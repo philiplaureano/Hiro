@@ -15,7 +15,7 @@ namespace Hiro.UnitTests
         [Test]
         public void ShouldListMissingDependencies()
         {
-            var dependencyMap = new Mock<IDependencyMap>();
+            var dependencyMap = new Mock<IDependencyContainer>();
             dependencyMap.Expect(m => m.Contains(It.IsAny<IDependency>())).Returns(false);
 
             TestMissingDependencies(dependencyMap, 1);
@@ -24,13 +24,34 @@ namespace Hiro.UnitTests
         [Test]
         public void ShouldListNoMissingDependenciesIfDependencyMapReturnsTrue()
         {
-            var dependencyMap = new Mock<IDependencyMap>();
+            var dependencyMap = new Mock<IDependencyContainer>();
             dependencyMap.Expect(m => m.Contains(It.IsAny<IDependency>())).Returns(true);
 
             TestMissingDependencies(dependencyMap, 0);
         }
 
-        private static void TestMissingDependencies(Mock<IDependencyMap> dependencyMap, int expectedResultCount)
+        [Test]
+        public void ShouldBeAbleToGetImplementationMemberRegardlessOfMemberType()
+        {
+            var constructor = typeof(Vehicle).GetConstructor(new Type[] { typeof(IPerson) });
+            var property = typeof(Vehicle).GetProperty("Driver");
+
+            var constructorResolver = new Mock<IDependencyResolver<ConstructorInfo>>();
+            var constructorImplementation = new Implementation<ConstructorInfo>(constructor, constructorResolver.Object);
+
+            var propertyResolver = new Mock<IDependencyResolver<PropertyInfo>>();
+            var propertyImplementation = new Implementation<PropertyInfo>(property, propertyResolver.Object);
+
+            var memberCollector = new MemberCollector();
+
+            constructorImplementation.Accept(memberCollector);
+            propertyImplementation.Accept(memberCollector);
+
+            Assert.AreEqual(constructor, memberCollector.Constructors.First());
+            Assert.AreEqual(property, memberCollector.Properties.First());
+        }
+
+        private static void TestMissingDependencies(Mock<IDependencyContainer> dependencyMap, int expectedResultCount)
         {
             var resolver = new Mock<IDependencyResolver<ConstructorInfo>>();
             var constructor = typeof(Vehicle).GetConstructor(new Type[] { typeof(IPerson) });
@@ -38,8 +59,8 @@ namespace Hiro.UnitTests
 
             resolver.Expect(r => r.GetDependenciesFrom(constructor)).Returns(dependencies);
 
-            var implementation = new Implementation<ConstructorInfo>(constructor);
-            var missingDependencies = implementation.GetMissingDependencies(dependencyMap.Object, resolver.Object);
+            var implementation = new Implementation<ConstructorInfo>(constructor, resolver.Object);
+            var missingDependencies = implementation.GetMissingDependencies(dependencyMap.Object);
 
             Assert.IsTrue(missingDependencies.Count() == expectedResultCount);
 

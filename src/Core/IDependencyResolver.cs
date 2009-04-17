@@ -11,7 +11,6 @@ namespace Hiro
     /// </summary>
     /// <typeparam name="TMember">The member type.</typeparam>
     public interface IDependencyResolver<TMember>
-        where TMember : MemberInfo
     {
         /// <summary>
         /// Determines the dependencies from a type member.
