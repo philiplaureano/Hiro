@@ -62,6 +62,8 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseFixture.cs" />
+    <Compile Include="DependencyTests.cs" />
+    <Compile Include="ImplementationTests.cs" />
     <Compile Include="ResolutionTests.cs" />
     <Compile Include="SampleDomain\IPerson.cs" />
     <Compile Include="SampleDomain\Vehicle.cs" />
