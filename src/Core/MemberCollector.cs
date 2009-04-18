@@ -9,7 +9,7 @@ namespace Hiro
     /// <summary>
     /// Represents a type that can determine the target member from a given implementation instance.
     /// </summary>
-    public class MemberCollector
+    public class MemberCollector : IMemberCollector
     {
         private List<ConstructorInfo> _constructors = new List<ConstructorInfo>();
         private List<PropertyInfo> _properties = new List<PropertyInfo>();

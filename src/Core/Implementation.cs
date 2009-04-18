@@ -7,7 +7,7 @@ using System.Text;
 namespace Hiro
 {
     // Represents a class that can implement a particular dependency.
-    public class Implementation<TMember>
+    public class Implementation<TMember> : IImplementation
     {
         private TMember _member;
         private IDependencyResolver<TMember> _resolver;
@@ -26,9 +26,9 @@ namespace Hiro
         /// Allows a collector to visit the current implementation.
         /// </summary>
         /// <param name="collector">The target collector.</param>
-        public void Accept(MemberCollector collector)
+        public void Accept(IMemberCollector collector)
         {
-            collector.AddMember<TMember>(_member);
+            collector.AddMember(_member);
         }
 
         /// <summary>
@@ -37,13 +37,22 @@ namespace Hiro
         /// <param name="map">The dependency map.</param>
         /// <param name="resolver">The dependency resolver.</param>
         /// <returns>A list of missing dependencies.</returns>
-        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
+        public virtual IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
         {
             foreach (var dependency in _resolver.GetDependenciesFrom(_member))
             {
                 if (!map.Contains(dependency))
                     yield return dependency;
             }
+        }
+
+        /// <summary>
+        /// Returns the dependencies required by the current implementation.
+        /// </summary>
+        /// <returns>The list of required dependencies required by the current implementation.</returns>
+        public virtual IEnumerable<IDependency> GetRequiredDependencies()
+        {
+            return _resolver.GetDependenciesFrom(_member);
         }
     }
 }

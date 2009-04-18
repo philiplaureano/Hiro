@@ -31,6 +31,23 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldBeAbleToListRequiredDependencies()
+        {
+            var constructorResolver = new Mock<IDependencyResolver<ConstructorInfo>>();
+            var dependency = new Dependency(string.Empty, typeof(IPerson));
+            
+            var constructor = typeof(Vehicle).GetConstructor(new Type[] { typeof(IPerson) });
+            var constructorImplementation = new Implementation<ConstructorInfo>(constructor, constructorResolver.Object);
+
+            constructorResolver.Expect(resolver => resolver.GetDependenciesFrom(constructor)).Returns(new[] { dependency});
+
+            IEnumerable<IDependency> results = constructorImplementation.GetRequiredDependencies();
+            
+            Assert.IsTrue(results.Count() > 0);
+            Assert.IsTrue(results.Contains(dependency));
+        }
+
+        [Test]
         public void ShouldBeAbleToGetImplementationMemberRegardlessOfMemberType()
         {
             var constructor = typeof(Vehicle).GetConstructor(new Type[] { typeof(IPerson) });

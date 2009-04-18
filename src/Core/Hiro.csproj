@@ -40,6 +40,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NGenerics, Version=1.4.1.0, Culture=neutral, PublicKeyToken=e4b41be133ea7faf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\NGenerics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -49,7 +53,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DependencyMap.cs" />
     <Compile Include="IDependencyContainer.cs" />
+    <Compile Include="IImplementation.cs" />
+    <Compile Include="IMemberCollector.cs" />
     <Compile Include="Implementation.cs" />
     <Compile Include="MemberCollector.cs" />
     <Compile Include="Resolvers\ConstructorDependencyResolver.cs" />
