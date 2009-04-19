@@ -20,16 +20,7 @@ namespace Hiro
         {
             _member = member;
             _resolver = resolver;
-        }
-
-        /// <summary>
-        /// Allows a collector to visit the current implementation.
-        /// </summary>
-        /// <param name="collector">The target collector.</param>
-        public void Accept(IMemberCollector collector)
-        {
-            collector.AddMember(_member);
-        }
+        }        
 
         /// <summary>
         /// Obtains the list of missing dependencies from the current implementation.

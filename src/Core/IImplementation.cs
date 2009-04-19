@@ -7,7 +7,6 @@ namespace Hiro
 {
     public interface IImplementation
     {
-        void Accept(IMemberCollector collector);
         IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map);
     }
 }

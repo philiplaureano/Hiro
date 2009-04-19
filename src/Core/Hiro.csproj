@@ -58,7 +58,6 @@
     <Compile Include="IImplementation.cs" />
     <Compile Include="IMemberCollector.cs" />
     <Compile Include="Implementation.cs" />
-    <Compile Include="MemberCollector.cs" />
     <Compile Include="Resolvers\ConstructorDependencyResolver.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="IDependency.cs" />
