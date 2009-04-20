@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Hiro.Interfaces;
 
 namespace Hiro.Resolvers
 {
@@ -16,7 +17,7 @@ namespace Hiro.Resolvers
         /// </summary>
         /// <param name="property">The target property.</param>
         /// <returns>A list of dependencies.</returns>
-        public IEnumerable<IDependency> GetDependenciesFrom(PropertyInfo property)
+        public virtual IEnumerable<IDependency> GetDependenciesFrom(PropertyInfo property)
         {
             yield return new Dependency(string.Empty, property.PropertyType);
         }

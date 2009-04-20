@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Hiro.Interfaces;
 
 namespace Hiro.Resolvers
 {
@@ -16,7 +17,7 @@ namespace Hiro.Resolvers
         /// </summary>
         /// <param name="constructor">The target constructor.</param>
         /// <returns>The list of <see cref="IDependency"/> instances that describe the constructor parameter dependencies.</returns>
-        public IEnumerable<IDependency> GetDependenciesFrom(ConstructorInfo constructor)
+        public virtual IEnumerable<IDependency> GetDependenciesFrom(ConstructorInfo constructor)
         {
             foreach (var param in constructor.GetParameters())
             {

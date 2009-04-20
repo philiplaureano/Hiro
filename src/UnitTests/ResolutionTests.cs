@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Hiro.UnitTests.SampleDomain;
 using System.Reflection;
 using Hiro.Resolvers;
+using Hiro.Interfaces;
 
 namespace Hiro.UnitTests
 {

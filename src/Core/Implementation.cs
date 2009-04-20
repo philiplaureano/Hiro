@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Hiro.Interfaces;
 
 namespace Hiro
 {
@@ -16,7 +17,7 @@ namespace Hiro
         /// Initializes a new instance of the Implementation class.
         /// </summary>
         /// <param name="member">The target member.</param>
-        public Implementation(TMember member, IDependencyResolver<TMember> resolver)
+        protected Implementation(TMember member, IDependencyResolver<TMember> resolver)
         {
             _member = member;
             _resolver = resolver;

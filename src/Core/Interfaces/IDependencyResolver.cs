@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Hiro
+namespace Hiro.Interfaces
 {
     /// <summary>
     /// Represents a type that can infer the service dependencies from a type member.

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4A778B50-F400-4301-BD6F-772761DFAE16}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -54,14 +54,16 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="DependencyMap.cs" />
-    <Compile Include="IDependencyContainer.cs" />
-    <Compile Include="IImplementation.cs" />
-    <Compile Include="IMemberCollector.cs" />
+    <Compile Include="Implementations\ConstructorImplementation.cs" />
+    <Compile Include="Implementations\PropertyImplementation.cs" />
+    <Compile Include="Interfaces\IDependencyContainer.cs" />
+    <Compile Include="Interfaces\IImplementation.cs" />
     <Compile Include="Implementation.cs" />
+    <Compile Include="Interfaces\IMethodEmitterContext.cs" />
     <Compile Include="Resolvers\ConstructorDependencyResolver.cs" />
     <Compile Include="Dependency.cs" />
-    <Compile Include="IDependency.cs" />
-    <Compile Include="IDependencyResolver.cs" />
+    <Compile Include="Interfaces\IDependency.cs" />
+    <Compile Include="Interfaces\IDependencyResolver.cs" />
     <Compile Include="Resolvers\PropertyDependencyResolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

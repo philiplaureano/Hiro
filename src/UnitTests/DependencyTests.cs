@@ -6,6 +6,8 @@ using NUnit.Framework;
 using Hiro.UnitTests.SampleDomain;
 using System.Reflection;
 using Moq;
+using Hiro.Interfaces;
+using Hiro.Implementations;
 
 namespace Hiro.UnitTests
 {
@@ -28,7 +30,7 @@ namespace Hiro.UnitTests
             var ctor = typeof(Vehicle).GetConstructor(new Type[0]);
             var resolver = new Mock<IDependencyResolver<ConstructorInfo>>();
             var dependency = new Dependency(string.Empty, typeof(IVehicle));
-            var constructorImplementation = new Implementation<ConstructorInfo>(ctor, resolver.Object);
+            var constructorImplementation = new ConstructorImplementation(ctor, resolver.Object);
 
             var dependencyMap = new DependencyMap();
             dependencyMap.AddImplementation(dependency, constructorImplementation);
