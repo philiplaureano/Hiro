@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\Hiro.build = ..\Hiro.build
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hiro.Containers", "Hiro.Containers\Hiro.Containers.csproj", "{2E7E26C4-E391-4C33-9B6C-792B877F8F90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AutomatedDebug|Any CPU = AutomatedDebug|Any CPU
@@ -29,6 +31,12 @@ Global
 		{FFBB1B9F-6F50-4796-833D-1A31935B8E10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFBB1B9F-6F50-4796-833D-1A31935B8E10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFBB1B9F-6F50-4796-833D-1A31935B8E10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E7E26C4-E391-4C33-9B6C-792B877F8F90}.AutomatedDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E7E26C4-E391-4C33-9B6C-792B877F8F90}.AutomatedDebug|Any CPU.Build.0 = Debug|Any CPU
+		{2E7E26C4-E391-4C33-9B6C-792B877F8F90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E7E26C4-E391-4C33-9B6C-792B877F8F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E7E26C4-E391-4C33-9B6C-792B877F8F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E7E26C4-E391-4C33-9B6C-792B877F8F90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

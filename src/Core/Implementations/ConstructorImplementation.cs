@@ -13,5 +13,10 @@ namespace Hiro.Implementations
             : base(constructor, resolver)
         {
         }
+
+        public override void Emit(IServiceEmitterContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

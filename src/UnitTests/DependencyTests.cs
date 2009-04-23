@@ -33,7 +33,7 @@ namespace Hiro.UnitTests
             var constructorImplementation = new ConstructorImplementation(ctor, resolver.Object);
 
             var dependencyMap = new DependencyMap();
-            dependencyMap.AddImplementation(dependency, constructorImplementation);
+            dependencyMap.AddService(dependency, constructorImplementation);
             Assert.IsTrue(dependencyMap.Contains(dependency));
         }
 
@@ -46,7 +46,7 @@ namespace Hiro.UnitTests
             implementation.Expect(impl => impl.GetMissingDependencies(map)).Returns(new IDependency[0]);
             
             bool addIncompleteImplementations = false;
-            map.AddImplementation(dependency, implementation.Object);
+            map.AddService(dependency, implementation.Object);
             var results = map.GetImplementations(dependency, addIncompleteImplementations);
 
             Assert.IsTrue(results.Count() > 0);

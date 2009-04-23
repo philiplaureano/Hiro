@@ -16,5 +16,13 @@ namespace Hiro.Interfaces
         /// <param name="dependency">The target service dependency.</param>
         /// <returns><c>true</c> if the service exists; otherwise, it will return <c>false</c>.</returns>
         bool Contains(IDependency dependency);
+
+        /// <summary>
+        /// Gets the current list of implementations for the current dependency.
+        /// </summary>
+        /// <param name="targetDependency">The target dependency.</param>
+        /// <param name="addIncompleteImplementations">A boolean flag that determines whether or not the resulting list should include implementations with incomplete dependencies.</param>
+        /// <returns>A list of implementations.</returns>
+        IEnumerable<IImplementation> GetImplementations(IDependency targetDependency, bool addIncompleteImplementations);
     }
 }

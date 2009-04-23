@@ -40,6 +40,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LinFu.Core, Version=2.0.3.16979, Culture=neutral, PublicKeyToken=a4c63a184389506f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\LinFu.Core.dll</HintPath>
+    </Reference>
     <Reference Include="NGenerics, Version=1.4.1.0, Culture=neutral, PublicKeyToken=e4b41be133ea7faf, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\NGenerics.dll</HintPath>
@@ -53,18 +57,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Compilers\AssemblyBuilder.cs" />
+    <Compile Include="Compilers\TypeBuilder.cs" />
+    <Compile Include="Compilers\BaseTypeBuilder.cs" />
     <Compile Include="DependencyMap.cs" />
+    <Compile Include="Interfaces\IDependencyMap.cs" />
+    <Compile Include="Interfaces\IImplementationOfT.cs" />
     <Compile Include="Implementations\ConstructorImplementation.cs" />
     <Compile Include="Implementations\PropertyImplementation.cs" />
     <Compile Include="Interfaces\IDependencyContainer.cs" />
     <Compile Include="Interfaces\IImplementation.cs" />
     <Compile Include="Implementation.cs" />
-    <Compile Include="Interfaces\IMethodEmitterContext.cs" />
+    <Compile Include="Interfaces\IServiceEmitterContext.cs" />
     <Compile Include="Resolvers\ConstructorDependencyResolver.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="Interfaces\IDependency.cs" />
     <Compile Include="Interfaces\IDependencyResolver.cs" />
     <Compile Include="Resolvers\PropertyDependencyResolver.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
+      <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
+      <Name>Hiro.Containers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

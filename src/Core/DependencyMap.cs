@@ -10,7 +10,7 @@ namespace Hiro
     /// <summary>
     /// Represents a class that can map dependencies to implementations.
     /// </summary>
-    public class DependencyMap : IDependencyContainer
+    public class DependencyMap : IDependencyMap
     {
         private HashList<IDependency, IImplementation> _entries = new HashList<IDependency, IImplementation>();
 
@@ -29,7 +29,7 @@ namespace Hiro
         /// </summary>
         /// <param name="dependency">The dependency that will be associated with the implementation.</param>
         /// <param name="implementation">The implementation itself.</param>
-        public void AddImplementation(IDependency dependency, IImplementation implementation)
+        public void AddService(IDependency dependency, IImplementation implementation)
         {
             _entries.Add(dependency, implementation);
         }
