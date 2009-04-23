@@ -21,8 +21,7 @@ namespace Hiro.Compilers
         /// <param name="assembly">The assembly that will contain the type</param>
         /// <param name="interfaces">The list of interfaces that the type will implement.</param>
         /// <returns>A <see cref="TypeDefinition"/> instance.</returns>
-        public TypeDefinition CreateType(string typeName, string namespaceName, TypeReference baseType,
-            AssemblyDefinition assembly, params TypeReference[] interfaces)
+        public TypeDefinition CreateType(string typeName, string namespaceName, TypeReference baseType, AssemblyDefinition assembly, params TypeReference[] interfaces)
         {
             var attributes = TypeAttributes.AutoClass | TypeAttributes.Class |
                              TypeAttributes.Public | TypeAttributes.BeforeFieldInit;
@@ -44,6 +43,8 @@ namespace Hiro.Compilers
         /// </summary>
         /// <param name="module">The host module.</param>
         /// <param name="containerType">The container type.</param>
-        protected virtual void AddInterfaces(ModuleDefinition module, TypeDefinition containerType) { }
+        protected virtual void AddInterfaces(ModuleDefinition module, TypeDefinition containerType) 
+        { 
+        }
     }
 }

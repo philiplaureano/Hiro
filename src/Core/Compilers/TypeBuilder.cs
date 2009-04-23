@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Hiro.Containers;
 using LinFu.Reflection.Emit;
 using Mono.Cecil;
-using Hiro.Containers;
 
 namespace Hiro.Compilers
 {

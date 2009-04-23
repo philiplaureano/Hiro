@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NGenerics.DataStructures.General;
 using Hiro.Interfaces;
+using NGenerics.DataStructures.General;
 
 namespace Hiro
 {
@@ -12,6 +12,9 @@ namespace Hiro
     /// </summary>
     public class DependencyMap : IDependencyMap
     {
+        /// <summary>
+        /// The list of dependencies in the current map.
+        /// </summary>
         private HashList<IDependency, IImplementation> _entries = new HashList<IDependency, IImplementation>();
 
         /// <summary>
@@ -49,9 +52,9 @@ namespace Hiro
             foreach (var item in items)
             {
                 var missingDependencies = item.GetMissingDependencies(this);
-                var isComplete = missingDependencies.Count() == 0;
+                var completed = missingDependencies.Count() == 0;
 
-                if (isComplete || (!isComplete && addIncompleteImplementations))
+                if (completed || (!completed && addIncompleteImplementations))
                     yield return item;
             }
         }

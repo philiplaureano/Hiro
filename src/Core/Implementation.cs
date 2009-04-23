@@ -7,16 +7,27 @@ using Hiro.Interfaces;
 
 namespace Hiro
 {
-    // Represents a class that can implement a particular dependency.
+    /// <summary>
+    /// Represents a class that can implement a particular dependency.
+    /// </summary>
+    /// <typeparam name="TMember">The member type.</typeparam>
     public abstract class Implementation<TMember> : IImplementation<TMember>
     {
+        /// <summary>
+        /// The target member.
+        /// </summary>
         private TMember _member;
+
+        /// <summary>
+        /// The dependency resolver that will be used to determine which dependencies are required by this instance.
+        /// </summary>
         private IDependencyResolver<TMember> _resolver;
 
         /// <summary>
         /// Initializes a new instance of the Implementation class.
         /// </summary>
         /// <param name="member">The target member.</param>
+        /// <param name="resolver">The dependency resolver.</param>
         protected Implementation(TMember member, IDependencyResolver<TMember> resolver)
         {
             _member = member;
@@ -36,7 +47,6 @@ namespace Hiro
         /// Obtains the list of missing dependencies from the current implementation.
         /// </summary>
         /// <param name="map">The dependency map.</param>
-        /// <param name="resolver">The dependency resolver.</param>
         /// <returns>A list of missing dependencies.</returns>
         public virtual IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
         {
