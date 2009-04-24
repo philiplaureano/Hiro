@@ -18,7 +18,8 @@ namespace Hiro.Compilers
         /// </summary>
         /// <param name="targetMethod">The target method.</param>
         /// <param name="hostType">The type that will host the new method.</param>
-        public void AddOverrideFor(MethodInfo targetMethod, TypeDefinition hostType)
+        /// <returns>The overridden method.</returns>
+        public MethodDefinition AddOverrideFor(MethodInfo targetMethod, TypeDefinition hostType)
         {
             var module = hostType.Module;
             var options = new MethodBuilderOptions();
@@ -27,14 +28,14 @@ namespace Hiro.Compilers
             options.MethodName = targetMethod.Name;
 
             var parameterTypes = (from param in targetMethod.GetParameters()
-                                 select param.ParameterType).ToArray();
+                                  select param.ParameterType).ToArray();
 
             options.HostType = hostType;
             options.SetMethodParameters(parameterTypes);
             options.ReturnType = targetMethod.ReturnType;
 
             var builder = new MethodBuilder();
-            builder.CreateMethod(options);            
+            return builder.CreateMethod(options);
         }
     }
 }

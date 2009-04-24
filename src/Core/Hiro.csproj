@@ -61,8 +61,9 @@
     <Compile Include="Compilers\MethodBuilder.cs" />
     <Compile Include="Compilers\MethodBuilderOptions.cs" />
     <Compile Include="Compilers\MethodOverrider.cs" />
+    <Compile Include="Compilers\ContainerTypeBuilder.cs" />
+    <Compile Include="Compilers\InterfaceStubBuilder.cs" />
     <Compile Include="Compilers\TypeBuilder.cs" />
-    <Compile Include="Compilers\BaseTypeBuilder.cs" />
     <Compile Include="DependencyMap.cs" />
     <Compile Include="Interfaces\IDependencyMap.cs" />
     <Compile Include="Interfaces\IImplementationOfT.cs" />

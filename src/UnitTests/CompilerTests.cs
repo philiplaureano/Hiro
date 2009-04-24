@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
-using NUnit.Framework;
-using Mono.Cecil;
 using Hiro.Compilers;
 using Hiro.Containers;
-using System.Reflection;
+using LinFu.Reflection.Emit;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
+using NUnit.Framework;
 
 namespace Hiro.UnitTests
 {
@@ -23,6 +25,52 @@ namespace Hiro.UnitTests
         protected override void OnTerm()
         {
             _assemblyBuilder = null;
+        }
+
+        [Test]
+        public void ShouldBeAbleToCreateInterfaceStub()
+        {
+            var interfaceType = typeof(IMicroContainer);
+
+            var assembly = _assemblyBuilder.CreateAssembly("Test", AssemblyKind.Dll);
+            var module = assembly.MainModule;
+
+            var objectType = module.Import(typeof(object));
+
+            var typeBuilder = new TypeBuilder();
+            var type = typeBuilder.CreateType("Test", "Test", objectType, assembly);
+
+            var stubBuilder = new InterfaceStubBuilder();
+            stubBuilder.AddStubImplementationFor(interfaceType, type);
+
+            var interfaceTypeRef = module.Import(interfaceType);
+
+            Assert.IsTrue(type.Interfaces.Contains(interfaceTypeRef));
+
+            var notImplementedCtor = module.ImportConstructor<NotImplementedException>();
+
+            // All stub methods must throw a NotImplementedException
+            foreach (MethodDefinition method in type.Methods)
+            {
+                var body = method.Body;
+                var instructions = body.Instructions;
+
+                // Define the expected constructors
+                var IL = body.CilWorker;
+                var expectedInstructions = new Queue<Instruction>();
+                expectedInstructions.Enqueue(IL.Create(OpCodes.Newobj, notImplementedCtor));
+                expectedInstructions.Enqueue(IL.Create(OpCodes.Throw));
+
+                Assert.AreEqual(expectedInstructions.Count, instructions.Count);
+
+                foreach (Instruction instruction in instructions)
+                {
+                    var expectedInstruction = expectedInstructions.Dequeue();
+                    
+                    Assert.AreEqual(expectedInstruction.OpCode, instruction.OpCode);
+                    Assert.AreEqual(expectedInstruction.Operand, instruction.Operand);
+                }
+            }
         }
 
         [Test]
@@ -48,7 +96,7 @@ namespace Hiro.UnitTests
             string typeName = "Hiro.MicroContainer";
             string namespaceName = "Hiro.Containers";
 
-            var typeBuilder = new TypeBuilder();
+            var typeBuilder = new ContainerTypeBuilder();
             TypeDefinition result = typeBuilder.CreateType(typeName, namespaceName, baseType, assembly, interfaces);
 
             // Verify the type attributes
@@ -78,7 +126,7 @@ namespace Hiro.UnitTests
 
         [Test]
         public void ShouldProvideMethodOverrideForContainsMethod()
-        {            
+        {
             ShouldProvideMethodOverrideFor<IMicroContainer>("Contains");
         }
 
@@ -103,7 +151,7 @@ namespace Hiro.UnitTests
             var module = assembly.MainModule;
 
             var objectType = module.Import(typeof(object));
-            var typeBuilder = new TypeBuilder();
+            var typeBuilder = new ContainerTypeBuilder();
             TypeDefinition hostType = typeBuilder.CreateType("Test", "Test", objectType, assembly);
 
             var overrider = new MethodOverrider();
@@ -150,7 +198,7 @@ namespace Hiro.UnitTests
 
         private void TestCreatePublicMethod(bool isStatic)
         {
-            var typeBuilder = new TypeBuilder();
+            var typeBuilder = new ContainerTypeBuilder();
             var methodBuilder = new MethodBuilder();
             MethodBuilderOptions options = new MethodBuilderOptions();
 
