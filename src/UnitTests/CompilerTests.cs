@@ -32,45 +32,32 @@ namespace Hiro.UnitTests
         {
             var interfaceType = typeof(IMicroContainer);
 
-            var assembly = _assemblyBuilder.CreateAssembly("Test", AssemblyKind.Dll);
-            var module = assembly.MainModule;
+            ModuleDefinition module;
+            TypeDefinition type;
+            CreateStub("Test", "Test", interfaceType, out module, out type);
 
-            var objectType = module.Import(typeof(object));
+            TestStubbedInterfaceImplementation(module, type);
+        }
 
-            var typeBuilder = new TypeBuilder();
-            var type = typeBuilder.CreateType("Test", "Test", objectType, assembly);
+        [Test]
+        [ExpectedException(typeof(NotImplementedException))]
+        public void ShouldThrowNotImplementedExceptionWhenCallingContainsMethod()
+        {
+            ShouldThrowNotImplementedExceptionWith<IMicroContainer>(c => c.Contains(null, null));
+        }
 
-            var stubBuilder = new InterfaceStubBuilder();
-            stubBuilder.AddStubImplementationFor(interfaceType, type);
+        [Test]
+        [ExpectedException(typeof(NotImplementedException))]
+        public void ShouldThrowNotImplementedExceptionWhenCallingGetAllInstancesMethod()
+        {
+            ShouldThrowNotImplementedExceptionWith<IMicroContainer>(c => c.GetAllInstances(null));
+        }
 
-            var interfaceTypeRef = module.Import(interfaceType);
-
-            Assert.IsTrue(type.Interfaces.Contains(interfaceTypeRef));
-
-            var notImplementedCtor = module.ImportConstructor<NotImplementedException>();
-
-            // All stub methods must throw a NotImplementedException
-            foreach (MethodDefinition method in type.Methods)
-            {
-                var body = method.Body;
-                var instructions = body.Instructions;
-
-                // Define the expected constructors
-                var IL = body.CilWorker;
-                var expectedInstructions = new Queue<Instruction>();
-                expectedInstructions.Enqueue(IL.Create(OpCodes.Newobj, notImplementedCtor));
-                expectedInstructions.Enqueue(IL.Create(OpCodes.Throw));
-
-                Assert.AreEqual(expectedInstructions.Count, instructions.Count);
-
-                foreach (Instruction instruction in instructions)
-                {
-                    var expectedInstruction = expectedInstructions.Dequeue();
-                    
-                    Assert.AreEqual(expectedInstruction.OpCode, instruction.OpCode);
-                    Assert.AreEqual(expectedInstruction.Operand, instruction.Operand);
-                }
-            }
+        [Test]
+        [ExpectedException(typeof(NotImplementedException))]
+        public void ShouldThrowNotImplementedExceptionWhenCallingGetInstanceMethod()
+        {
+            ShouldThrowNotImplementedExceptionWith<IMicroContainer>(c => c.GetInstance(null, null));
         }
 
         [Test]
@@ -234,6 +221,69 @@ namespace Hiro.UnitTests
             foreach (ParameterDefinition param in result.Parameters)
             {
                 Assert.IsTrue(param.ParameterType == integerType);
+            }
+        }
+        private void ShouldThrowNotImplementedExceptionWith<T>(Action<T> actionThatShouldTriggerException)
+        {
+            var interfaceType = typeof(T);
+
+            ModuleDefinition module;
+            TypeDefinition type;
+            CreateStub("Test", "Test", interfaceType, out module, out type);
+
+            var assembly = module.Assembly;
+            var loadedAssembly = assembly.ToAssembly();
+
+            var firstType = loadedAssembly.GetTypes()[0];
+            Assert.IsNotNull(firstType);
+
+            var instance = (T)Activator.CreateInstance(firstType);
+            actionThatShouldTriggerException(instance);
+        }
+
+        private void CreateStub(string typeName, string assemblyName, Type interfaceType, out ModuleDefinition module, out TypeDefinition type)
+        {
+            var assembly = _assemblyBuilder.CreateAssembly(assemblyName, AssemblyKind.Dll);
+            module = assembly.MainModule;
+
+            var objectType = module.Import(typeof(object));
+
+            var typeBuilder = new TypeBuilder();
+            type = typeBuilder.CreateType(typeName, "Test", objectType, assembly);
+
+            var stubBuilder = new InterfaceStubBuilder();
+            stubBuilder.AddStubImplementationFor(interfaceType, type);
+
+            var interfaceTypeRef = module.Import(interfaceType);
+
+            Assert.IsTrue(type.Interfaces.Contains(interfaceTypeRef));
+        }
+
+        private static void TestStubbedInterfaceImplementation(ModuleDefinition module, TypeDefinition type)
+        {
+            var notImplementedCtor = module.ImportConstructor<NotImplementedException>();
+
+            // All stub methods must throw a NotImplementedException
+            foreach (MethodDefinition method in type.Methods)
+            {
+                var body = method.Body;
+                var instructions = body.Instructions;
+
+                // Define the expected constructors
+                var IL = body.CilWorker;
+                var expectedInstructions = new Queue<Instruction>();
+                expectedInstructions.Enqueue(IL.Create(OpCodes.Newobj, notImplementedCtor));
+                expectedInstructions.Enqueue(IL.Create(OpCodes.Throw));
+
+                Assert.AreEqual(expectedInstructions.Count, instructions.Count);
+
+                foreach (Instruction instruction in instructions)
+                {
+                    var expectedInstruction = expectedInstructions.Dequeue();
+
+                    Assert.AreEqual(expectedInstruction.OpCode, instruction.OpCode);
+                    Assert.AreEqual(expectedInstruction.Operand, instruction.Operand);
+                }
             }
         }
     }

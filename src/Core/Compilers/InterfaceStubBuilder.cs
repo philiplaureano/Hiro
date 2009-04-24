@@ -20,7 +20,8 @@ namespace Hiro.Compilers
         /// <remarks>By default, each implemented method will throw a <see cref="NotImplementedException"/>.</remarks>
         /// <param name="interfaceType">The interface type.</param>
         /// <param name="type">The host type.</param>
-        public void AddStubImplementationFor(Type interfaceType, TypeDefinition type)
+        /// <returns>The list of stubbed methods.</returns>
+        public IEnumerable<MethodDefinition> AddStubImplementationFor(Type interfaceType, TypeDefinition type)
         {
             var module = type.Module;            
             var interfaceTypeRef = module.Import(interfaceType);
@@ -29,7 +30,7 @@ namespace Hiro.Compilers
             if (!interfaces.Contains(interfaceTypeRef)) 
                 interfaces.Add(interfaceTypeRef);
 
-            CreateInterfaceStub(interfaceType, type);
+            return CreateInterfaceStub(interfaceType, type);
         }
 
         /// <summary>
@@ -38,14 +39,20 @@ namespace Hiro.Compilers
         /// <param name="interfaceType">The interface type that will be implemented by the target type.</param>
         /// <param name="type">The target type.</param>
         /// <param name="module">The target module.</param>
-        private static void CreateInterfaceStub(Type interfaceType, TypeDefinition type, ModuleDefinition module)
+        /// <returns>The list of stubbed methods.</returns>
+        private static IEnumerable<MethodDefinition> CreateInterfaceStub(Type interfaceType, TypeDefinition type)
         {
+            var module = type.Module;            
             var overrider = new MethodOverrider();
             var methods = interfaceType.GetMethods();
+            var stubbedMethods = new List<MethodDefinition>();
             foreach (var method in methods)
             {
-                CreateMethodStub(type, module, overrider, method);
+                var newMethod = CreateMethodStub(type, module, overrider, method);
+                stubbedMethods.Add(newMethod);
             }
+
+            return stubbedMethods;
         }
 
         /// <summary>
@@ -55,7 +62,8 @@ namespace Hiro.Compilers
         /// <param name="module">The host module.</param>
         /// <param name="overrider">The <see cref="MethodOverrider"/> that will be used to override the target method.</param>
         /// <param name="method">The target method.</param>
-        private static void CreateMethodStub(TypeDefinition type, ModuleDefinition module, MethodOverrider overrider, MethodInfo method)
+        /// <returns>The stubbed method.</returns>
+        private static MethodDefinition CreateMethodStub(TypeDefinition type, ModuleDefinition module, MethodOverrider overrider, MethodInfo method)
         {
             // Import the NotImplementedException type
             var notImplementedCtor = module.ImportConstructor<NotImplementedException>();
@@ -67,6 +75,8 @@ namespace Hiro.Compilers
 
             worker.Emit(OpCodes.Newobj, notImplementedCtor);
             worker.Emit(OpCodes.Throw);
+
+            return currentMethod;
         }
     }
 }
