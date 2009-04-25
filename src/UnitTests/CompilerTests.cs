@@ -9,6 +9,7 @@ using LinFu.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using NUnit.Framework;
+using Hiro.UnitTests.SampleDomain;
 
 namespace Hiro.UnitTests
 {
@@ -25,6 +26,44 @@ namespace Hiro.UnitTests
         protected override void OnTerm()
         {
             _assemblyBuilder = null;
+        }
+
+        [Test]
+        public void ShouldBeAbleToCreatePrivateStaticGetServiceHashCodeMethodForAGivenType()
+        {
+            var assembly = _assemblyBuilder.CreateAssembly(Guid.NewGuid().ToString(), AssemblyKind.Dll);
+            var module = assembly.MainModule;
+
+            TypeReference baseType = module.Import(typeof(object));
+
+            var typeBuilder = new TypeBuilder();
+            var newType = typeBuilder.CreateType("Test", "Test", baseType, assembly);
+
+            var emitter = new ServiceHashEmitter();
+            emitter.AddGetServiceHashMethodTo(newType, true);
+
+            var result = (from MethodDefinition m in newType.Methods
+                          where m.Name == "GetServiceHashCode"
+                          select m).First();
+
+            Assert.IsNotNull(result);
+
+            // Load the assembly
+            var loadedAssembly = assembly.ToAssembly();
+
+            var containerType = loadedAssembly.GetTypes()[0];
+            var targetMethod = containerType.GetMethod("GetServiceHashCode", BindingFlags.Public | BindingFlags.Static);
+            
+            Assert.IsNotNull(targetMethod);
+
+            var serviceName = "Test";
+            var serviceType = typeof(IVehicle);
+
+            // The GetServiceHashCode method result should match the actual hash
+            var expectedHash = serviceName.GetHashCode() ^ serviceType.GetHashCode();
+            var actualHash = targetMethod.Invoke(null, new object[] { serviceType, serviceName });
+
+            Assert.AreEqual(expectedHash, actualHash);
         }
 
         [Test]
@@ -209,9 +248,16 @@ namespace Hiro.UnitTests
 
             // Verify the method attributes
             Assert.IsTrue(result.IsPublic);
-            Assert.AreEqual(result.HasThis, !isStatic);
-            Assert.IsTrue(result.IsVirtual);
             Assert.IsFalse(result.IsAbstract);
+            if (!isStatic)
+            {
+                Assert.IsTrue(result.HasThis);
+                Assert.IsTrue(result.IsVirtual);
+            }
+            else
+            {
+                Assert.IsTrue(result.IsStatic);
+            }
 
             // Check the method signature
             Assert.IsTrue(result.Parameters.Count == 2);

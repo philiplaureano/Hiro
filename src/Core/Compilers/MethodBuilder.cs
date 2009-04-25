@@ -19,16 +19,15 @@ namespace Hiro.Compilers
         /// <returns>A method definition.</returns>
         public MethodDefinition CreateMethod(MethodBuilderOptions options)
         {
-            var methodAttributes = MethodAttributes.HideBySig | MethodAttributes.NewSlot;
+            var methodAttributes = MethodAttributes.HideBySig;
 
             if (options.IsPublic)
             {
                 methodAttributes |= MethodAttributes.Public;
-                methodAttributes |= MethodAttributes.Virtual;
             }
 
-            if (options.IsStatic)
-                methodAttributes |= MethodAttributes.Static;
+            var instanceAttributes = MethodAttributes.NewSlot | MethodAttributes.Virtual;
+            methodAttributes |= options.IsStatic ? MethodAttributes.Static : instanceAttributes;
 
             var targetType = options.HostType;
             var methodName = options.MethodName;

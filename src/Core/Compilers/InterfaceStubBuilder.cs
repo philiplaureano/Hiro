@@ -38,7 +38,6 @@ namespace Hiro.Compilers
         /// </summary>
         /// <param name="interfaceType">The interface type that will be implemented by the target type.</param>
         /// <param name="type">The target type.</param>
-        /// <param name="module">The target module.</param>
         /// <returns>The list of stubbed methods.</returns>
         private static IEnumerable<MethodDefinition> CreateInterfaceStub(Type interfaceType, TypeDefinition type)
         {
