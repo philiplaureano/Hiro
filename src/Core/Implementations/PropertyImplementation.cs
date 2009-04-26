@@ -20,15 +20,6 @@ namespace Hiro.Implementations
         public PropertyImplementation(PropertyInfo property, IDependencyResolver<PropertyInfo> resolver)
             : base(property, resolver)
         {
-        }
-
-        /// <summary>
-        /// Emits the instructions necessary to instantiate the target service.
-        /// </summary>
-        /// <param name="context">The <see cref="IServiceEmitterContext"/> that contains the information required to emit the service instance. </param>
-        public override void Emit(IServiceEmitterContext context)
-        {
-            throw new NotImplementedException();
-        }
+        }        
     }
 }

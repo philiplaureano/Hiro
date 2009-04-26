@@ -28,6 +28,7 @@ namespace Hiro.UnitTests
         {
             var dependencyMap = new Mock<IDependencyContainer>();
             dependencyMap.Expect(m => m.Contains(It.IsAny<IDependency>())).Returns(true);
+            dependencyMap.Expect(m => m.Dependencies).Returns(new IDependency[0]);
 
             TestMissingDependencies(dependencyMap, 0);
         }

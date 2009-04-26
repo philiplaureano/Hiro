@@ -54,5 +54,19 @@ namespace Hiro.UnitTests
 
             implementation.VerifyAll();
         }
+
+        [Test]
+        public void ShouldBeAbleToGetCurrentListOfDependencies()
+        {
+            var map = new DependencyMap();
+            for (int i = 0; i < 10; i++)
+            {
+                var dependency = new Mock<IDependency>();
+                var implementation = new Mock<IImplementation>();
+
+                map.AddService(dependency.Object, implementation.Object);
+                Assert.IsTrue(map.Dependencies.Contains(dependency.Object));
+            }
+        }
     }
 }

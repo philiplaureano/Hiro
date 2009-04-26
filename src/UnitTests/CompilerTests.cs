@@ -29,6 +29,25 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldCreateJumpEntryFieldInTargetType()
+        {
+            var assembly = _assemblyBuilder.CreateAssembly(Guid.NewGuid().ToString(), AssemblyKind.Dll);
+            var module = assembly.MainModule;
+
+            var objectType = module.ImportType(typeof(object));
+            var typeBuilder = new TypeBuilder();
+            TypeDefinition targetType = typeBuilder.CreateType(Guid.NewGuid().ToString(), "Test", objectType, assembly);
+            
+            var entryDictionaryType = module.ImportType<Dictionary<int, int>>();
+            var entryBuilder = new FieldBuilder();
+            var targetField = entryBuilder.AddField(targetType, "___jumpEntries", entryDictionaryType);
+            
+            // The type should have a field that is a Dictionary<int, int>            
+            Assert.IsNotNull(targetField);
+            Assert.AreEqual(targetField.FieldType, entryDictionaryType);
+        }
+
+        [Test]
         public void ShouldBeAbleToCreatePrivateStaticGetServiceHashCodeMethodForAGivenType()
         {
             var assembly = _assemblyBuilder.CreateAssembly(Guid.NewGuid().ToString(), AssemblyKind.Dll);

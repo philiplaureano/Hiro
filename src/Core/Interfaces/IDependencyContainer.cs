@@ -24,5 +24,11 @@ namespace Hiro.Interfaces
         /// <param name="addIncompleteImplementations">A boolean flag that determines whether or not the resulting list should include implementations with incomplete dependencies.</param>
         /// <returns>A list of implementations.</returns>
         IEnumerable<IImplementation> GetImplementations(IDependency targetDependency, bool addIncompleteImplementations);
+
+        /// <summary>
+        /// Gets the value indicating the list of dependencies that currently exist within the current container.
+        /// </summary>
+        /// <value>The current list of dependencies.</value>
+        IEnumerable<IDependency> Dependencies { get; }
     }
 }
