@@ -28,9 +28,8 @@ namespace Hiro.UnitTests
         public void ShouldBeAbleToAddItemsToDependencyMap()
         {
             var ctor = typeof(Vehicle).GetConstructor(new Type[0]);
-            var resolver = new Mock<IDependencyResolver<ConstructorInfo>>();
             var dependency = new Dependency(string.Empty, typeof(IVehicle));
-            var constructorImplementation = new ConstructorImplementation(ctor, resolver.Object);
+            var constructorImplementation = new ConstructorImplementation(ctor);
 
             var dependencyMap = new DependencyMap();
             dependencyMap.AddService(dependency, constructorImplementation);

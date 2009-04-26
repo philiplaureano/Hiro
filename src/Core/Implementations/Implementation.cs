@@ -4,8 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Hiro.Interfaces;
+using Mono.Cecil;
 
-namespace Hiro
+namespace Hiro.Implementations
 {
     /// <summary>
     /// Represents a class that can implement a particular dependency.
@@ -65,5 +66,13 @@ namespace Hiro
         {
             return _resolver.GetDependenciesFrom(_member);
         }
+
+        /// <summary>
+        /// Emits the instructions that will instantiate the current implementation.
+        /// </summary>
+        /// <param name="targetMethod">The target method.</param>
+        /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
+        /// <param name="serviceMap">The service map that contains the list of available dependencies in the current application.</param>
+        public abstract void Emit(MethodDefinition targetMethod, IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap);
     }
 }

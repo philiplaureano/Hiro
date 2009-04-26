@@ -19,7 +19,8 @@ namespace Hiro.Compilers
         /// </summary>
         /// <param name="targetType">The target type.</param>
         /// <param name="shouldBeVisible">A boolean flag that indicates whether or not the method should be public.</param>
-        public void AddGetServiceHashMethodTo(TypeDefinition targetType, bool shouldBeVisible)
+        /// <returns>The GetServiceHashCode method.</returns>
+        public MethodDefinition AddGetServiceHashMethodTo(TypeDefinition targetType, bool shouldBeVisible)
         {
             var options = new MethodBuilderOptions();
             DefineOptions(targetType, shouldBeVisible, options);
@@ -51,6 +52,8 @@ namespace Hiro.Compilers
             worker.Append(skipNameHash);
             worker.Emit(OpCodes.Ldloc, hashVariable);
             worker.Emit(OpCodes.Ret);
+
+            return method;
         }
 
         /// <summary>

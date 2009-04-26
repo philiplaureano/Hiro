@@ -66,6 +66,7 @@
     <Compile Include="Compilers\InterfaceStubBuilder.cs" />
     <Compile Include="Compilers\ServiceHashEmitter.cs" />
     <Compile Include="Compilers\TypeBuilder.cs" />
+    <Compile Include="ContainerCompiler.cs" />
     <Compile Include="DependencyMap.cs" />
     <Compile Include="Interfaces\IDependencyMap.cs" />
     <Compile Include="Interfaces\IImplementationOfT.cs" />
@@ -73,7 +74,7 @@
     <Compile Include="Implementations\PropertyImplementation.cs" />
     <Compile Include="Interfaces\IDependencyContainer.cs" />
     <Compile Include="Interfaces\IImplementation.cs" />
-    <Compile Include="Implementation.cs" />
+    <Compile Include="Implementations\Implementation.cs" />
     <Compile Include="Resolvers\ConstructorDependencyResolver.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="Interfaces\IDependency.cs" />

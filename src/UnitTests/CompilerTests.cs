@@ -10,6 +10,8 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using NUnit.Framework;
 using Hiro.UnitTests.SampleDomain;
+using Hiro.Interfaces;
+using Moq;
 
 namespace Hiro.UnitTests
 {
@@ -37,14 +39,31 @@ namespace Hiro.UnitTests
             var objectType = module.ImportType(typeof(object));
             var typeBuilder = new TypeBuilder();
             TypeDefinition targetType = typeBuilder.CreateType(Guid.NewGuid().ToString(), "Test", objectType, assembly);
-            
+
             var entryDictionaryType = module.ImportType<Dictionary<int, int>>();
             var entryBuilder = new FieldBuilder();
             var targetField = entryBuilder.AddField(targetType, "___jumpEntries", entryDictionaryType);
-            
+
             // The type should have a field that is a Dictionary<int, int>            
             Assert.IsNotNull(targetField);
             Assert.AreEqual(targetField.FieldType, entryDictionaryType);
+        }
+
+        [Test]
+        public void ShouldPullAvailableDependenciesFromDependencyContainer()
+        {
+            var dependency = new Dependency(string.Empty, typeof(IVehicle));
+            var dependencyList = new IDependency[] { dependency };
+            var implementation = new Mock<IImplementation>();
+            implementation.Expect(i => i.Emit(It.IsAny<MethodDefinition>(), It.IsAny<IDependency>(), It.IsAny<IDictionary<IDependency, IImplementation>>()));
+
+            var map = new Mock<IDependencyContainer>();
+            map.Expect(m => m.Dependencies).Returns(dependencyList);
+            map.Expect(m => m.GetImplementations(It.IsAny<IDependency>(), It.IsAny<bool>())).Returns(new IImplementation[] { implementation.Object });
+
+            var compiler = new ContainerCompiler();
+            compiler.Compile(map.Object);
+            map.VerifyAll();
         }
 
         [Test]
@@ -72,7 +91,7 @@ namespace Hiro.UnitTests
 
             var containerType = loadedAssembly.GetTypes()[0];
             var targetMethod = containerType.GetMethod("GetServiceHashCode", BindingFlags.Public | BindingFlags.Static);
-            
+
             Assert.IsNotNull(targetMethod);
 
             var serviceName = "Test";
