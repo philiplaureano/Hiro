@@ -12,6 +12,7 @@ using NUnit.Framework;
 using Hiro.UnitTests.SampleDomain;
 using Hiro.Interfaces;
 using Moq;
+using Hiro.Implementations;
 
 namespace Hiro.UnitTests
 {
@@ -204,6 +205,40 @@ namespace Hiro.UnitTests
         public void ShouldProvideMethodOverrideForGetInstanceMethod()
         {
             ShouldProvideMethodOverrideFor<IMicroContainer>("GetInstance");
+        }
+
+        [Test]
+        public void ShouldBeAbleToCompileContainerWithParameterlessConstructor()
+        {
+            var targetConstructor = typeof(Vehicle).GetConstructor(new Type[0]);
+            
+            var dependency = new Dependency(string.Empty, typeof(IVehicle));
+            var implementation = new ConstructorImplementation(targetConstructor);
+
+            var map = new DependencyMap();
+            map.AddService(dependency, implementation);
+
+            var compiler = new ContainerCompiler();
+            var assembly = compiler.Compile(map);
+
+            AssemblyFactory.SaveAssembly(assembly, "output.dll");
+
+            var loadedAssembly = assembly.ToAssembly();
+
+            Assert.IsNotNull(loadedAssembly);
+
+            var targetType = (from t in loadedAssembly.GetTypes()
+                             where typeof(IMicroContainer).IsAssignableFrom(t)
+                             select t).First();
+
+            var container = Activator.CreateInstance(targetType) as IMicroContainer;
+            Assert.IsNotNull(container);
+
+            Assert.IsTrue(container.Contains(typeof(IVehicle), null));
+            Assert.IsTrue(container.Contains(typeof(IVehicle), string.Empty));
+
+            var result = container.GetInstance(typeof(IVehicle), null);
+            Assert.IsNotNull(result);
         }
 
         private void ShouldProvideMethodOverrideFor<T>(string methodName)

@@ -44,41 +44,58 @@ namespace Hiro
 
             DefineContainsMethod(containerType, module, getServiceHash, jumpTargetField);
 
+            DefineGetInstanceMethod(containerType, module, getServiceHash, jumpTargetField, serviceMap);
+
+            return assembly;
+        }
+
+        /// <summary>
+        /// Defines the <see cref="IMicroContainer.GetInstance"/> method implementation for the container type.
+        /// </summary>
+        /// <param name="containerType">The container type.</param>
+        /// <param name="module">The target module.</param>
+        /// <param name="getServiceHash">The GetServiceHash method.</param>
+        /// <param name="jumpTargetField">The field that will store the jump target indexes.</param>
+        /// <param name="serviceMap">The service map that contains the list of existing services.</param>
+        private static void DefineGetInstanceMethod(TypeDefinition containerType, ModuleDefinition module, MethodDefinition getServiceHash, FieldDefinition jumpTargetField, Dictionary<IDependency, IImplementation> serviceMap)
+        {
             // Implement the GetInstance method
             var getInstanceMethod = (from MethodDefinition m in containerType.Methods
-                                    where m.Name == "GetInstance"
-                                    select m).First();
+                                     where m.Name == "GetInstance"
+                                     select m).First();
 
             var body = getInstanceMethod.Body;
+            body.InitLocals = true;
+
             var worker = body.CilWorker;
 
             body.Instructions.Clear();
 
             ReturnNullIfServiceDoesNotExist(module, worker);
-                        
+
             var hashVariable = getInstanceMethod.AddLocal<int>();
 
             // Calculate the service hash code
             EmitCalculateServiceHash(getServiceHash, worker);
             worker.Emit(OpCodes.Stloc, hashVariable);
 
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ldfld, jumpTargetField);
-            worker.Emit(OpCodes.Ldloc, hashVariable);
+            EmitJumpTargetIndex(module, jumpTargetField, worker, hashVariable);
 
-            // Calculate the target label index
-            var getItem = module.ImportMethod<Dictionary<int, int>>("get_Item");
-            worker.Emit(OpCodes.Callvirt, getItem);
+            var jumpLabels = DefineJumpLabels(serviceMap, worker);
 
-            // Define the jump labels
-            var jumpLabels = new List<Instruction>();
-            var entryCount = serviceMap.Count;
-            for (int i = 0; i < entryCount; i++)
-            {
-                var newLabel = worker.Create(OpCodes.Nop);
-                jumpLabels.Add(newLabel);
-            }
+            DefineServices(serviceMap, getInstanceMethod, worker, jumpLabels);
+            worker.Emit(OpCodes.Ret);
+        }
 
+        /// <summary>
+        /// Defines the instructions that create each service type in the <paramref name="serviceMap"/>.
+        /// </summary>
+        /// <param name="serviceMap">The service map that contains the list of application dependencies.</param>
+        /// <param name="getInstanceMethod">The method that will be used to instantiate the service types.</param>
+        /// <param name="worker">The <see cref="CilWorker"/> that points to the body of the factory method.</param>
+        /// <param name="jumpLabels">The list of labels that define each service instantiation.</param>
+        private static void DefineServices(Dictionary<IDependency, IImplementation> serviceMap, MethodDefinition getInstanceMethod, CilWorker worker, List<Instruction> jumpLabels)
+        {
             var endLabel = worker.Emit(OpCodes.Nop);
 
             worker.Emit(OpCodes.Switch, jumpLabels.ToArray());
@@ -99,9 +116,45 @@ namespace Hiro
             }
 
             worker.Append(endLabel);
-            worker.Emit(OpCodes.Ret);
+        }
 
-            return assembly;
+        /// <summary>
+        /// Emits the instructions that determine which switch label should be executed whenever a particular service name and service type
+        /// are pushed onto the stack.
+        /// </summary>
+        /// <param name="module">The target module.</param>
+        /// <param name="jumpTargetField">The field that holds the jump label indexes.</param>
+        /// <param name="worker">The <see cref="CilWorker"/> that points to the body of the factory method.</param>
+        /// <param name="hashVariable">The local variable that will store the jump index.</param>
+        private static void EmitJumpTargetIndex(ModuleDefinition module, FieldDefinition jumpTargetField, CilWorker worker, VariableDefinition hashVariable)
+        {
+            worker.Emit(OpCodes.Ldarg_0);
+            worker.Emit(OpCodes.Ldfld, jumpTargetField);
+            worker.Emit(OpCodes.Ldloc, hashVariable);
+
+            // Calculate the target label index
+            var getItem = module.ImportMethod<Dictionary<int, int>>("get_Item");
+            worker.Emit(OpCodes.Callvirt, getItem);
+        }
+
+        /// <summary>
+        /// Defines the jump targets for each service in the <paramref name="serviceMap"/>.
+        /// </summary>
+        /// <param name="serviceMap">The service map that contains the list of application dependencies.</param>
+        /// <param name="worker">The <see cref="CilWorker"/> that points to the body of the factory method.</param>
+        /// <returns>A set of jump labels that point to each respective service instantiation operation.</returns>
+        private static List<Instruction> DefineJumpLabels(Dictionary<IDependency, IImplementation> serviceMap, CilWorker worker)
+        {
+            // Define the jump labels
+            var jumpLabels = new List<Instruction>();
+            var entryCount = serviceMap.Count;
+            for (int i = 0; i < entryCount; i++)
+            {
+                var newLabel = worker.Create(OpCodes.Nop);
+                jumpLabels.Add(newLabel);
+            }
+
+            return jumpLabels;
         }
 
         /// <summary>
@@ -153,6 +206,7 @@ namespace Hiro
             EmitCalculateServiceHash(getServiceHash, worker);
 
             var containsEntry = module.ImportMethod<Dictionary<int, int>>("ContainsKey");
+            worker.Emit(OpCodes.Callvirt, containsEntry);
             worker.Emit(OpCodes.Ret);
         }
 
@@ -195,7 +249,8 @@ namespace Hiro
             RemoveLastInstruction(body);
 
             // Initialize the jump targets in the default container constructor
-            var getTypeFromHandle = module.ImportMethod<Type>("GetTypeFromHandle", BindingFlags.Public | BindingFlags.Static);
+            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
 
             // __jumpTargets = new Dictionary<int, int>();
             var dictionaryCtor = module.ImportConstructor<Dictionary<int, int>>();

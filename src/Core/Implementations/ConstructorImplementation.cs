@@ -76,7 +76,8 @@ namespace Hiro.Implementations
             var worker = body.CilWorker;
 
             // Instantiate the parameter values
-            var getTypeFromHandle = module.ImportMethod<Type>("GetTypeFromHandle", BindingFlags.Public | BindingFlags.Instance);
+            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
             var getInstanceMethod = module.ImportMethod<IMicroContainer>("GetInstance");
             foreach (var currentDependency in GetRequiredDependencies())
             {
