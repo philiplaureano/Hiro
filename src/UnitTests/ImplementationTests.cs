@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using Moq;
-using Hiro.UnitTests.SampleDomain;
 using System.Reflection;
-using Hiro.Interfaces;
+using System.Text;
 using Hiro.Implementations;
+using Hiro.Interfaces;
 using Hiro.Resolvers;
+using Hiro.UnitTests.SampleDomain;
+using Moq;
+using NUnit.Framework;
 
 namespace Hiro.UnitTests
 {
@@ -21,7 +21,6 @@ namespace Hiro.UnitTests
             var targetType = typeof(Vehicle);
             var constructorImplementations = (from c in typeof(Vehicle).GetConstructors()
                                               select new ConstructorImplementation(c) as IImplementation<ConstructorInfo>).AsEnumerable();
-
 
             var bestParameterCount = 0;
             IImplementation<ConstructorInfo> expectedImplementation = null;

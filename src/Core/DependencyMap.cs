@@ -18,6 +18,18 @@ namespace Hiro
         private HashList<IDependency, IImplementation> _entries = new HashList<IDependency, IImplementation>();
 
         /// <summary>
+        /// Gets the value indicating the list of dependencies that currently exist within the current container.
+        /// </summary>
+        /// <value>The current list of dependencies.</value>
+        public IEnumerable<IDependency> Dependencies
+        {
+            get
+            {
+                return _entries.Keys;
+            }
+        }
+
+        /// <summary>
         /// Determines whether or not a particular service dependency exists in the current dependency container.
         /// </summary>
         /// <param name="dependency">The target service dependency.</param>
@@ -57,18 +69,6 @@ namespace Hiro
                 if (completed || (!completed && addIncompleteImplementations))
                     yield return item;
             }
-        }
-
-        /// <summary>
-        /// Gets the value indicating the list of dependencies that currently exist within the current container.
-        /// </summary>
-        /// <value>The current list of dependencies.</value>
-        public IEnumerable<IDependency> Dependencies
-        {
-            get
-            {
-                return _entries.Keys;
-            }
-        }
+        }        
     }
 }

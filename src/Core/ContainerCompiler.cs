@@ -8,13 +8,21 @@ using Hiro.Containers;
 using Hiro.Interfaces;
 using LinFu.Reflection.Emit;
 using Mono.Cecil;
-using NGenerics.DataStructures.General;
 using Mono.Cecil.Cil;
+using NGenerics.DataStructures.General;
 
 namespace Hiro
 {
+    /// <summary>
+    /// A class that compile a dependency graph into an inversion of control container.
+    /// </summary>
     public class ContainerCompiler
     {
+        /// <summary>
+        /// Compiles a dependency graph into an IOC container.
+        /// </summary>
+        /// <param name="dependencyContainer">The <see cref="IDependencyContainer"/> instance that contains the services that will be instantiated by compiled container.</param>
+        /// <returns>An assembly containing the compiled IOC container.</returns>
         public AssemblyDefinition Compile(IDependencyContainer dependencyContainer)
         {
             TypeDefinition containerType = CreateContainerStub();
@@ -96,14 +104,18 @@ namespace Hiro
             return assembly;
         }
 
+        /// <summary>
+        /// Emits the instructions that ensure that the target method returns null if the container cannot create the current service name and service type.
+        /// </summary>
+        /// <param name="module">The target module.</param>
+        /// <param name="worker">The worker that points to the method body of the GetInstance method.</param>
         private static void ReturnNullIfServiceDoesNotExist(ModuleDefinition module, CilWorker worker)
         {
             var skipReturnNull = worker.Emit(OpCodes.Nop);
             var containsMethod = module.ImportMethod<IMicroContainer>("Contains");
 
             // if (!Contains(serviceType, serviceName))
-            //    return null;
-
+            // return null;
             worker.Emit(OpCodes.Ldarg_0);
             worker.Emit(OpCodes.Ldarg_1);
             worker.Emit(OpCodes.Ldarg_2);
@@ -115,6 +127,13 @@ namespace Hiro
             worker.Append(skipReturnNull);
         }
 
+        /// <summary>
+        /// Emits the body of the <see cref="IMicroContainer.Contains"/> method implementation.
+        /// </summary>
+        /// <param name="containerType">The container type.</param>
+        /// <param name="module">The target module.</param>
+        /// <param name="getServiceHash">The method that will be used to determine the hash code of the current service.</param>
+        /// <param name="jumpTargetField">The field that contains the list of jump entries.</param>
         private static void DefineContainsMethod(TypeDefinition containerType, ModuleDefinition module, MethodDefinition getServiceHash, FieldDefinition jumpTargetField)
         {
             // Override the Contains method stub
@@ -137,6 +156,11 @@ namespace Hiro
             worker.Emit(OpCodes.Ret);
         }
 
+        /// <summary>
+        /// Emits the instructions that calculate the hash code of a given service type and service name.
+        /// </summary>
+        /// <param name="getServiceHash">The method that will be used to calculate the hash code.</param>
+        /// <param name="worker">The worker that points to the target method body.</param>
         private static void EmitCalculateServiceHash(MethodDefinition getServiceHash, CilWorker worker)
         {
             // Push the service type
@@ -149,6 +173,16 @@ namespace Hiro
             worker.Emit(OpCodes.Call, getServiceHash);
         }
 
+        /// <summary>
+        /// Modifies the default constructor of a container type so that the jump labels used in the <see cref="IMicroContainer.GetInstance"/> implementation
+        /// will be precalculated every time the compiled container is instantiated.
+        /// </summary>
+        /// <param name="module">The target module.</param>
+        /// <param name="jumpTargetField">The field that holds the jump entries.</param>
+        /// <param name="targetType">The container type.</param>
+        /// <param name="getServiceHash">The hash calculation method.</param>
+        /// <param name="serviceMap">The collection that contains the current list of dependencies and their respective implementations.</param>
+        /// <param name="jumpTargets">A dictionary that maps dependencies to their respective label indexes.</param>
         private static void AddJumpEntries(ModuleDefinition module, FieldDefinition jumpTargetField, TypeDefinition targetType, MethodReference getServiceHash, Dictionary<IDependency, IImplementation> serviceMap, Dictionary<IDependency, int> jumpTargets)
         {
             var defaultContainerConstructor = targetType.Constructors[0];
@@ -192,7 +226,6 @@ namespace Hiro
 
                 // Map the current dependency to the index
                 // that will be used in the GetInstance switch statement
-
                 jumpTargets[dependency] = index;
 
                 worker.Emit(OpCodes.Ldc_I4, index++);
@@ -202,6 +235,10 @@ namespace Hiro
             worker.Emit(OpCodes.Ret);
         }
 
+        /// <summary>
+        /// Removes the last instruction from the given method body.
+        /// </summary>
+        /// <param name="body">The target method body.</param>
         private static void RemoveLastInstruction(Mono.Cecil.Cil.MethodBody body)
         {
             var instructions = body.Instructions;
@@ -213,6 +250,10 @@ namespace Hiro
             }
         }
 
+        /// <summary>
+        /// Creates a stub <see cref="IMicroContainer"/> implementation.
+        /// </summary>
+        /// <returns>A <see cref="TypeDefinition"/> with a stubbed <see cref="IMicroContainer"/> implementation.</returns>
         private static TypeDefinition CreateContainerStub()
         {
             var assemblyBuilder = new AssemblyBuilder();
@@ -224,13 +265,18 @@ namespace Hiro
             var typeBuilder = new ContainerTypeBuilder();
             var containerType = typeBuilder.CreateType("MicroContainer", "Hiro.Containers", objectType, assembly, containerInterfaceType);
 
-            //  Add a stub implementation for the IMicroContainer interface
+            // Add a stub implementation for the IMicroContainer interface
             var stubBuilder = new InterfaceStubBuilder();
             stubBuilder.AddStubImplementationFor(typeof(IMicroContainer), containerType);
 
             return containerType;
         }
 
+        /// <summary>
+        /// Obtains the list of available services from the given <paramref name="dependencyContainer"/>.
+        /// </summary>
+        /// <param name="dependencyContainer">The container that contains the list of services.</param>
+        /// <returns>A dictionary that maps dependencies to their respective implementations.</returns>
         private static Dictionary<IDependency, IImplementation> GetAvailableServices(IDependencyContainer dependencyContainer)
         {
             Dictionary<IDependency, IImplementation> serviceMap = new Dictionary<IDependency, IImplementation>();
@@ -245,6 +291,7 @@ namespace Hiro
 
                 serviceMap[dependency] = implementation;
             }
+
             return serviceMap;
         }
     }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Hiro.Containers;
 using Hiro.Interfaces;
 using LinFu.Reflection.Emit;
 using Mono.Cecil;
-using Hiro.Containers;
 using Mono.Cecil.Cil;
 
 namespace Hiro.Implementations
