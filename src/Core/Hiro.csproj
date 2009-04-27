@@ -75,15 +75,13 @@
     <Compile Include="Interfaces\IImplementation.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="Interfaces\IDependency.cs" />
+    <Compile Include="Resolvers\ConstructorResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
       <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
       <Name>Hiro.Containers</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resolvers\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

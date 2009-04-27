@@ -57,9 +57,10 @@ namespace Hiro.Implementations
         {
             foreach (var parameter in Target.GetParameters())
             {
-                yield return new Dependency(string.Empty, parameter.ParameterType);
+                var dependency = GetDependency(parameter);
+                yield return dependency;
             }
-        }
+        }        
 
         /// <summary>
         /// Emits the instructions that will instantiate the current implementation.
@@ -99,6 +100,16 @@ namespace Hiro.Implementations
 
             var targetConstructor = module.Import(Target);
             worker.Emit(OpCodes.Newobj, targetConstructor);
+        }
+
+        /// <summary>
+        /// Determines which dependency should be used for the target parameter.
+        /// </summary>
+        /// <param name="parameter">The constructor parameter.</param>
+        /// <returns>A <see cref="IDependency"/> instance that represents the dependency that will be used for the target parameter.</returns>
+        protected virtual IDependency GetDependency(ParameterInfo parameter)
+        {
+            return new Dependency(string.Empty, parameter.ParameterType);
         }
     }
 }
