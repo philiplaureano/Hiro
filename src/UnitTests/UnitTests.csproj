@@ -65,7 +65,6 @@
     <Compile Include="CompilerTests.cs" />
     <Compile Include="DependencyTests.cs" />
     <Compile Include="ImplementationTests.cs" />
-    <Compile Include="ResolutionTests.cs" />
     <Compile Include="SampleDomain\IPerson.cs" />
     <Compile Include="SampleDomain\IVehicle.cs" />
     <Compile Include="SampleDomain\Vehicle.cs" />

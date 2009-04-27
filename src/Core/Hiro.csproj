@@ -71,21 +71,19 @@
     <Compile Include="Interfaces\IDependencyMap.cs" />
     <Compile Include="Interfaces\IImplementationOfT.cs" />
     <Compile Include="Implementations\ConstructorImplementation.cs" />
-    <Compile Include="Implementations\PropertyImplementation.cs" />
     <Compile Include="Interfaces\IDependencyContainer.cs" />
     <Compile Include="Interfaces\IImplementation.cs" />
-    <Compile Include="Implementations\Implementation.cs" />
-    <Compile Include="Resolvers\ConstructorDependencyResolver.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="Interfaces\IDependency.cs" />
-    <Compile Include="Interfaces\IDependencyResolver.cs" />
-    <Compile Include="Resolvers\PropertyDependencyResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
       <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
       <Name>Hiro.Containers</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resolvers\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
