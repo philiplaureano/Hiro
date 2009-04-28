@@ -16,6 +16,7 @@ namespace Hiro
         /// Adds a service to the dependency map.
         /// </summary>
         /// <param name="map">The dependency map.</param>
+        /// <param name="serviceName">The service name.</param>
         /// <param name="serviceType">The service type.</param>
         /// <param name="implementingType">The implementing type.</param>
         public static void AddService(this IDependencyMap map, string serviceName, Type serviceType, Type implementingType)
@@ -45,6 +46,7 @@ namespace Hiro
         /// </summary>
         /// <param name="map">The dependency map.</param>
         /// <param name="serviceType">The service type.</param>
+        /// <param name="serviceName">The service name.</param>
         /// <returns><c>true</c> if the service exists; otherwise, it will return <c>false</c>.</returns>
         public static bool Contains(this IDependencyMap map, Type serviceType, string serviceName)
         {

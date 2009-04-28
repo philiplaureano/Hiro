@@ -58,26 +58,34 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Compilers\AssemblyBuilder.cs" />
+    <Compile Include="Compilers\ContainsMethodImplementor.cs" />
+    <Compile Include="Compilers\CreateContainerStub.cs" />
     <Compile Include="Compilers\FieldBuilder.cs" />
+    <Compile Include="Compilers\GetInstanceMethodImplementor.cs" />
     <Compile Include="Compilers\MethodBuilder.cs" />
     <Compile Include="Compilers\MethodBuilderOptions.cs" />
     <Compile Include="Compilers\MethodOverrider.cs" />
     <Compile Include="Compilers\ContainerTypeBuilder.cs" />
     <Compile Include="Compilers\InterfaceStubBuilder.cs" />
     <Compile Include="Compilers\ServiceHashEmitter.cs" />
+    <Compile Include="Compilers\ServiceMapBuilder.cs" />
     <Compile Include="Compilers\TypeBuilder.cs" />
     <Compile Include="ConstructorNotFoundException.cs" />
     <Compile Include="ContainerCompiler.cs" />
     <Compile Include="DependencyMap.cs" />
     <Compile Include="DependencyMapExtensions.cs" />
     <Compile Include="Implementations\TypeImplementation.cs" />
+    <Compile Include="Interfaces\IContainsMethodImplementor.cs" />
+    <Compile Include="Interfaces\ICreateContainerType.cs" />
     <Compile Include="Interfaces\IDependencyMap.cs" />
+    <Compile Include="Interfaces\IGetInstanceMethodImplementor.cs" />
     <Compile Include="Interfaces\IImplementationOfT.cs" />
     <Compile Include="Implementations\ConstructorImplementation.cs" />
     <Compile Include="Interfaces\IDependencyContainer.cs" />
     <Compile Include="Interfaces\IImplementation.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="Interfaces\IDependency.cs" />
+    <Compile Include="Interfaces\IServiceMapBuilder.cs" />
     <Compile Include="Resolvers\ConstructorResolver.cs" />
   </ItemGroup>
   <ItemGroup>
