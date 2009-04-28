@@ -216,7 +216,7 @@ namespace Hiro.UnitTests
             var implementation = new TypeImplementation(typeof(Vehicle), map);
 
             map.AddService(dependency, implementation);
-            map.AddService(new Dependency("", typeof(IPerson)), new TypeImplementation(typeof(Person), map));
+            map.AddService(typeof(IPerson), typeof(Person));
 
             var container = Compile(map);
             var vehicle = (IVehicle)container.GetInstance(typeof(IVehicle), null);
@@ -228,7 +228,7 @@ namespace Hiro.UnitTests
         public void ShouldBeAbleToCompileContainerWithParameterlessConstructor()
         {
             var targetConstructor = typeof(Vehicle).GetConstructor(new Type[0]);
-            
+
             var dependency = new Dependency(string.Empty, typeof(IVehicle));
             var implementation = new ConstructorImplementation(targetConstructor);
 

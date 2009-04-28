@@ -25,6 +25,25 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldBeAbleToRegisterAnonymousServicesWithDependencyMap()
+        {
+            var dependencyMap = new DependencyMap();
+            dependencyMap.AddService(typeof(IVehicle), typeof(Vehicle));
+
+            Assert.IsTrue(dependencyMap.Contains(new Dependency(typeof(IVehicle))));
+            Assert.IsTrue(dependencyMap.Contains(typeof(IVehicle)));
+        }
+
+        [Test]
+        public void ShouldBeAbleToRegisterNamedServicesWithDependencyMap()
+        {
+            var serviceName = "MyService";
+            var dependencyMap = new DependencyMap();
+            dependencyMap.AddService(serviceName, typeof(IVehicle), typeof(Vehicle));
+            Assert.IsTrue(dependencyMap.Contains(typeof(IVehicle), serviceName));
+        }
+
+        [Test]
         public void ShouldBeAbleToAddItemsToDependencyMap()
         {
             var ctor = typeof(Vehicle).GetConstructor(new Type[0]);

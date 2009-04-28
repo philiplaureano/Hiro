@@ -14,6 +14,15 @@ namespace Hiro
         /// <summary>
         /// Initializes a new instance of the Dependency class.
         /// </summary>
+        /// <param name="serviceType">The service type.</param>
+        public Dependency(Type serviceType)
+            : this(string.Empty, serviceType)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Dependency class.
+        /// </summary>
         /// <param name="serviceName">The service name.</param>
         /// <param name="serviceType">The service type.</param>
         public Dependency(string serviceName, Type serviceType)
