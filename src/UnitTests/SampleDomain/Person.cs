@@ -5,8 +5,7 @@ using System.Text;
 
 namespace Hiro.UnitTests.SampleDomain
 {
-    public interface IVehicle
+    public class Person : IPerson
     {
-        IPerson Driver { get; set; }
     }
 }

@@ -65,10 +65,9 @@ namespace Hiro.Implementations
         /// <summary>
         /// Emits the instructions that will instantiate the current implementation.
         /// </summary>
-        /// <param name="targetMethod">The method that will instantiate the service itself.</param>
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
-        /// <param name="serviceMap">The service map that contains the list of available dependencies in the current application.</param>
-        public void Emit(MethodDefinition targetMethod, IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap)
+        /// <param name="targetMethod">The method that will instantiate the service itself.</param>
+        public void Emit(IDependency dependency, MethodDefinition targetMethod)
         {
             var declaringType = targetMethod.DeclaringType;
             var module = declaringType.Module;

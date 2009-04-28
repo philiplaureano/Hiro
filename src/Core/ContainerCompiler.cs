@@ -25,7 +25,7 @@ namespace Hiro
         /// <returns>An assembly containing the compiled IOC container.</returns>
         public AssemblyDefinition Compile(IDependencyContainer dependencyContainer)
         {
-            TypeDefinition containerType = CreateContainerStub();
+            TypeDefinition containerType = CreateContainerStub("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers");
 
             var module = containerType.Module;
             var assembly = module.Assembly;
@@ -49,6 +49,7 @@ namespace Hiro
             return assembly;
         }
 
+        #region The GetInstanceMethod implementation
         /// <summary>
         /// Defines the <see cref="IMicroContainer.GetInstance"/> method implementation for the container type.
         /// </summary>
@@ -109,7 +110,7 @@ namespace Hiro
 
                 // Emit the implementation
                 var implementation = serviceMap[dependency];
-                implementation.Emit(getInstanceMethod, dependency, serviceMap);
+                implementation.Emit(dependency, getInstanceMethod);
 
                 worker.Emit(OpCodes.Br, endLabel);
                 index++;
@@ -179,6 +180,7 @@ namespace Hiro
             worker.Emit(OpCodes.Ret);
             worker.Append(skipReturnNull);
         }
+        #endregion
 
         /// <summary>
         /// Emits the body of the <see cref="IMicroContainer.Contains"/> method implementation.
@@ -308,17 +310,20 @@ namespace Hiro
         /// <summary>
         /// Creates a stub <see cref="IMicroContainer"/> implementation.
         /// </summary>
+        /// <param name="typeName">The name of the new container type.</param>
+        /// <param name="namespaceName">The namespace of the container type.</param>
+        /// <param name="assemblyName">The name of the container assembly.</param>
         /// <returns>A <see cref="TypeDefinition"/> with a stubbed <see cref="IMicroContainer"/> implementation.</returns>
-        private static TypeDefinition CreateContainerStub()
+        private static TypeDefinition CreateContainerStub(string typeName, string namespaceName, string assemblyName)
         {
             var assemblyBuilder = new AssemblyBuilder();
-            var assembly = assemblyBuilder.CreateAssembly("Hiro.CompiledContainers", AssemblyKind.Dll);
+            var assembly = assemblyBuilder.CreateAssembly(assemblyName, AssemblyKind.Dll);
             var module = assembly.MainModule;
 
             var objectType = module.Import(typeof(object));
             var containerInterfaceType = module.Import(typeof(IMicroContainer));
             var typeBuilder = new ContainerTypeBuilder();
-            var containerType = typeBuilder.CreateType("MicroContainer", "Hiro.Containers", objectType, assembly, containerInterfaceType);
+            var containerType = typeBuilder.CreateType(typeName, namespaceName, objectType, assembly, containerInterfaceType);
 
             // Add a stub implementation for the IMicroContainer interface
             var stubBuilder = new InterfaceStubBuilder();

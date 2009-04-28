@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Hiro.UnitTests.SampleDomain
 {
-    public class Vehicle
+    public class Vehicle : IVehicle
     {
         public Vehicle()
         {

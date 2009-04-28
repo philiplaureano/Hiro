@@ -56,7 +56,7 @@ namespace Hiro.UnitTests
             var dependency = new Dependency(string.Empty, typeof(IVehicle));
             var dependencyList = new IDependency[] { dependency };
             var implementation = new Mock<IImplementation>();
-            implementation.Expect(i => i.Emit(It.IsAny<MethodDefinition>(), It.IsAny<IDependency>(), It.IsAny<IDictionary<IDependency, IImplementation>>()));
+            implementation.Expect(i => i.Emit(It.IsAny<IDependency>(), It.IsAny<MethodDefinition>()));
 
             var map = new Mock<IDependencyContainer>();
             map.Expect(m => m.Dependencies).Returns(dependencyList);
@@ -208,6 +208,23 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldBeAbleToCompileContainerUsingATypeWithMultipleConstructors()
+        {
+            var map = new DependencyMap();
+
+            var dependency = new Dependency(string.Empty, typeof(IVehicle));
+            var implementation = new TypeImplementation(typeof(Vehicle), map);
+
+            map.AddService(dependency, implementation);
+            map.AddService(new Dependency("", typeof(IPerson)), new TypeImplementation(typeof(Person), map));
+
+            var container = Compile(map);
+            var vehicle = (IVehicle)container.GetInstance(typeof(IVehicle), null);
+            Assert.IsNotNull(vehicle);
+            Assert.IsNotNull(vehicle.Driver);
+        }
+
+        [Test]
         public void ShouldBeAbleToCompileContainerWithParameterlessConstructor()
         {
             var targetConstructor = typeof(Vehicle).GetConstructor(new Type[0]);
@@ -218,27 +235,32 @@ namespace Hiro.UnitTests
             var map = new DependencyMap();
             map.AddService(dependency, implementation);
 
-            var compiler = new ContainerCompiler();
-            var assembly = compiler.Compile(map);
-
-            AssemblyFactory.SaveAssembly(assembly, "output.dll");
-
-            var loadedAssembly = assembly.ToAssembly();
-
-            Assert.IsNotNull(loadedAssembly);
-
-            var targetType = (from t in loadedAssembly.GetTypes()
-                             where typeof(IMicroContainer).IsAssignableFrom(t)
-                             select t).First();
-
-            var container = Activator.CreateInstance(targetType) as IMicroContainer;
-            Assert.IsNotNull(container);
+            var container = Compile(map);
 
             Assert.IsTrue(container.Contains(typeof(IVehicle), null));
             Assert.IsTrue(container.Contains(typeof(IVehicle), string.Empty));
 
             var result = container.GetInstance(typeof(IVehicle), null);
             Assert.IsNotNull(result);
+        }
+
+        private static IMicroContainer Compile(DependencyMap map)
+        {
+            var compiler = new ContainerCompiler();
+            var assembly = compiler.Compile(map);
+
+            var loadedAssembly = assembly.ToAssembly();
+
+            Assert.IsNotNull(loadedAssembly);
+
+            var targetType = (from t in loadedAssembly.GetTypes()
+                              where typeof(IMicroContainer).IsAssignableFrom(t)
+                              select t).First();
+
+            var container = Activator.CreateInstance(targetType) as IMicroContainer;
+            Assert.IsNotNull(container);
+
+            return container;
         }
 
         private void ShouldProvideMethodOverrideFor<T>(string methodName)

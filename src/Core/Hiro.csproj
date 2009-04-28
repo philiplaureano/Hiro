@@ -66,8 +66,10 @@
     <Compile Include="Compilers\InterfaceStubBuilder.cs" />
     <Compile Include="Compilers\ServiceHashEmitter.cs" />
     <Compile Include="Compilers\TypeBuilder.cs" />
+    <Compile Include="ConstructorNotFoundException.cs" />
     <Compile Include="ContainerCompiler.cs" />
     <Compile Include="DependencyMap.cs" />
+    <Compile Include="Implementations\TypeImplementation.cs" />
     <Compile Include="Interfaces\IDependencyMap.cs" />
     <Compile Include="Interfaces\IImplementationOfT.cs" />
     <Compile Include="Implementations\ConstructorImplementation.cs" />

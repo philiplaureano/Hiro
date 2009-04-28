@@ -22,6 +22,34 @@ namespace Hiro.UnitTests
             var constructorImplementations = (from c in typeof(Vehicle).GetConstructors()
                                               select new ConstructorImplementation(c) as IImplementation<ConstructorInfo>).AsEnumerable();
 
+            IImplementation<ConstructorInfo> expectedImplementation = GetExpectedConstructorImplementation(constructorImplementations);
+
+            var map = new Mock<IDependencyContainer>();
+            map.Expect(m => m.Contains(It.IsAny<Dependency>())).Returns(true);
+
+            var constructorResolver = new ConstructorResolver(constructorImplementations);
+            IImplementation<ConstructorInfo> result = constructorResolver.ResolveFrom(map.Object);
+
+            Assert.AreEqual(expectedImplementation.Target, result.Target);
+
+            map.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldSelectConstructorWithMostResolvableParametersFromTypeImplementation()
+        {
+            var map = new Mock<IDependencyContainer>();
+            map.Expect(m => m.Contains(It.IsAny<Dependency>())).Returns(true);
+
+            var expectedConstructor = typeof(Vehicle).GetConstructor(new Type[] { typeof(IPerson) });
+            var targetType = typeof(Vehicle);
+            IImplementation<ConstructorInfo> implementation = new TypeImplementation(typeof(Vehicle), map.Object);
+
+            Assert.AreSame(implementation.Target, expectedConstructor);
+        }
+
+        private static IImplementation<ConstructorInfo> GetExpectedConstructorImplementation(IEnumerable<IImplementation<ConstructorInfo>> constructorImplementations)
+        {
             var bestParameterCount = 0;
             IImplementation<ConstructorInfo> expectedImplementation = null;
             foreach (var implementation in constructorImplementations)
@@ -35,16 +63,7 @@ namespace Hiro.UnitTests
                 expectedImplementation = implementation;
                 bestParameterCount = parameterCount;
             }
-
-            var map = new Mock<IDependencyContainer>();
-            map.Expect(m => m.Contains(It.IsAny<Dependency>())).Returns(true);
-
-            var constructorResolver = new ConstructorResolver(constructorImplementations);
-            IImplementation<ConstructorInfo> result = constructorResolver.ResolveFrom(map.Object);
-
-            Assert.AreEqual(expectedImplementation.Target, result.Target);
-
-            map.VerifyAll();
+            return expectedImplementation;
         }
     }
 }
