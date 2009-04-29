@@ -13,6 +13,7 @@ using Hiro.UnitTests.SampleDomain;
 using Hiro.Interfaces;
 using Moq;
 using Hiro.Implementations;
+using System.IO;
 
 namespace Hiro.UnitTests
 {
@@ -56,7 +57,7 @@ namespace Hiro.UnitTests
             var dependency = new Dependency(string.Empty, typeof(IVehicle));
             var dependencyList = new IDependency[] { dependency };
             var implementation = new Mock<IImplementation>();
-            implementation.Expect(i => i.Emit(It.IsAny<IDependency>(), It.IsAny<MethodDefinition>()));
+            implementation.Expect(i => i.Emit(It.IsAny<IDependency>(), It.IsAny<IDictionary<IDependency, IImplementation>>(), It.IsAny<MethodDefinition>()));
 
             var map = new Mock<IDependencyContainer>();
             map.Expect(m => m.Dependencies).Returns(dependencyList);
@@ -231,14 +232,13 @@ namespace Hiro.UnitTests
         {
             var map = new DependencyMap();
 
-            var dependency = new Dependency(string.Empty, typeof(IVehicle));
-            var implementation = new TransientType(typeof(Vehicle), map);
-
-            map.AddService(dependency, implementation);
+            map.AddService(typeof(IVehicle), typeof(Vehicle));
             map.AddService(typeof(IPerson), typeof(Person));
 
             var container = Compile(map);
-            var vehicle = (IVehicle)container.GetInstance(typeof(IVehicle), null);
+            var result = container.GetInstance(typeof(IVehicle), null);
+
+            var vehicle = (IVehicle)result;
             Assert.IsNotNull(vehicle);
             Assert.IsNotNull(vehicle.Driver);
         }
@@ -267,6 +267,17 @@ namespace Hiro.UnitTests
         {
             var compiler = new ContainerCompiler();
             var assembly = compiler.Compile(map);
+
+            try
+            {
+                if (File.Exists("output.dll"))
+                    File.Delete("output.dll");
+                AssemblyFactory.SaveAssembly(assembly, "output.dll");
+            }
+            catch
+            {
+                // Do nothing
+            }
 
             var loadedAssembly = assembly.ToAssembly();
 

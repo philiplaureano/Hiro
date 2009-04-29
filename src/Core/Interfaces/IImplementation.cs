@@ -28,7 +28,8 @@ namespace Hiro.Interfaces
         /// Emits the instructions that will instantiate the current implementation.
         /// </summary>
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
+        /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        void Emit(IDependency dependency, MethodDefinition targetMethod);
+        void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod);
     }
 }

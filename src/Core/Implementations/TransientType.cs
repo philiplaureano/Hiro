@@ -105,10 +105,11 @@ namespace Hiro.Implementations
         /// Emits the instructions that will instantiate the current implementation.
         /// </summary>
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
+        /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        public virtual void Emit(IDependency dependency, MethodDefinition targetMethod)
+        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
         {
-            TargetImplementation.Emit(dependency, targetMethod);
+            TargetImplementation.Emit(dependency, serviceMap, targetMethod);
         }        
     }
 }

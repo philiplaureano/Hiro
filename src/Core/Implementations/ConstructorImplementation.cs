@@ -60,14 +60,15 @@ namespace Hiro.Implementations
                 var dependency = GetDependency(parameter);
                 yield return dependency;
             }
-        }        
+        }
 
         /// <summary>
         /// Emits the instructions that will instantiate the current implementation.
         /// </summary>
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
-        /// <param name="targetMethod">The method that will instantiate the service itself.</param>
-        public void Emit(IDependency dependency, MethodDefinition targetMethod)
+        /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
+        /// <param name="targetMethod">The target method.</param>
+        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
         {
             var declaringType = targetMethod.DeclaringType;
             var module = declaringType.Module;
@@ -80,21 +81,10 @@ namespace Hiro.Implementations
             var getInstanceMethod = module.ImportMethod<IMicroContainer>("GetInstance");
             foreach (var currentDependency in GetRequiredDependencies())
             {
-                // Push the container instance
-                worker.Emit(OpCodes.Ldarg_0);
-
-                // Push the service type onto the stack
                 var serviceType = module.Import(currentDependency.ServiceType);
-                worker.Emit(OpCodes.Ldtoken, serviceType);
-                worker.Emit(OpCodes.Call, getTypeFromHandle);
 
-                // Push the service name onto the stack
-                var serviceName = currentDependency.ServiceName;
-                var pushName = String.IsNullOrEmpty(serviceName) ? worker.Create(OpCodes.Ldnull) : worker.Emit(OpCodes.Ldstr, serviceName);
-                worker.Append(pushName);
-
-                // var argN = (ArgumentType)this.GetInstance(serviceType, serviceName);
-                worker.Emit(OpCodes.Callvirt, getInstanceMethod);
+                var implementation = serviceMap[currentDependency];
+                implementation.Emit(currentDependency, serviceMap, targetMethod);
                 worker.Emit(OpCodes.Unbox_Any, serviceType);
             }
 

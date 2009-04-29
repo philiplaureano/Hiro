@@ -58,11 +58,12 @@ namespace Hiro.Compilers
         /// Emits the instructions that will instantiate the target service.
         /// </summary>
         /// <param name="getInstanceMethod">The method that will instantiate the target type.</param>
-        /// <param name="dependency">The target dependency</param>
+        /// <param name="dependency">The target dependency</param>       
         /// <param name="implementation">The implementation that will instantiate the dependency.</param>
-        protected virtual void EmitService(MethodDefinition getInstanceMethod, IDependency dependency, IImplementation implementation)
+        /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
+        protected virtual void EmitService(MethodDefinition getInstanceMethod, IDependency dependency, IImplementation implementation, IDictionary<IDependency, IImplementation> serviceMap)
         {
-            implementation.Emit(dependency, getInstanceMethod);
+            implementation.Emit(dependency, serviceMap, getInstanceMethod);
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace Hiro.Compilers
 
                 // Emit the implementation
                 var implementation = serviceMap[dependency];
-                EmitService(getInstanceMethod, dependency, implementation);
+                EmitService(getInstanceMethod, dependency, implementation, serviceMap);
 
                 worker.Emit(OpCodes.Br, endLabel);
                 index++;

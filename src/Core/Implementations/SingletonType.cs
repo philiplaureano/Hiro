@@ -40,12 +40,13 @@ namespace Hiro.Implementations
         /// Emits the instructions that will instantiate the current implementation.
         /// </summary>
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
+        /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        public void Emit(IDependency dependency, MethodDefinition targetMethod)
+        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
         {
             var emitter = new SingletonEmitter();
             var worker = targetMethod.Body.CilWorker;
-            emitter.EmitService(targetMethod, dependency, _implementation);
+            emitter.EmitService(targetMethod, dependency, _implementation, serviceMap);
         }
 
         /// <summary>
