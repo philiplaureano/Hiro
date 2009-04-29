@@ -16,7 +16,7 @@ namespace Hiro
         /// </summary>
         /// <param name="serviceType">The service type.</param>
         public Dependency(Type serviceType)
-            : this(string.Empty, serviceType)
+            : this(null, serviceType)
         {
         }
 

@@ -40,9 +40,10 @@ namespace Hiro.Compilers
             var getIsNullOrEmptyMethod = module.ImportMethod<string>("IsNullOrEmpty", BindingFlags.Public | BindingFlags.Static);
 
             // Calculate the hash code for the service name
-            // if it isn't null or empty
+            // if it isn't null
             worker.Emit(OpCodes.Ldarg_1);
-            worker.Emit(OpCodes.Call, getIsNullOrEmptyMethod);
+            worker.Emit(OpCodes.Ldnull);
+            worker.Emit(OpCodes.Ceq);
 
             var skipNameHash = worker.Create(OpCodes.Nop);
             worker.Emit(OpCodes.Brtrue, skipNameHash);

@@ -256,10 +256,9 @@ namespace Hiro.UnitTests
 
             var container = Compile(map);
 
-            Assert.IsTrue(container.Contains(typeof(IVehicle), null));
             Assert.IsTrue(container.Contains(typeof(IVehicle), string.Empty));
 
-            var result = container.GetInstance(typeof(IVehicle), null);
+            var result = container.GetInstance(typeof(IVehicle), string.Empty);
             Assert.IsNotNull(result);
         }
 

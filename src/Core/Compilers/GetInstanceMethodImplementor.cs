@@ -7,6 +7,7 @@ using Hiro.Interfaces;
 using LinFu.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using System.Reflection;
 
 namespace Hiro.Compilers
 {
@@ -38,19 +39,7 @@ namespace Hiro.Compilers
 
             body.Instructions.Clear();
 
-            ReturnNullIfServiceDoesNotExist(module, worker);
-
-            var hashVariable = getInstanceMethod.AddLocal<int>();
-
-            // Calculate the service hash code
-            EmitCalculateServiceHash(getServiceHash, worker);
-            worker.Emit(OpCodes.Stloc, hashVariable);
-
-            EmitJumpTargetIndex(module, jumpTargetField, worker, hashVariable);
-
-            var jumpLabels = DefineJumpLabels(serviceMap, worker);
-
-            DefineServices(serviceMap, getInstanceMethod, worker, jumpLabels);
+            DefineServices(serviceMap, getInstanceMethod, worker);
             worker.Emit(OpCodes.Ret);
         }
 
@@ -81,7 +70,7 @@ namespace Hiro.Compilers
 
             // Calculate the hash code using the service type and service name
             worker.Emit(OpCodes.Call, getServiceHash);
-        }                
+        }
 
         /// <summary>
         /// Emits the instructions that determine which switch label should be executed whenever a particular service name and service type
@@ -102,48 +91,8 @@ namespace Hiro.Compilers
             worker.Emit(OpCodes.Callvirt, getItem);
         }
 
-        /// <summary>
-        /// Defines the jump targets for each service in the <paramref name="serviceMap"/>.
-        /// </summary>
-        /// <param name="serviceMap">The service map that contains the list of application dependencies.</param>
-        /// <param name="worker">The <see cref="CilWorker"/> that points to the body of the factory method.</param>
-        /// <returns>A set of jump labels that point to each respective service instantiation operation.</returns>
-        private static List<Instruction> DefineJumpLabels(IDictionary<IDependency, IImplementation> serviceMap, CilWorker worker)
-        {
-            // Define the jump labels
-            var jumpLabels = new List<Instruction>();
-            var entryCount = serviceMap.Count;
-            for (int i = 0; i < entryCount; i++)
-            {
-                var newLabel = worker.Create(OpCodes.Nop);
-                jumpLabels.Add(newLabel);
-            }
 
-            return jumpLabels;
-        }
 
-        /// <summary>
-        /// Emits the instructions that ensure that the target method returns null if the container cannot create the current service name and service type.
-        /// </summary>
-        /// <param name="module">The target module.</param>
-        /// <param name="worker">The worker that points to the method body of the GetInstance method.</param>
-        private static void ReturnNullIfServiceDoesNotExist(ModuleDefinition module, CilWorker worker)
-        {
-            var skipReturnNull = worker.Emit(OpCodes.Nop);
-            var containsMethod = module.ImportMethod<IMicroContainer>("Contains");
-
-            // if (!Contains(serviceType, serviceName))
-            // return null;
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ldarg_1);
-            worker.Emit(OpCodes.Ldarg_2);
-            worker.Emit(OpCodes.Callvirt, containsMethod);
-            worker.Emit(OpCodes.Brtrue, skipReturnNull);
-
-            worker.Emit(OpCodes.Ldnull);
-            worker.Emit(OpCodes.Ret);
-            worker.Append(skipReturnNull);
-        }
 
         /// <summary>
         /// Defines the instructions that create each service type in the <paramref name="serviceMap"/>.
@@ -151,28 +100,64 @@ namespace Hiro.Compilers
         /// <param name="serviceMap">The service map that contains the list of application dependencies.</param>
         /// <param name="getInstanceMethod">The method that will be used to instantiate the service types.</param>
         /// <param name="worker">The <see cref="CilWorker"/> that points to the body of the factory method.</param>
-        /// <param name="jumpLabels">The list of labels that define each service instantiation.</param>
-        private void DefineServices(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition getInstanceMethod, CilWorker worker, List<Instruction> jumpLabels)
+        private void DefineServices(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition getInstanceMethod, CilWorker worker)
         {
             var endLabel = worker.Emit(OpCodes.Nop);
 
-            worker.Emit(OpCodes.Switch, jumpLabels.ToArray());
+            var body = worker.GetBody();
+            body.InitLocals = true;
 
-            var index = 0;
+            var method = body.Method;
+            var returnValue = method.AddLocal<object>();
+            var declaringType = method.DeclaringType;
+            var module = declaringType.Module;
+
+            var getTypeFromHandle = module.ImportMethod<Type>("GetTypeFromHandle", BindingFlags.Public | BindingFlags.Static);
+            var equalsMethod = typeof(string).GetMethod("Equals", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string), typeof(string) }, null);
+            var stringEquals = module.Import(equalsMethod);
+
             foreach (var dependency in serviceMap.Keys)
             {
-                // Mark the jump label
-                var label = jumpLabels[index];
-                worker.Append(label);
+                var serviceType = module.ImportType(dependency.ServiceType);
+
+                // Match the service type
+                worker.Emit(OpCodes.Ldtoken, serviceType);
+                worker.Emit(OpCodes.Call, getTypeFromHandle);
+                worker.Emit(OpCodes.Ldarg_1);
+                worker.Emit(OpCodes.Ceq);
+
+                var skipCreate = worker.Create(OpCodes.Nop);
+                worker.Emit(OpCodes.Brfalse, skipCreate);
+
+                // Match the service name
+                var serviceName = dependency.ServiceName;
+
+                worker.Emit(OpCodes.Ldarg_2);
+
+                // Push the service name onto the stack
+                var pushName = serviceName == null
+                                   ? worker.Create(OpCodes.Ldnull)
+                                   : worker.Create(OpCodes.Ldstr, serviceName);
+
+                worker.Append(pushName);
+                worker.Emit(OpCodes.Call, stringEquals);
+
+                worker.Emit(OpCodes.Brfalse, skipCreate);
 
                 // Emit the implementation
                 var implementation = serviceMap[dependency];
                 EmitService(getInstanceMethod, dependency, implementation, serviceMap);
 
+                if (serviceType.IsValueType)
+                    worker.Emit(OpCodes.Box, serviceType);
+
                 worker.Emit(OpCodes.Br, endLabel);
-                index++;
+
+                // Fall through to the next if-then-else case
+                worker.Append(skipCreate);
             }
 
+            worker.Emit(OpCodes.Ldnull);
             worker.Append(endLabel);
         }
         #endregion
