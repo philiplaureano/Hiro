@@ -69,12 +69,14 @@
     <Compile Include="Compilers\InterfaceStubBuilder.cs" />
     <Compile Include="Compilers\ServiceHashEmitter.cs" />
     <Compile Include="Compilers\ServiceMapBuilder.cs" />
+    <Compile Include="Compilers\SingletonEmitter.cs" />
     <Compile Include="Compilers\TypeBuilder.cs" />
     <Compile Include="ConstructorNotFoundException.cs" />
     <Compile Include="ContainerCompiler.cs" />
     <Compile Include="DependencyMap.cs" />
     <Compile Include="DependencyMapExtensions.cs" />
-    <Compile Include="Implementations\TypeImplementation.cs" />
+    <Compile Include="Implementations\SingletonType.cs" />
+    <Compile Include="Implementations\TransientType.cs" />
     <Compile Include="Interfaces\IContainsMethodImplementor.cs" />
     <Compile Include="Interfaces\ICreateContainerType.cs" />
     <Compile Include="Interfaces\IDependencyMap.cs" />

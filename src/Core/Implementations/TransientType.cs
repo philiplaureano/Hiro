@@ -12,7 +12,7 @@ namespace Hiro.Implementations
     /// <summary>
     /// Represents an implementation that can instantiate a type that has more than one constructor.
     /// </summary>
-    public class TypeImplementation : IImplementation<ConstructorInfo>
+    public class TransientType : IImplementation<ConstructorInfo>
     {
         /// <summary>
         /// The type that will be instantiated by the compiled container.
@@ -30,11 +30,11 @@ namespace Hiro.Implementations
         private Func<IImplementation<ConstructorInfo>> _getConstructorImplementation;
 
         /// <summary>
-        /// Initializes a new instance of the TypeImplementation class.
+        /// Initializes a new instance of the TransientType class.
         /// </summary>
         /// <param name="targetType">The target type.</param>
         /// <param name="container">The dependency container.</param>
-        public TypeImplementation(Type targetType, IDependencyContainer container)
+        public TransientType(Type targetType, IDependencyContainer container)
         {
             _targetType = targetType;
             _container = container;
@@ -106,7 +106,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
         /// <param name="targetMethod">The target method.</param>
-        public void Emit(IDependency dependency, MethodDefinition targetMethod)
+        public virtual void Emit(IDependency dependency, MethodDefinition targetMethod)
         {
             TargetImplementation.Emit(dependency, targetMethod);
         }        

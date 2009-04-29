@@ -206,6 +206,25 @@ namespace Hiro.UnitTests
         {
             ShouldProvideMethodOverrideFor<IMicroContainer>("GetInstance");
         }
+        [Test]
+        public void ShouldBeAbleToCreateServiceAsSingleton()
+        {
+            var map = new DependencyMap();
+            var dependency = new Dependency(typeof(IVehicle));
+
+            map.AddService(dependency, new SingletonType(typeof(Vehicle), map));
+
+            var container = Compile(map);
+            var first = container.GetInstance(typeof(IVehicle), null);
+            Assert.IsNotNull(first);
+
+            // The GetInstance call must return the same instance
+            for (int i = 0; i < 10; i++)
+            {
+                var currentInstance = container.GetInstance(typeof(IVehicle), null);
+                Assert.AreSame(first, currentInstance);
+            }
+        }
 
         [Test]
         public void ShouldBeAbleToCompileContainerUsingATypeWithMultipleConstructors()
@@ -213,7 +232,7 @@ namespace Hiro.UnitTests
             var map = new DependencyMap();
 
             var dependency = new Dependency(string.Empty, typeof(IVehicle));
-            var implementation = new TypeImplementation(typeof(Vehicle), map);
+            var implementation = new TransientType(typeof(Vehicle), map);
 
             map.AddService(dependency, implementation);
             map.AddService(typeof(IPerson), typeof(Person));

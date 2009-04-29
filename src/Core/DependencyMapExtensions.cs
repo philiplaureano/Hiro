@@ -24,7 +24,7 @@ namespace Hiro
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
-            map.AddService(new Dependency(serviceName, serviceType), new TypeImplementation(implementingType, map));
+            map.AddService(new Dependency(serviceName, serviceType), new TransientType(implementingType, map));
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Hiro
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
-            map.AddService(new Dependency(serviceType), new TypeImplementation(implementingType, map));
+            map.AddService(new Dependency(serviceType), new TransientType(implementingType, map));
         }
 
         /// <summary>

@@ -43,7 +43,7 @@ namespace Hiro.UnitTests
 
             var expectedConstructor = typeof(Vehicle).GetConstructor(new Type[] { typeof(IPerson) });
             var targetType = typeof(Vehicle);
-            IImplementation<ConstructorInfo> implementation = new TypeImplementation(typeof(Vehicle), map.Object);
+            IImplementation<ConstructorInfo> implementation = new TransientType(typeof(Vehicle), map.Object);
 
             Assert.AreSame(implementation.Target, expectedConstructor);
         }
