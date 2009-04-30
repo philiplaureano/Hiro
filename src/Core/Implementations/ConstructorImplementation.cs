@@ -85,12 +85,11 @@ namespace Hiro.Implementations
 
                 var implementation = serviceMap[currentDependency];
                 implementation.Emit(currentDependency, serviceMap, targetMethod);
-                worker.Emit(OpCodes.Unbox_Any, serviceType);
             }
 
             var targetConstructor = module.Import(Target);
             worker.Emit(OpCodes.Newobj, targetConstructor);
-        }
+        }       
 
         /// <summary>
         /// Determines which dependency should be used for the target parameter.

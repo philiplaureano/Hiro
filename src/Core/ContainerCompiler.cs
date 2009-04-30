@@ -88,7 +88,7 @@ namespace Hiro
             _containsMethodImplementor.DefineContainsMethod(containerType, module, getServiceHash, jumpTargetField);
 
             _getInstanceMethodImplementor.DefineGetInstanceMethod(containerType, module, getServiceHash, jumpTargetField, serviceMap);
-
+            
             return assembly;
         }
 

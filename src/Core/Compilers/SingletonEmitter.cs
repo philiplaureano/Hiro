@@ -61,6 +61,9 @@ namespace Hiro.Compilers
 
             worker.Emit(OpCodes.Call, getInstanceMethod);
 
+            var serviceTypeRef = module.Import(serviceType);
+            worker.Emit(OpCodes.Unbox_Any, serviceTypeRef);
+
             // Cache the singleton method
             _entries[dependency] = getInstanceMethod;
         }        

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Hiro.Containers;
 using Hiro.Interfaces;
 using LinFu.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using System.Reflection;
 
 namespace Hiro.Compilers
 {
@@ -91,9 +91,6 @@ namespace Hiro.Compilers
             worker.Emit(OpCodes.Callvirt, getItem);
         }
 
-
-
-
         /// <summary>
         /// Defines the instructions that create each service type in the <paramref name="serviceMap"/>.
         /// </summary>
@@ -113,7 +110,7 @@ namespace Hiro.Compilers
             var module = declaringType.Module;
 
             var getTypeFromHandle = module.ImportMethod<Type>("GetTypeFromHandle", BindingFlags.Public | BindingFlags.Static);
-            var equalsMethod = typeof(string).GetMethod("Equals", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string), typeof(string) }, null);
+            var equalsMethod = typeof(string).GetMethod("CompareOrdinal", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string), typeof(string) }, null);
             var stringEquals = module.Import(equalsMethod);
 
             foreach (var dependency in serviceMap.Keys)
@@ -142,7 +139,7 @@ namespace Hiro.Compilers
                 worker.Append(pushName);
                 worker.Emit(OpCodes.Call, stringEquals);
 
-                worker.Emit(OpCodes.Brfalse, skipCreate);
+                worker.Emit(OpCodes.Brtrue, skipCreate);
 
                 // Emit the implementation
                 var implementation = serviceMap[dependency];
