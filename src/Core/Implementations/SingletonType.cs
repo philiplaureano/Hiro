@@ -18,6 +18,7 @@ namespace Hiro.Implementations
         /// </summary>
         private IImplementation _implementation;
 
+        private SingletonEmitter _emitter = new SingletonEmitter();
         /// <summary>
         /// Initializes a new instance of the SingletonType class.
         /// </summary>
@@ -43,10 +44,9 @@ namespace Hiro.Implementations
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
         public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
-        {
-            var emitter = new SingletonEmitter();
+        {            
             var worker = targetMethod.Body.CilWorker;
-            emitter.EmitService(targetMethod, dependency, _implementation, serviceMap);
+            _emitter.EmitService(targetMethod, dependency, _implementation, serviceMap);
         }
 
         /// <summary>

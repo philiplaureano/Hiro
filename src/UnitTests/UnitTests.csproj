@@ -68,6 +68,7 @@
     <Compile Include="SampleDomain\IPerson.cs" />
     <Compile Include="SampleDomain\IVehicle.cs" />
     <Compile Include="SampleDomain\Person.cs" />
+    <Compile Include="SampleDomain\Truck.cs" />
     <Compile Include="SampleDomain\Vehicle.cs" />
   </ItemGroup>
   <ItemGroup>

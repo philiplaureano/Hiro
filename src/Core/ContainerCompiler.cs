@@ -88,7 +88,67 @@ namespace Hiro
             _containsMethodImplementor.DefineContainsMethod(containerType, module, getServiceHash, jumpTargetField);
 
             _getInstanceMethodImplementor.DefineGetInstanceMethod(containerType, module, getServiceHash, jumpTargetField, serviceMap);
+
+            var getAllInstancesMethod = (from MethodDefinition m in containerType.Methods
+                                         where m.Name == "GetAllInstances"
+                                         select m).First();
+
+            // Remove the stub implementation
+            var body = getAllInstancesMethod.Body;
+            var worker = body.CilWorker;
             
+            body.InitLocals = true;
+            body.Instructions.Clear();
+
+            var listVariable = getAllInstancesMethod.AddLocal<List<object>>();
+            var listCtor = module.ImportConstructor<List<object>>();
+            worker.Emit(OpCodes.Newobj, listCtor);
+            worker.Emit(OpCodes.Stloc, listVariable);
+
+            // Group the dependencies by type
+            var dependenciesByType = new HashList<Type, IDependency>();
+            foreach (var dependency in serviceMap.Keys)
+            {
+                var serviceType = dependency.ServiceType;
+                dependenciesByType.Add(serviceType, dependency);
+            }
+
+            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
+            var addItem = module.ImportMethod<List<object>>("Add");
+
+            foreach (var currentType in dependenciesByType.Keys)
+            {
+                var currentTypeRef = module.Import(currentType);
+
+                var currentList = dependenciesByType[currentType];
+                if (currentList.Count == 0)
+                    continue;
+
+                var skipAdd = worker.Create(OpCodes.Nop);
+                worker.Emit(OpCodes.Ldarg_1);
+                worker.Emit(OpCodes.Ldtoken, currentTypeRef);
+                worker.Emit(OpCodes.Call, getTypeFromHandle);
+                worker.Emit(OpCodes.Ceq);
+                worker.Emit(OpCodes.Brfalse, skipAdd);
+                
+                foreach (var dependency in currentList)
+                {
+                    worker.Emit(OpCodes.Ldloc, listVariable);
+                    var implementation = serviceMap[dependency];
+                    implementation.Emit(dependency, serviceMap, getAllInstancesMethod);
+                    worker.Emit(OpCodes.Callvirt, addItem);
+                }                
+
+                worker.Append(skipAdd);
+            }
+
+            // Cast the results down to an IEnumerable<object>
+            var enumerableType = module.ImportType<IEnumerable<object>>();
+            worker.Emit(OpCodes.Ldloc, listVariable);
+            worker.Emit(OpCodes.Isinst, enumerableType);
+            worker.Emit(OpCodes.Ret);
+
             return assembly;
         }
 
@@ -168,6 +228,6 @@ namespace Hiro
                 var lastInstruction = instructions[0];
                 instructions.RemoveAt(instructions.Count - 1);
             }
-        }        
+        }
     }
 }

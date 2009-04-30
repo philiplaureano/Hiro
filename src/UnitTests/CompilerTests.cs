@@ -228,6 +228,27 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldBeAbleToGetAllInstancesOfATypeFromACompiledContainer()
+        {
+            var map = new DependencyMap();
+
+            map.AddService(typeof(IVehicle), typeof(Vehicle));
+            map.AddService("Truck", typeof(IVehicle), typeof(Truck));
+
+            var compiler = new ContainerCompiler();
+            var assembly = compiler.Compile(map);
+
+            var container = Compile(map);
+            var instances = container.GetAllInstances(typeof(IVehicle));
+
+            Assert.IsNotNull(instances);
+            Assert.IsTrue(instances.Count() == 2);
+
+            var items = instances.ToArray();
+            Assert.IsTrue(items[0] is Vehicle);
+            Assert.IsTrue(items[1] is Truck);
+        }
+        [Test]
         public void ShouldBeAbleToCompileContainerUsingATypeWithMultipleConstructors()
         {
             var map = new DependencyMap();
