@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Hiro.Compilers;
 using Hiro.Containers;
+using Hiro.Implementations;
+using Hiro.Interfaces;
+using Hiro.UnitTests.SampleDomain;
 using LinFu.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using NUnit.Framework;
-using Hiro.UnitTests.SampleDomain;
-using Hiro.Interfaces;
 using Moq;
-using Hiro.Implementations;
-using System.IO;
+using NUnit.Framework;
 
 namespace Hiro.UnitTests
 {
@@ -30,6 +30,45 @@ namespace Hiro.UnitTests
         protected override void OnTerm()
         {
             _assemblyBuilder = null;
+        }
+
+        [Test]
+        public void ShouldBeAbleToCompileContainerFromDependencyMap()
+        {
+            var map = new DependencyMap();
+            map.AddService(typeof(IPerson), typeof(Person));
+
+            var container = map.CreateContainer();
+            var result = container.GetInstance(typeof(IPerson), null);
+            
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result is Person);
+        }
+
+        [Test]
+        public void ShouldBeAbleToAddAnonymousServiceToMapUsingExtensionMethod()
+        {
+            var map = new DependencyMap();
+            map.AddSingletonService(typeof(IPerson), typeof(Person));
+
+            var container = map.CreateContainer();
+            var result = container.GetInstance(typeof(IPerson), null);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result is Person);
+        }
+
+        [Test]
+        public void ShouldBeAbleToAddNamedServiceToMapUsingExtensionMethod()
+        {
+            var map = new DependencyMap();
+            map.AddSingletonService("SomePerson", typeof(IPerson), typeof(Person));
+
+            var container = map.CreateContainer();
+            var result = container.GetInstance(typeof(IPerson), "SomePerson");
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result is Person);
         }
 
         [Test]
