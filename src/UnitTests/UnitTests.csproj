@@ -65,6 +65,7 @@
     <Compile Include="CompilerTests.cs" />
     <Compile Include="DependencyTests.cs" />
     <Compile Include="ImplementationTests.cs" />
+    <Compile Include="MicroContainerExtensionTests.cs" />
     <Compile Include="PropertyInjectionTests.cs" />
     <Compile Include="SampleDomain\IPerson.cs" />
     <Compile Include="SampleDomain\IVehicle.cs" />

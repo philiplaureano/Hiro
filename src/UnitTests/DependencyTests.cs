@@ -25,10 +25,10 @@ namespace Hiro.UnitTests
         }
 
         [Test]
-        public void ShouldBeAbleToRegisterAnonymousServicesWithDependencyMap()
+        public void ShouldBeAbleToRegisterAnonymousServicesWithDependencyMapUsingGenerics()
         {
             var dependencyMap = new DependencyMap();
-            dependencyMap.AddService(typeof(IVehicle), typeof(Vehicle));
+            dependencyMap.AddService<IVehicle, Vehicle>();
 
             Assert.IsTrue(dependencyMap.Contains(new Dependency(typeof(IVehicle))));
             Assert.IsTrue(dependencyMap.Contains(typeof(IVehicle)));
@@ -39,7 +39,26 @@ namespace Hiro.UnitTests
         {
             var serviceName = "MyService";
             var dependencyMap = new DependencyMap();
-            dependencyMap.AddService(serviceName, typeof(IVehicle), typeof(Vehicle));
+            dependencyMap.AddService<IVehicle, Vehicle>(serviceName);
+            Assert.IsTrue(dependencyMap.Contains(typeof(IVehicle), serviceName));
+        }
+
+        [Test]
+        public void ShouldBeAbleToRegisterAnonymousServicesWithDependencyMap()
+        {
+            var dependencyMap = new DependencyMap();
+            dependencyMap.AddService(typeof(IVehicle), typeof(Vehicle));
+
+            Assert.IsTrue(dependencyMap.Contains(new Dependency(typeof(IVehicle))));
+            Assert.IsTrue(dependencyMap.Contains(typeof(IVehicle)));
+        }
+
+        [Test]
+        public void ShouldBeAbleToRegisterNamedServicesWithDependencyMapUsingGenerics()
+        {
+            var serviceName = "MyService";
+            var dependencyMap = new DependencyMap();
+            dependencyMap.AddService<IVehicle, Vehicle>(serviceName);
             Assert.IsTrue(dependencyMap.Contains(typeof(IVehicle), serviceName));
         }
 

@@ -33,6 +33,8 @@ namespace Hiro.Compilers
 
             var worker = newMethod.GetILGenerator();
 
+            // Emit only one singleton per dependency and call
+            // the singleton GetInstance() method on every subsequent emit call
             if (_entries.ContainsKey(dependency))
             {
                 getInstanceMethod = _entries[dependency];
@@ -40,8 +42,6 @@ namespace Hiro.Compilers
                 return;
             }
 
-            // TODO: Modify this class to emit only one singleton per dependency and call
-            // the singleton GetInstance() method on every subsequent emit call
             var declaringType = newMethod.DeclaringType;
             var module = declaringType.Module;
             var containerType = newMethod.DeclaringType;

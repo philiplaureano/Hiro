@@ -17,6 +17,30 @@ namespace Hiro
         /// <summary>
         /// Adds a service to the dependency map.
         /// </summary>
+        /// <typeparam name="TService">The service type.</typeparam>
+        /// <typeparam name="TImplementation">The concrete type that will implement the service type.</typeparam>
+        /// <param name="map">The dependency map.</param>
+        /// <param name="serviceName">The service name.</param>
+        public static void AddService<TService, TImplementation>(this IDependencyMap map)
+        {
+            map.AddService(typeof(TService), typeof(TImplementation));
+        }
+
+        /// <summary>
+        /// Adds a service to the dependency map.
+        /// </summary>
+        /// <typeparam name="TService">The service type.</typeparam>
+        /// <typeparam name="TImplementation">The concrete type that will implement the service type.</typeparam>
+        /// <param name="map">The dependency map.</param>
+        /// <param name="serviceName">The service name.</param>
+        public static void AddService<TService, TImplementation>(this IDependencyMap map, string serviceName)
+        {
+            map.AddService(serviceName, typeof(TService), typeof(TImplementation));
+        }
+
+        /// <summary>
+        /// Adds a service to the dependency map.
+        /// </summary>
         /// <param name="map">The dependency map.</param>
         /// <param name="serviceName">The service name.</param>
         /// <param name="serviceType">The service type.</param>

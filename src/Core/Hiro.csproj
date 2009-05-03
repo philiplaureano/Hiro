@@ -89,6 +89,7 @@
     <Compile Include="Dependency.cs" />
     <Compile Include="Interfaces\IDependency.cs" />
     <Compile Include="Interfaces\IServiceMapBuilder.cs" />
+    <Compile Include="MicroContainerExtensions.cs" />
     <Compile Include="Resolvers\ConstructorResolver.cs" />
   </ItemGroup>
   <ItemGroup>
