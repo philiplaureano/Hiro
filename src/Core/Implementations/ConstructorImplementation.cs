@@ -26,6 +26,18 @@ namespace Hiro.Implementations
         }
 
         /// <summary>
+        /// Gets the value indicating the type that will be instantiated by this implementation.
+        /// </summary>
+        /// <value>The target type.</value>
+        public Type TargetType
+        {
+            get
+            {
+                return Target.DeclaringType;
+            }
+        }
+
+        /// <summary>
         /// Gets the value indicating the target member.
         /// </summary>
         /// <value>The target member.</value>

@@ -95,6 +95,11 @@ namespace Hiro
             return map.Contains(new Dependency(serviceType));
         }
 
+        /// <summary>
+        /// Compiles and instantiates a container instance using the current dependencies in the dependency map.
+        /// </summary>
+        /// <param name="map">The dependency map.</param>
+        /// <returns>A <see cref="IMicroContainer"/> instance.</returns>
         public static IMicroContainer CreateContainer(this IDependencyMap map)
         {
             var compiler = new ContainerCompiler();

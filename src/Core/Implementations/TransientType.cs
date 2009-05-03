@@ -58,6 +58,18 @@ namespace Hiro.Implementations
         }
 
         /// <summary>
+        /// Gets the value indicating the type that will be instantiated by this implementation.
+        /// </summary>
+        /// <value>The target type.</value>
+        public Type TargetType
+        {
+            get
+            {
+                return _targetType;
+            }
+        }
+
+        /// <summary>
         /// Gets the value indicating the constructor that will be used to instantiate the implementation.
         /// </summary>
         /// <value>The target constructor.</value>

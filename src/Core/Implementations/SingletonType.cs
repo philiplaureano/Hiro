@@ -18,7 +18,11 @@ namespace Hiro.Implementations
         /// </summary>
         private IImplementation _implementation;
 
+        /// <summary>
+        /// The singleton emitter that will generate the singleton types.
+        /// </summary>
         private SingletonEmitter _emitter = new SingletonEmitter();
+
         /// <summary>
         /// Initializes a new instance of the SingletonType class.
         /// </summary>
@@ -33,8 +37,21 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="targetType">The concrete service type.</param>
         /// <param name="container">The dependency container that contains the dependencies that will be used by the target type.</param>
-        public SingletonType(Type targetType, IDependencyContainer container) : this(new TransientType(targetType, container))
-        {            
+        public SingletonType(Type targetType, IDependencyContainer container)
+            : this(new TransientType(targetType, container))
+        {
+        }
+
+        /// <summary>
+        /// Gets the value indicating the type that will be instantiated by this implementation.
+        /// </summary>
+        /// <value>The target type.</value>
+        public Type TargetType
+        {
+            get
+            {
+                return _implementation.TargetType;
+            }
         }
 
         /// <summary>
@@ -44,7 +61,7 @@ namespace Hiro.Implementations
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
         public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
-        {            
+        {
             var worker = targetMethod.Body.CilWorker;
             _emitter.EmitService(targetMethod, dependency, _implementation, serviceMap);
         }
