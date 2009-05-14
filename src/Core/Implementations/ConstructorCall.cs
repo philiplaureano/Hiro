@@ -14,13 +14,13 @@ namespace Hiro.Implementations
     /// <summary>
     /// Represents an implementation that emits a constructor call.
     /// </summary>
-    public class ConstructorImplementation : IImplementation<ConstructorInfo>
+    public class ConstructorCall : IImplementation<ConstructorInfo>
     {
         /// <summary>
         /// Initializes a new instance of the ConstructorImplementation class.
         /// </summary>
         /// <param name="constructor">The target constructor.</param>
-        public ConstructorImplementation(ConstructorInfo constructor)
+        public ConstructorCall(ConstructorInfo constructor)
         {
             Target = constructor;
         }
@@ -110,7 +110,7 @@ namespace Hiro.Implementations
         /// <returns>A <see cref="IDependency"/> instance that represents the dependency that will be used for the target parameter.</returns>
         protected virtual IDependency GetDependency(ParameterInfo parameter)
         {
-            return new Dependency(string.Empty, parameter.ParameterType);
+            return new Dependency(parameter.ParameterType, string.Empty);
         }
     }
 }

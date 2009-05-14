@@ -20,7 +20,7 @@ namespace Hiro.UnitTests
         {
             var targetType = typeof(Vehicle);
             var constructorImplementations = (from c in typeof(Vehicle).GetConstructors()
-                                              select new ConstructorImplementation(c) as IImplementation<ConstructorInfo>).AsEnumerable();
+                                              select new ConstructorCall(c) as IImplementation<ConstructorInfo>).AsEnumerable();
 
             IImplementation<ConstructorInfo> expectedImplementation = GetExpectedConstructorImplementation(constructorImplementations);
 

@@ -40,7 +40,7 @@ namespace Hiro.Implementations
             _container = container;
 
             var constructorImplementations = (from c in targetType.GetConstructors()
-                                              select new ConstructorImplementation(c) as IImplementation<ConstructorInfo>).ToList();
+                                              select new ConstructorCall(c) as IImplementation<ConstructorInfo>).ToList();
 
             _getConstructorImplementation = () =>
                 {

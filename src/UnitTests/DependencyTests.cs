@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using Hiro.UnitTests.SampleDomain;
 using System.Reflection;
-using Moq;
-using Hiro.Interfaces;
+using System.Text;
 using Hiro.Implementations;
+using Hiro.Interfaces;
+using Hiro.UnitTests.SampleDomain;
+using Moq;
+using NUnit.Framework;
 
 namespace Hiro.UnitTests
 {
     [TestFixture]
     public class DependencyTests : BaseFixture
-    {
+    {        
         [Test]
         public void ShouldBeEqualIfServiceNameAndServiceTypeAreTheSame()
         {
-            var first = new Dependency(string.Empty, typeof(IPerson));
-            var second = new Dependency(string.Empty, typeof(IPerson));
+            var first = new Dependency(typeof(IPerson), string.Empty);
+            var second = new Dependency(typeof(IPerson), string.Empty);
 
             Assert.AreEqual(first, second);
             Assert.AreEqual(first.GetHashCode(), second.GetHashCode());
@@ -54,6 +54,25 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldBeAbleToRegisterAnonymousSingletonServicesWithDependencyMap()
+        {
+            var dependencyMap = new DependencyMap();
+            dependencyMap.AddSingletonService<IVehicle, Vehicle>();
+
+            Assert.IsTrue(dependencyMap.Contains(new Dependency(typeof(IVehicle))));
+            Assert.IsTrue(dependencyMap.Contains(typeof(IVehicle)));
+        }
+
+        [Test]
+        public void ShouldBeAbleToRegisterNamedSingletonServicesWithDependencyMapUsingGenerics()
+        {
+            var serviceName = "MyService";
+            var dependencyMap = new DependencyMap();
+            dependencyMap.AddSingletonService<IVehicle, Vehicle>(serviceName);
+            Assert.IsTrue(dependencyMap.Contains(typeof(IVehicle), serviceName));
+        }
+
+        [Test]
         public void ShouldBeAbleToRegisterNamedServicesWithDependencyMapUsingGenerics()
         {
             var serviceName = "MyService";
@@ -66,8 +85,8 @@ namespace Hiro.UnitTests
         public void ShouldBeAbleToAddItemsToDependencyMap()
         {
             var ctor = typeof(Vehicle).GetConstructor(new Type[0]);
-            var dependency = new Dependency(string.Empty, typeof(IVehicle));
-            var constructorImplementation = new ConstructorImplementation(ctor);
+            var dependency = new Dependency(typeof(IVehicle), string.Empty);
+            var constructorImplementation = new ConstructorCall(ctor);
 
             var dependencyMap = new DependencyMap();
             dependencyMap.AddService(dependency, constructorImplementation);
@@ -77,8 +96,8 @@ namespace Hiro.UnitTests
         [Test]
         public void ShouldReturnImplementationsFromDependencyMapFromImplementationsThatHaveNoMissingDependencies()
         {
-            var map = new DependencyMap();            
-            var dependency = new Dependency(string.Empty, typeof(IVehicle));
+            var map = new DependencyMap();
+            var dependency = new Dependency(typeof(IVehicle), string.Empty);
             var implementation = new Mock<IImplementation>();
             implementation.Expect(impl => impl.GetMissingDependencies(map)).Returns(new IDependency[0]);
             

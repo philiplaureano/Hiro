@@ -93,7 +93,7 @@ namespace Hiro.UnitTests
         [Test]
         public void ShouldPullAvailableDependenciesFromDependencyContainer()
         {
-            var dependency = new Dependency(string.Empty, typeof(IVehicle));
+            var dependency = new Dependency(typeof(IVehicle), string.Empty);
             var dependencyList = new IDependency[] { dependency };
             var implementation = new Mock<IImplementation>();
             implementation.Expect(i => i.Emit(It.IsAny<IDependency>(), It.IsAny<IDictionary<IDependency, IImplementation>>(), It.IsAny<MethodDefinition>()));
@@ -308,8 +308,8 @@ namespace Hiro.UnitTests
         {
             var targetConstructor = typeof(Vehicle).GetConstructor(new Type[0]);
 
-            var dependency = new Dependency(string.Empty, typeof(IVehicle));
-            var implementation = new ConstructorImplementation(targetConstructor);
+            var dependency = new Dependency(typeof(IVehicle), string.Empty);
+            var implementation = new ConstructorCall(targetConstructor);
 
             var map = new DependencyMap();
             map.AddService(dependency, implementation);

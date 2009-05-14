@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Hiro;
 using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
@@ -22,6 +23,7 @@ namespace Hiro
         /// <param name="map">The dependency map.</param>
         /// <param name="serviceName">The service name.</param>
         public static void AddService<TService, TImplementation>(this IDependencyMap map)
+            where TImplementation : TService
         {
             map.AddService(typeof(TService), typeof(TImplementation));
         }
@@ -34,6 +36,7 @@ namespace Hiro
         /// <param name="map">The dependency map.</param>
         /// <param name="serviceName">The service name.</param>
         public static void AddService<TService, TImplementation>(this IDependencyMap map, string serviceName)
+            where TImplementation : TService
         {
             map.AddService(serviceName, typeof(TService), typeof(TImplementation));
         }
@@ -50,7 +53,7 @@ namespace Hiro
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
-            map.AddService(new Dependency(serviceName, serviceType), new TransientType(implementingType, map));
+            map.AddService(new Dependency(serviceType, serviceName), new TransientType(implementingType, map));
         }
 
         /// <summary>
@@ -65,6 +68,31 @@ namespace Hiro
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
             map.AddService(new Dependency(serviceType), new TransientType(implementingType, map));
+        }
+
+        /// <summary>
+        /// Adds a service to the dependency map.
+        /// </summary>
+        /// <typeparam name="TService">The service type.</typeparam>
+        /// <typeparam name="TImplementation">The concrete type that will implement the service type.</typeparam>
+        /// <param name="map">The dependency map.</param>
+        /// <param name="serviceName">The service name.</param>
+        public static void AddSingletonService<TService, TImplementation>(this IDependencyMap map)
+            where TImplementation : TService
+        {
+            map.AddService(new Dependency(typeof(TService)), new SingletonType(typeof(TImplementation), map));
+        }
+
+        /// <summary>
+        /// Adds a service to the dependency map.
+        /// </summary>
+        /// <typeparam name="TService">The service type.</typeparam>
+        /// <typeparam name="TImplementation">The concrete type that will implement the service type.</typeparam>
+        /// <param name="map">The dependency map.</param>
+        /// <param name="serviceName">The service name.</param>
+        public static void AddSingletonService<TService, TImplementation>(this IDependencyMap map, string serviceName)
+        {
+            map.AddService(new Dependency(typeof(TService), serviceName), new SingletonType(typeof(TImplementation), map));
         }
 
         /// <summary>
@@ -93,7 +121,7 @@ namespace Hiro
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
-            map.AddService(new Dependency(serviceName, serviceType), new SingletonType(implementingType, map));
+            map.AddService(new Dependency(serviceType, serviceName), new SingletonType(implementingType, map));
         }
 
         /// <summary>
@@ -105,7 +133,7 @@ namespace Hiro
         /// <returns><c>true</c> if the service exists; otherwise, it will return <c>false</c>.</returns>
         public static bool Contains(this IDependencyMap map, Type serviceType, string serviceName)
         {
-            return map.Contains(new Dependency(serviceName, serviceType));
+            return map.Contains(new Dependency(serviceType, serviceName));
         }
 
         /// <summary>

@@ -16,16 +16,16 @@ namespace Hiro
         /// </summary>
         /// <param name="serviceType">The service type.</param>
         public Dependency(Type serviceType)
-            : this(null, serviceType)
+            : this(serviceType, null)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the Dependency class.
         /// </summary>
-        /// <param name="serviceName">The service name.</param>
         /// <param name="serviceType">The service type.</param>
-        public Dependency(string serviceName, Type serviceType)
+        /// <param name="serviceName">The service name.</param>
+        public Dependency(Type serviceType, string serviceName)
         {
             ServiceName = serviceName;
             ServiceType = serviceType;
