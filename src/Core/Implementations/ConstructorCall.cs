@@ -17,7 +17,7 @@ namespace Hiro.Implementations
     public class ConstructorCall : IImplementation<ConstructorInfo>
     {
         /// <summary>
-        /// Initializes a new instance of the ConstructorImplementation class.
+        /// Initializes a new instance of the ConstructorCall class.
         /// </summary>
         /// <param name="constructor">The target constructor.</param>
         public ConstructorCall(ConstructorInfo constructor)

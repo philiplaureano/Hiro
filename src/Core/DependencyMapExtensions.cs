@@ -21,7 +21,6 @@ namespace Hiro
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will implement the service type.</typeparam>
         /// <param name="map">The dependency map.</param>
-        /// <param name="serviceName">The service name.</param>
         public static void AddService<TService, TImplementation>(this IDependencyMap map)
             where TImplementation : TService
         {
@@ -76,7 +75,6 @@ namespace Hiro
         /// <typeparam name="TService">The service type.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will implement the service type.</typeparam>
         /// <param name="map">The dependency map.</param>
-        /// <param name="serviceName">The service name.</param>
         public static void AddSingletonService<TService, TImplementation>(this IDependencyMap map)
             where TImplementation : TService
         {

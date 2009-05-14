@@ -17,10 +17,26 @@ namespace Hiro.UnitTests
             var map = new DependencyMap();
 
             var dependency = new Dependency(typeof(IVehicle));
-            var injector = new PropertyInjector(new TransientType(typeof(Vehicle), map));
+            var injector = new PropertyInjectionCall(new TransientType(typeof(Vehicle), map));
             map.AddService(dependency, injector);
 
             map.AddService(typeof(IPerson), typeof(Person));
+
+            var container = map.CreateContainer();
+
+            var result = (IVehicle)container.GetInstance(typeof(IVehicle), null);
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Driver);
+            Assert.IsTrue(result.Driver is Person);
+        }
+        [Test]
+        public void ShouldInjectPropertyIfDependencyMapHasAPropertyInjectorAssignedToTheInjectorProperty()
+        {
+            var map = new DependencyMap();
+            map.Injector = new PropertyInjector();
+
+            map.AddService<IVehicle, Vehicle>();
+            map.AddService<IPerson, Person>();
 
             var container = map.CreateContainer();
 

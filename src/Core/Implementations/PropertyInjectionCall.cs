@@ -12,7 +12,7 @@ namespace Hiro.Implementations
     /// <summary>
     /// Represents an <see cref="IImplementation"/> type that adds property injection capabilities to other <see cref="IImplementation"/> instances.
     /// </summary>
-    public class PropertyInjector : IImplementation
+    public class PropertyInjectionCall : IImplementation
     {
         /// <summary>
         /// The implementation that will instantiate the target type.
@@ -33,7 +33,7 @@ namespace Hiro.Implementations
         /// Initializes a new instance of the PropertyInjector class.
         /// </summary>
         /// <param name="implementation">The target implementation that will instantiate the service type.</param>
-        public PropertyInjector(IImplementation implementation)
+        public PropertyInjectionCall(IImplementation implementation)
             : this(implementation, p => p.CanWrite, p => new Dependency(p.PropertyType))
         {
         }
@@ -44,7 +44,7 @@ namespace Hiro.Implementations
         /// <param name="implementation">The target implementation that will instantiate the service type.</param>
         /// <param name="propertyFilter">The functor that determines which properties will be injected.</param>
         /// <param name="propertyDependencyResolver">The functor that determines the dependencies that will be injected into each property.</param>
-        public PropertyInjector(IImplementation implementation, Func<PropertyInfo, bool> propertyFilter, Func<PropertyInfo, IDependency> propertyDependencyResolver)
+        public PropertyInjectionCall(IImplementation implementation, Func<PropertyInfo, bool> propertyFilter, Func<PropertyInfo, IDependency> propertyDependencyResolver)
         {
             _implementation = implementation;
             _propertyFilter = propertyFilter;

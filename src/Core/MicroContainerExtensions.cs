@@ -16,6 +16,7 @@ namespace Hiro
         /// and <paramref name="key">service name</paramref>.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
+        /// <param name="container">The target container.</param>
         /// <returns>An object instance that matches the given service description.</returns>
         public static T GetInstance<T>(this IMicroContainer container)
         {
@@ -27,6 +28,7 @@ namespace Hiro
         /// and <paramref name="key">service name</paramref>.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
+        /// /// <param name="container">The target container.</param>
         /// <param name="key">The name of the service itself.</param>
         /// <returns>An object instance that matches the given service description.</returns>
         public static T GetInstance<T>(this IMicroContainer container, string key)

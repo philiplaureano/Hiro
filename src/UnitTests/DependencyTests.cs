@@ -13,7 +13,20 @@ namespace Hiro.UnitTests
 {
     [TestFixture]
     public class DependencyTests : BaseFixture
-    {        
+    {
+        [Test]
+        public void ShouldCallImplementationInjectorIfItExists()
+        {
+            var injector = new Mock<IImplementationInjector>();
+            var map = new DependencyMap();
+            map.Injector = injector.Object;
+
+            injector.Expect(i => i.Inject(It.IsAny<IDependency>(), It.IsAny<IImplementation>())).Returns(new TransientType(typeof(Vehicle), map));
+
+            map.AddService<IVehicle, Vehicle>();
+            injector.VerifyAll();
+        }
+
         [Test]
         public void ShouldBeEqualIfServiceNameAndServiceTypeAreTheSame()
         {
@@ -100,7 +113,7 @@ namespace Hiro.UnitTests
             var dependency = new Dependency(typeof(IVehicle), string.Empty);
             var implementation = new Mock<IImplementation>();
             implementation.Expect(impl => impl.GetMissingDependencies(map)).Returns(new IDependency[0]);
-            
+
             bool addIncompleteImplementations = false;
             map.AddService(dependency, implementation.Object);
             var results = map.GetImplementations(dependency, addIncompleteImplementations);

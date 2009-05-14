@@ -18,6 +18,12 @@ namespace Hiro
         private HashList<IDependency, IImplementation> _entries = new HashList<IDependency, IImplementation>();
 
         /// <summary>
+        /// Gets or sets the value indicating the <see cref="IImplementationInjector"/> instance that will be used to intercept <see cref="IImplementation"/> instances.
+        /// </summary>
+        /// <value>The implementation injector.</value>
+        public IImplementationInjector Injector { get; set; }
+
+        /// <summary>
         /// Gets the value indicating the list of dependencies that currently exist within the current container.
         /// </summary>
         /// <value>The current list of dependencies.</value>
@@ -46,7 +52,12 @@ namespace Hiro
         /// <param name="implementation">The implementation itself.</param>
         public void AddService(IDependency dependency, IImplementation implementation)
         {
-            _entries.Add(dependency, implementation);
+            var currentImplementation = implementation;
+
+            if (Injector != null)
+                currentImplementation = Injector.Inject(dependency, currentImplementation);
+
+            _entries.Add(dependency, currentImplementation);
         }
 
         /// <summary>

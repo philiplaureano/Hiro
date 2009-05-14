@@ -76,6 +76,7 @@
     <Compile Include="DependencyMap.cs" />
     <Compile Include="DependencyMapExtensions.cs" />
     <Compile Include="Implementations\ConstructorCall.cs" />
+    <Compile Include="Implementations\PropertyInjectionCall.cs" />
     <Compile Include="Implementations\PropertyInjector.cs" />
     <Compile Include="Implementations\SingletonType.cs" />
     <Compile Include="Implementations\TransientType.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Interfaces\ICreateContainerType.cs" />
     <Compile Include="Interfaces\IDependencyMap.cs" />
     <Compile Include="Interfaces\IGetInstanceMethodImplementor.cs" />
+    <Compile Include="Interfaces\IImplementationInjector.cs" />
     <Compile Include="Interfaces\IImplementationOfT.cs" />
     <Compile Include="Interfaces\IDependencyContainer.cs" />
     <Compile Include="Interfaces\IImplementation.cs" />
