@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using LinFu.Reflection.Emit;
@@ -27,11 +26,14 @@ namespace Hiro.Compilers
             options.IsPublic = true;
             options.MethodName = targetMethod.Name;
 
-            var parameterTypes = (from param in targetMethod.GetParameters()
-                                  select param.ParameterType).ToArray();
+            var parameterTypes = new List<Type>();
+            foreach (var param in targetMethod.GetParameters())
+            {
+                parameterTypes.Add(param.ParameterType);
+            }
 
             options.HostType = hostType;
-            options.SetMethodParameters(parameterTypes);
+            options.SetMethodParameters(parameterTypes.ToArray());
             options.ReturnType = targetMethod.ReturnType;
 
             var builder = new MethodBuilder();

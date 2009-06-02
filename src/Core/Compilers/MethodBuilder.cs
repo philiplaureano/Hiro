@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using LinFu.Reflection.Emit;
 using Mono.Cecil;
@@ -32,9 +31,9 @@ namespace Hiro.Compilers
             var targetType = options.HostType;
             var methodName = options.MethodName;
             var returnType = options.ReturnType;
-            var parameterTypes = options.ParameterTypes.ToArray();
+            var parameterTypes = new List<Type>(options.ParameterTypes);
 
-            var newMethod = targetType.DefineMethod(methodName, methodAttributes, returnType, parameterTypes);
+            var newMethod = targetType.DefineMethod(methodName, methodAttributes, returnType, parameterTypes.ToArray());
 
             newMethod.SetReturnType(options.ReturnType);
 

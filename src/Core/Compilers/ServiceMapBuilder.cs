@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Hiro.Interfaces;
 
@@ -24,7 +23,10 @@ namespace Hiro.Compilers
             foreach (var dependency in dependencies)
             {
                 var implementations = dependencyContainer.GetImplementations(dependency, false);
-                var implementation = implementations.FirstOrDefault();
+
+                var concreteTypes = new List<IImplementation>(implementations);
+
+                var implementation = concreteTypes.Count > 0 ? concreteTypes[0] : null;
                 if (implementation == null)
                     continue;
 

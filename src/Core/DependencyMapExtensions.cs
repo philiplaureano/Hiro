@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Hiro;
 using Hiro.Containers;
@@ -156,10 +155,16 @@ namespace Hiro
             var assembly = compiler.Compile(map);
             var loadedAssembly = assembly.ToAssembly();
 
-            var containerType = (from t in loadedAssembly.GetTypes()
-                                where typeof(IMicroContainer).IsAssignableFrom(t)
-                                select t).First();
+            var containerTypes = new List<Type>();
+            foreach (var type in loadedAssembly.GetTypes())
+            {
+                if (!typeof(IMicroContainer).IsAssignableFrom(type))
+                    continue;
 
+                containerTypes.Add(type);
+            }
+
+            var containerType = containerTypes[0];
             IMicroContainer result = (IMicroContainer)Activator.CreateInstance(containerType);
 
             return result;

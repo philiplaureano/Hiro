@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using Hiro.Compilers;
@@ -89,9 +88,16 @@ namespace Hiro
 
             _getInstanceMethodImplementor.DefineGetInstanceMethod(containerType, module, getServiceHash, jumpTargetField, serviceMap);
 
-            var getAllInstancesMethod = (from MethodDefinition m in containerType.Methods
-                                         where m.Name == "GetAllInstances"
-                                         select m).First();
+            var targetMethods = new List<MethodDefinition>();
+            foreach (MethodDefinition method in containerType.Methods)
+            {
+                if (method.Name != "GetAllInstances")
+                    continue;
+
+                targetMethods.Add(method);
+            }
+
+            var getAllInstancesMethod = targetMethods[0];
 
             // Remove the stub implementation
             var body = getAllInstancesMethod.Body;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using Hiro.Interfaces;
@@ -39,7 +38,8 @@ namespace Hiro.Resolvers
             foreach (var constructor in _constructors)
             {
                 var missingDependencies = constructor.GetMissingDependencies(container);
-                var hasMissingDependencies = missingDependencies == null || missingDependencies.Count() > 0;
+                var missingItems = new List<IDependency>(missingDependencies);
+                var hasMissingDependencies = missingDependencies == null || missingItems.Count > 0;
                 if (hasMissingDependencies)
                     continue;
 
@@ -59,7 +59,7 @@ namespace Hiro.Resolvers
         {
             var targetConstructor = constructor.Target;
             var parameters = targetConstructor.GetParameters();
-            var parameterCount = parameters.Count();
+            var parameterCount = parameters.Length;
 
             if (result != null && parameterCount <= bestParameterCount)
                 return;

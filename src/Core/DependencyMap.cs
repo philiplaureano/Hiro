@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Hiro.Interfaces;
 using NGenerics.DataStructures.General;
@@ -75,7 +74,8 @@ namespace Hiro
             foreach (var item in items)
             {
                 var missingDependencies = item.GetMissingDependencies(this);
-                var completed = missingDependencies.Count() == 0;
+                var missingItems = new List<IDependency>(missingDependencies);
+                var completed = missingItems.Count == 0;
 
                 if (completed || (!completed && addIncompleteImplementations))
                     yield return item;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using Hiro.Containers;
@@ -27,11 +26,16 @@ namespace Hiro.Compilers
         /// <param name="serviceMap">The service map that contains the list of existing services.</param>
         public void DefineGetInstanceMethod(TypeDefinition containerType, ModuleDefinition module, MethodDefinition getServiceHash, FieldDefinition jumpTargetField, IDictionary<IDependency, IImplementation> serviceMap)
         {
-            // Implement the GetInstance method
-            var getInstanceMethod = (from MethodDefinition m in containerType.Methods
-                                     where m.Name == "GetInstance"
-                                     select m).First();
+            var targetMethods = new List<MethodDefinition>();
+            foreach (MethodDefinition method in containerType.Methods)
+            {
+                if (method.Name != "GetInstance")
+                    continue;
 
+                targetMethods.Add(method);
+            }
+
+            MethodDefinition getInstanceMethod = targetMethods[0];
             var body = getInstanceMethod.Body;
             body.InitLocals = true;
 

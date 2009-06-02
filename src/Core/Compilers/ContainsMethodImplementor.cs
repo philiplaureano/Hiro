@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Hiro.Interfaces;
 using LinFu.Reflection.Emit;
@@ -24,10 +23,16 @@ namespace Hiro.Compilers
         public void DefineContainsMethod(TypeDefinition containerType, ModuleDefinition module, MethodDefinition getServiceHash, FieldDefinition jumpTargetField)
         {
             // Override the Contains method stub
-            var containsMethod = (from MethodDefinition m in containerType.Methods
-                                  where m.Name == "Contains"
-                                  select m).First();
+            var targetMethods = new List<MethodDefinition>();
+            foreach (MethodDefinition method in containerType.Methods)
+            {
+                if (method.Name != "Contains")
+                    continue;
 
+                targetMethods.Add(method);
+            }
+
+            var containsMethod = targetMethods[0];
             var body = containsMethod.Body;
             var worker = body.CilWorker;
 

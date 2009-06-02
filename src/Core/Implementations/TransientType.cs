@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using Hiro.Interfaces;
@@ -39,8 +38,11 @@ namespace Hiro.Implementations
             _targetType = targetType;
             _container = container;
 
-            var constructorImplementations = (from c in targetType.GetConstructors()
-                                              select new ConstructorCall(c) as IImplementation<ConstructorInfo>).ToList();
+            var constructorImplementations = new List<IImplementation<ConstructorInfo>>();
+            foreach(var constructor in targetType.GetConstructors())
+            {
+                constructorImplementations.Add(new ConstructorCall(constructor));
+            }
 
             _getConstructorImplementation = () =>
                 {

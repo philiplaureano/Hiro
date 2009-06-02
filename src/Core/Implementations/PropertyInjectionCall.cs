@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using Hiro.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Iesi.Collections.Generic;
 
 namespace Hiro.Implementations
 {
@@ -70,9 +70,11 @@ namespace Hiro.Implementations
         /// <returns>A list of missing dependencies.</returns>
         public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
         {
-            var missingDependencies = GetRequiredDependencies().Where(d => !map.Contains(d));
-
-            return missingDependencies;
+            foreach (var dependency in GetRequiredDependencies())
+            {
+                if (!map.Contains(dependency))
+                    yield return dependency;
+            }
         }
 
         /// <summary>
@@ -82,7 +84,8 @@ namespace Hiro.Implementations
         public IEnumerable<IDependency> GetRequiredDependencies()
         {
             var requiredDependencies = _implementation.GetRequiredDependencies();
-            var results = new HashSet<IDependency>(requiredDependencies);
+            var dependencyList = new List<IDependency>(requiredDependencies);
+            var results = new HashedSet<IDependency>(dependencyList);
 
             var properties = TargetType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var property in properties)
@@ -118,12 +121,14 @@ namespace Hiro.Implementations
             _implementation.Emit(dependency, serviceMap, targetMethod);
 
             // Determine the properties that need injection
-            var targetProperties = from p in TargetType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                                   where _propertyFilter(p) && _propertyDependencyResolver(p) != null && p.CanWrite
-                                   select p;
+            Func<PropertyInfo, bool> propertyFilter = p => _propertyFilter(p) && _propertyDependencyResolver(p) != null && p.CanWrite;
+            var targetProperties = TargetType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             foreach (var property in targetProperties)
             {
+                if (!propertyFilter(property))
+                    continue;
+
                 var curentDependency = _propertyDependencyResolver(property);
                 if (!serviceMap.ContainsKey(curentDependency))
                     continue;

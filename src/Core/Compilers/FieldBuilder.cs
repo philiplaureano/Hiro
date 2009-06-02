@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using LinFu.Reflection.Emit;
 using Mono.Cecil;
