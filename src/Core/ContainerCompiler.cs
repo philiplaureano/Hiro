@@ -5,7 +5,6 @@ using System.Text;
 using Hiro.Compilers;
 using Hiro.Containers;
 using Hiro.Interfaces;
-using LinFu.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using NGenerics.DataStructures.General;

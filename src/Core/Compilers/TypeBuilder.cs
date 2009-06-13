@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using LinFu.Reflection.Emit;
 using Mono.Cecil;
 
 namespace Hiro.Compilers

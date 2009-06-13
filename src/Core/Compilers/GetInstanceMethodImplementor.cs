@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Text;
 using Hiro.Containers;
 using Hiro.Interfaces;
-using LinFu.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 

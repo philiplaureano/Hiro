@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Hiro.Interfaces;
-using LinFu.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 

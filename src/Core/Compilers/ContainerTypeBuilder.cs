@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Hiro.Containers;
-using LinFu.Reflection.Emit;
 using Mono.Cecil;
 
 namespace Hiro.Compilers

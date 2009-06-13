@@ -9,7 +9,6 @@ using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
 using Hiro.UnitTests.SampleDomain;
-using LinFu.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Moq;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Hiro.Containers;
 using Hiro.Implementations;
-using LinFu.Reflection.Emit;
 
 namespace Hiro
 {

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FFBB1B9F-6F50-4796-833D-1A31935B8E10}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -40,9 +40,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LinFu.Core, Version=2.0.3.16979, Culture=neutral, PublicKeyToken=a4c63a184389506f, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil, Version=0.6.9.0, Culture=neutral, PublicKeyToken=f8308f98b9861962, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\LinFu.Core.dll</HintPath>
+      <HintPath>..\..\lib\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Moq, Version=2.0.2991.26580, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

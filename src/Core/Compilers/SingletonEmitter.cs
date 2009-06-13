@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Hiro.Containers;
 using Hiro.Interfaces;
-using LinFu.Reflection.Emit;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -49,7 +48,7 @@ namespace Hiro.Compilers
             var typeName = serviceType.Name;
             var singletonName = string.Format("{0}ServiceSingleton-{1}", typeName, dependency.GetHashCode());
             var typeAttributes = TypeAttributes.NotPublic | TypeAttributes.AutoClass | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit;
-            var objectType = module.ImportType<object>();
+            var objectType = module.Import(typeof(object));
 
             var singletonType = AddDefaultSingletonConstructor(module, singletonName, typeAttributes, objectType);
             var instanceField = new FieldDefinition("__instance", objectType, FieldAttributes.Assembly | FieldAttributes.InitOnly | FieldAttributes.Static);
@@ -230,7 +229,7 @@ namespace Hiro.Compilers
         {
             // Define the GetInstance method on the singleton type
             var getInstanceMethodAttributes = MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig;
-            var getInstanceMethod = singletonType.DefineMethod("GetInstance", getInstanceMethodAttributes, typeof(object));
+            var getInstanceMethod = singletonType.DefineMethod("GetInstance", getInstanceMethodAttributes, typeof(object), new Type[0], new Type[0]);
             var singletonWorker = getInstanceMethod.GetILGenerator();
 
             singletonWorker.Emit(OpCodes.Ldsfld, instanceField);
