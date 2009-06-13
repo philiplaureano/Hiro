@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4A778B50-F400-4301-BD6F-772761DFAE16}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BaseDependencyMap.cs" />
     <Compile Include="Compilers\AssemblyBuilder.cs" />
     <Compile Include="Compilers\ContainsMethodImplementor.cs" />
     <Compile Include="Compilers\CreateContainerStub.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="ConstructorNotFoundException.cs" />
     <Compile Include="ContainerCompiler.cs" />
     <Compile Include="DependencyMap.cs" />
-    <Compile Include="DependencyMapExtensions.cs" />
     <Compile Include="Implementations\ConstructorCall.cs" />
     <Compile Include="Implementations\PropertyInjectionCall.cs" />
     <Compile Include="Implementations\PropertyInjector.cs" />
