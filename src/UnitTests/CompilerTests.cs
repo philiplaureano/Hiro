@@ -32,6 +32,115 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldNotCauseStackOverflowExceptionWhenCallingGetAllInstancesOnTheNextContainerAndNextContainerIsSelf()
+        {
+            var map = new DependencyMap();
+            var container = map.CreateContainer();
+            container.NextContainer = container;
+
+            var result = container.GetAllInstances(typeof(int));
+            var resultList = new List<object>(result);
+            Assert.IsTrue(resultList.Count == 0);
+        }
+
+        [Test]
+        public void ShouldNotCauseStackOverflowExceptionWhenCallingGetInstanceOnTheNextContainerAndNextContainerIsSelf()
+        {
+            var map = new DependencyMap();
+            var container = map.CreateContainer();
+            container.NextContainer = container;
+
+            var result = container.GetInstance(typeof(int), "abcdefg");
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void ShouldNotCauseStackOverflowExceptionWhenCallingContainsOnTheNextContainerAndNextContainerIsSelf()
+        {
+            var map = new DependencyMap();
+            var container = map.CreateContainer();
+            container.NextContainer = container;
+
+            var result = container.Contains(typeof(int), "abcdefg");
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void ShouldCallGetAllInstancesMethodOnNextContainer()
+        {
+            var map = new DependencyMap();
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            var mockContainer = new Mock<IMicroContainer>();
+            mockContainer.Expect(m => m.GetAllInstances(typeof(int))).Returns(new object[] { 42 });
+
+            container.NextContainer = mockContainer.Object;
+
+            var results = container.GetAllInstances(typeof(int));
+
+            mockContainer.VerifyAll();
+
+            var resultList = new List<object>(results);
+            Assert.IsTrue(resultList.Contains(42));
+        }
+
+        [Test]
+        public void ShouldCallGetInstanceMethodOnNextContainer()
+        {
+            var map = new DependencyMap();
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            var mockContainer = new Mock<IMicroContainer>();
+            mockContainer.Expect(m => m.GetInstance(It.IsAny<Type>(), It.IsAny<string>())).Returns(42);
+            container.NextContainer = mockContainer.Object;
+
+            Assert.AreSame(container.NextContainer, mockContainer.Object);
+
+            var result = container.GetInstance(typeof(int), "abcdefg");
+
+            Assert.AreEqual(42, result);
+            mockContainer.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldCallContainsMethodOnNextContainer()
+        {
+            var map = new DependencyMap();
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            var mockContainer = new Mock<IMicroContainer>();
+            mockContainer.Expect(m => m.Contains(It.IsAny<Type>(), It.IsAny<string>())).Returns(true);
+            container.NextContainer = mockContainer.Object;
+
+            // The Contains() call on the created container should trigger
+            // the contains method on the mock container
+            var result = container.Contains(typeof(int), "abcd");
+
+            Assert.IsTrue(result);
+            mockContainer.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldBeAbleToAssignTheNextContainerToACompiledContainer()
+        {
+            var map = new DependencyMap();
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            var mockContainer = new Mock<IMicroContainer>();
+            container.NextContainer = mockContainer.Object;
+
+            Assert.AreSame(container.NextContainer, mockContainer.Object);
+        }
+
+        [Test]
         public void ShouldBeAbleToCompileContainerFromDependencyMap()
         {
             var map = new DependencyMap();
@@ -39,7 +148,7 @@ namespace Hiro.UnitTests
 
             var container = map.CreateContainer();
             var result = container.GetInstance(typeof(IPerson), null);
-            
+
             Assert.IsNotNull(result);
             Assert.IsTrue(result is Person);
         }

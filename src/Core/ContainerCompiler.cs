@@ -27,6 +27,11 @@ namespace Hiro
         private IContainsMethodImplementor _containsMethodImplementor;
 
         /// <summary>
+        /// The class that will implement the GetAllInstances method.
+        /// </summary>
+        private IGetAllInstancesMethodImplementor _getAllInstancesMethodImplementor;
+
+        /// <summary>
         /// The class that will define the container type.
         /// </summary>
         private ICreateContainerType _createContainerType;
@@ -40,7 +45,7 @@ namespace Hiro
         /// Initializes a new instance of the ContainerCompiler class.
         /// </summary>
         public ContainerCompiler()
-            : this(new GetInstanceMethodImplementor(), new ContainsMethodImplementor(), new CreateContainerStub(), new ServiceMapBuilder())
+            : this(new GetInstanceMethodImplementor(), new ContainsMethodImplementor(), new CreateContainerStub(), new ServiceMapBuilder(), new GetAllInstancesMethodImplementor())
         {
         }
 
@@ -51,10 +56,12 @@ namespace Hiro
         /// <param name="containsMethodImplementor">The class that will implement the Contains method.</param>
         /// <param name="createContainerType">The class that will define the container type.</param>
         /// <param name="serviceMapBuilder">The class that will define the service map.</param>
-        public ContainerCompiler(IGetInstanceMethodImplementor getInstanceMethodImplementor, IContainsMethodImplementor containsMethodImplementor, ICreateContainerType createContainerType, IServiceMapBuilder serviceMapBuilder)
+        public ContainerCompiler(IGetInstanceMethodImplementor getInstanceMethodImplementor, IContainsMethodImplementor containsMethodImplementor, ICreateContainerType createContainerType, IServiceMapBuilder serviceMapBuilder, IGetAllInstancesMethodImplementor getAllInstancesMethodImplementor)
         {
             _getInstanceMethodImplementor = getInstanceMethodImplementor;
             _containsMethodImplementor = containsMethodImplementor;
+            _getAllInstancesMethodImplementor = getAllInstancesMethodImplementor;
+
             _createContainerType = createContainerType;
             _serviceMapBuilder = serviceMapBuilder;
         }
@@ -87,72 +94,22 @@ namespace Hiro
 
             _getInstanceMethodImplementor.DefineGetInstanceMethod(containerType, module, getServiceHash, jumpTargetField, serviceMap);
 
+            _getAllInstancesMethodImplementor.DefineGetAllInstancesMethod(containerType, module, serviceMap);
+
+            // Remove the NextContainer property stub
             var targetMethods = new List<MethodDefinition>();
             foreach (MethodDefinition method in containerType.Methods)
             {
-                if (method.Name != "GetAllInstances")
-                    continue;
+                var methodName = method.Name;
 
-                targetMethods.Add(method);
+                if (methodName == "get_NextContainer" || methodName == "set_NextContainer")
+                    targetMethods.Add(method);
             }
 
-            var getAllInstancesMethod = targetMethods[0];
+            targetMethods.ForEach(m => containerType.Methods.Remove(m));
 
-            // Remove the stub implementation
-            var body = getAllInstancesMethod.Body;
-            var worker = body.CilWorker;
-            
-            body.InitLocals = true;
-            body.Instructions.Clear();
-
-            var listVariable = getAllInstancesMethod.AddLocal<List<object>>();
-            var listCtor = module.ImportConstructor<List<object>>();
-            worker.Emit(OpCodes.Newobj, listCtor);
-            worker.Emit(OpCodes.Stloc, listVariable);
-
-            // Group the dependencies by type
-            var dependenciesByType = new HashList<Type, IDependency>();
-            foreach (var dependency in serviceMap.Keys)
-            {
-                var serviceType = dependency.ServiceType;
-                dependenciesByType.Add(serviceType, dependency);
-            }
-
-            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-            var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
-            var addItem = module.ImportMethod<List<object>>("Add");
-
-            foreach (var currentType in dependenciesByType.Keys)
-            {
-                var currentTypeRef = module.Import(currentType);
-
-                var currentList = dependenciesByType[currentType];
-                if (currentList.Count == 0)
-                    continue;
-
-                var skipAdd = worker.Create(OpCodes.Nop);
-                worker.Emit(OpCodes.Ldarg_1);
-                worker.Emit(OpCodes.Ldtoken, currentTypeRef);
-                worker.Emit(OpCodes.Call, getTypeFromHandle);
-                worker.Emit(OpCodes.Ceq);
-                worker.Emit(OpCodes.Brfalse, skipAdd);
-                
-                foreach (var dependency in currentList)
-                {
-                    worker.Emit(OpCodes.Ldloc, listVariable);
-                    var implementation = serviceMap[dependency];
-                    implementation.Emit(dependency, serviceMap, getAllInstancesMethod);
-                    worker.Emit(OpCodes.Callvirt, addItem);
-                }                
-
-                worker.Append(skipAdd);
-            }
-
-            // Cast the results down to an IEnumerable<object>
-            var enumerableType = module.ImportType<IEnumerable<object>>();
-            worker.Emit(OpCodes.Ldloc, listVariable);
-            worker.Emit(OpCodes.Isinst, enumerableType);
-            worker.Emit(OpCodes.Ret);
+            // Add the NextContainer property
+            containerType.AddProperty("NextContainer", typeof(IMicroContainer));
 
             return assembly;
         }

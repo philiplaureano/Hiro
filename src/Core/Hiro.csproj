@@ -72,6 +72,7 @@
     <Compile Include="Compilers\ContainsMethodImplementor.cs" />
     <Compile Include="Compilers\CreateContainerStub.cs" />
     <Compile Include="Compilers\FieldBuilder.cs" />
+    <Compile Include="Compilers\GetAllInstancesMethodImplementor.cs" />
     <Compile Include="Compilers\GetInstanceMethodImplementor.cs" />
     <Compile Include="Compilers\MethodBuilder.cs" />
     <Compile Include="Compilers\MethodBuilderOptions.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Interfaces\IContainsMethodImplementor.cs" />
     <Compile Include="Interfaces\ICreateContainerType.cs" />
     <Compile Include="Interfaces\IDependencyMap.cs" />
+    <Compile Include="Interfaces\IGetAllInstancesMethodImplementor.cs" />
     <Compile Include="Interfaces\IGetInstanceMethodImplementor.cs" />
     <Compile Include="Interfaces\IImplementationInjector.cs" />
     <Compile Include="Interfaces\IImplementationOfT.cs" />

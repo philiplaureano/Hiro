@@ -56,43 +56,7 @@ namespace Hiro.Compilers
         protected virtual void EmitService(MethodDefinition getInstanceMethod, IDependency dependency, IImplementation implementation, IDictionary<IDependency, IImplementation> serviceMap)
         {
             implementation.Emit(dependency, serviceMap, getInstanceMethod);
-        }
-
-        /// <summary>
-        /// Emits the instructions that calculate the hash code of a given service type and service name.
-        /// </summary>
-        /// <param name="getServiceHash">The method that will be used to calculate the hash code.</param>
-        /// <param name="worker">The worker that points to the target method body.</param>
-        private static void EmitCalculateServiceHash(MethodDefinition getServiceHash, CilWorker worker)
-        {
-            // Push the service type
-            worker.Emit(OpCodes.Ldarg_1);
-
-            // Push the service name
-            worker.Emit(OpCodes.Ldarg_2);
-
-            // Calculate the hash code using the service type and service name
-            worker.Emit(OpCodes.Call, getServiceHash);
-        }
-
-        /// <summary>
-        /// Emits the instructions that determine which switch label should be executed whenever a particular service name and service type
-        /// are pushed onto the stack.
-        /// </summary>
-        /// <param name="module">The target module.</param>
-        /// <param name="jumpTargetField">The field that holds the jump label indexes.</param>
-        /// <param name="worker">The <see cref="CilWorker"/> that points to the body of the factory method.</param>
-        /// <param name="hashVariable">The local variable that will store the jump index.</param>
-        private static void EmitJumpTargetIndex(ModuleDefinition module, FieldDefinition jumpTargetField, CilWorker worker, VariableDefinition hashVariable)
-        {
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ldfld, jumpTargetField);
-            worker.Emit(OpCodes.Ldloc, hashVariable);
-
-            // Calculate the target label index
-            var getItem = module.ImportMethod<Dictionary<int, int>>("get_Item");
-            worker.Emit(OpCodes.Callvirt, getItem);
-        }
+        }                
 
         /// <summary>
         /// Defines the instructions that create each service type in the <paramref name="serviceMap"/>.
@@ -157,6 +121,35 @@ namespace Hiro.Compilers
                 worker.Append(skipCreate);
             }
 
+            var getNextContainer = module.ImportMethod<IMicroContainer>("get_NextContainer");
+            var otherContainer = method.AddLocal<IMicroContainer>();
+
+            worker.Emit(OpCodes.Ldarg_0);
+            worker.Emit(OpCodes.Callvirt, getNextContainer);
+            worker.Emit(OpCodes.Stloc, otherContainer);
+
+            // if (otherContainer != null ) {
+            var skipOtherContainerCall = worker.Create(OpCodes.Nop);
+            worker.Emit(OpCodes.Ldloc, otherContainer);            
+            worker.Emit(OpCodes.Brfalse, skipOtherContainerCall);
+
+            // Prevent the container from calling itself
+            worker.Emit(OpCodes.Ldloc, otherContainer);
+            worker.Emit(OpCodes.Ldarg_0);
+            worker.Emit(OpCodes.Ceq);
+            worker.Emit(OpCodes.Brtrue, skipOtherContainerCall);
+
+            var otherGetInstanceMethod = module.ImportMethod<IMicroContainer>("GetInstance");
+
+            // return otherContainer.GetInstance(type, key);
+            worker.Emit(OpCodes.Ldloc, otherContainer);
+            worker.Emit(OpCodes.Ldarg_1);
+            worker.Emit(OpCodes.Ldarg_2);
+            worker.Emit(OpCodes.Callvirt, otherGetInstanceMethod);
+            worker.Emit(OpCodes.Br, endLabel);
+            // }
+            
+            worker.Append(skipOtherContainerCall);
             worker.Emit(OpCodes.Ldnull);
             worker.Append(endLabel);
         }

@@ -4,6 +4,7 @@ using System.Text;
 using Hiro.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Hiro.Containers;
 
 namespace Hiro.Compilers
 {
@@ -52,6 +53,46 @@ namespace Hiro.Compilers
 
             var containsEntry = module.ImportMethod<Dictionary<int, int>>("ContainsKey");
             worker.Emit(OpCodes.Callvirt, containsEntry);
+
+            var returnValue = containsMethod.AddLocal<bool>();
+            worker.Emit(OpCodes.Stloc, returnValue);
+
+            var skipCall = worker.Create(OpCodes.Nop);
+            worker.Emit(OpCodes.Ldloc, returnValue);
+            worker.Emit(OpCodes.Brtrue, skipCall);
+
+            
+            var getNextContainer = module.ImportMethod<IMicroContainer>("get_NextContainer");
+
+            
+            var otherContainer = containsMethod.AddLocal<IMicroContainer>();
+            worker.Emit(OpCodes.Ldarg_0);
+            worker.Emit(OpCodes.Callvirt, getNextContainer);
+            worker.Emit(OpCodes.Stloc, otherContainer);
+                        
+            // if (otherContainer != null) {
+            worker.Emit(OpCodes.Ldloc, otherContainer);
+            worker.Emit(OpCodes.Brfalse, skipCall);
+
+            var otherContainsMethod = module.ImportMethod<IMicroContainer>("Contains");
+
+            // Prevent the container from calling itself 
+            worker.Emit(OpCodes.Ldarg_0);
+            worker.Emit(OpCodes.Ldloc, otherContainer);
+            worker.Emit(OpCodes.Ceq);
+            worker.Emit(OpCodes.Brtrue, skipCall);
+
+            // returnValue = otherContainer.Contains(Type, name);
+            worker.Emit(OpCodes.Ldloc, otherContainer);
+            worker.Emit(OpCodes.Ldarg_1);
+            worker.Emit(OpCodes.Ldarg_2);
+            worker.Emit(OpCodes.Callvirt, otherContainsMethod);
+            worker.Emit(OpCodes.Stloc, returnValue);
+
+            worker.Append(skipCall);
+            // }
+
+            worker.Emit(OpCodes.Ldloc, returnValue);
             worker.Emit(OpCodes.Ret);
         }
     }

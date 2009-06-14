@@ -10,6 +10,12 @@ namespace Hiro.Containers
     public interface IMicroContainer
     {
         /// <summary>
+        /// Gets or sets the value indicating the <see cref="IMicroContainer"/> instance that will be added to the current container chain.
+        /// </summary>
+        /// <value>The next container.</value>
+        IMicroContainer NextContainer { get; set; }
+
+        /// <summary>
         /// Determines whether or not the container holds a particular service implementation.
         /// </summary>
         /// <param name="serviceType">The service type to be instantiated.</param>
