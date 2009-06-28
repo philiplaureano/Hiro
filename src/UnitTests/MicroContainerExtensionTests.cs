@@ -34,5 +34,21 @@ namespace Hiro.UnitTests
             Assert.IsNotNull(person);
             Assert.IsNull(container.GetInstance<IPerson>());
         }
+        [Test]
+        public void ShouldBeAbleToAddExistingServiceInstanceToContainer()
+        {
+            var map = new DependencyMap();
+            var person = new Person();
+            
+            // Create a blank container
+            var container = map.CreateContainer();
+
+            string serviceName = null;
+            container.AddService<IPerson>(null, person);
+
+            // The container should return the added instance
+            var result = container.GetInstance<IPerson>();
+            Assert.AreSame(person, result);
+        }
     }
 }

@@ -34,5 +34,35 @@ namespace Hiro
         {
             return (T)container.GetInstance(typeof(T), key);
         }
+
+        /// <summary>
+        /// Adds a service instance to the container.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <param name="container">The container instance itself.</param>
+        /// <param name="serviceInstance">The service instance.</param>
+        public static void AddService<T>(this IMicroContainer container, T serviceInstance)
+        {
+            container.AddService<T>(null, serviceInstance);
+        }
+
+        /// <summary>
+        /// Adds a service instance to the container.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <param name="container">The container instance itself.</param>
+        /// <param name="serviceName">The service name.</param>
+        /// <param name="serviceInstance">The service instance.</param>
+        public static void AddService<T>(this IMicroContainer container, string serviceName, T serviceInstance)
+        {
+            // Find the next available container slot
+            var targetContainer = container;
+            while (targetContainer.NextContainer != null)
+            {
+                targetContainer = targetContainer.NextContainer;
+            }
+
+            targetContainer.NextContainer = new InstanceContainer(typeof(T), serviceName, serviceInstance);
+        }
     }
 }

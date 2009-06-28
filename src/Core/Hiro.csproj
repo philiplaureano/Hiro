@@ -91,6 +91,7 @@
     <Compile Include="Implementations\PropertyInjector.cs" />
     <Compile Include="Implementations\SingletonType.cs" />
     <Compile Include="Implementations\TransientType.cs" />
+    <Compile Include="InstanceContainer.cs" />
     <Compile Include="Interfaces\IContainsMethodImplementor.cs" />
     <Compile Include="Interfaces\ICreateContainerType.cs" />
     <Compile Include="Interfaces\IDependencyMap.cs" />
