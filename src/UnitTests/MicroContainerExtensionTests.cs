@@ -43,7 +43,6 @@ namespace Hiro.UnitTests
             // Create a blank container
             var container = map.CreateContainer();
 
-            string serviceName = null;
             container.AddService<IPerson>(null, person);
 
             // The container should return the added instance

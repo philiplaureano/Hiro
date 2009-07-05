@@ -103,11 +103,19 @@
     <Compile Include="Interfaces\IImplementation.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="Interfaces\IDependency.cs" />
+    <Compile Include="Interfaces\IServiceInfo.cs" />
     <Compile Include="Interfaces\IServiceMapBuilder.cs" />
+    <Compile Include="Interfaces\ITypeFilter.cs" />
+    <Compile Include="Interfaces\ITypeLoader.cs" />
+    <Compile Include="Loaders\AssemblyLoader.cs" />
+    <Compile Include="Loaders\ServiceLoader.cs" />
+    <Compile Include="Loaders\TypeFilter.cs" />
+    <Compile Include="Loaders\TypeLoader.cs" />
     <Compile Include="MethodDefinitionExtensions.cs" />
     <Compile Include="MicroContainerExtensions.cs" />
     <Compile Include="ModuleDefinitionExtensions.cs" />
     <Compile Include="Resolvers\ConstructorResolver.cs" />
+    <Compile Include="ServiceInfo.cs" />
     <Compile Include="TypeDefinitionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
