@@ -10,7 +10,7 @@ namespace Hiro.Loaders
     /// <summary>
     /// Represents a type that can load services into memory.
     /// </summary>
-    public class ServiceLoader
+    public class ServiceLoader : IServiceLoader
     {
         /// <summary>
         /// Initializes a new instance of the ServiceLoader class.

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4A778B50-F400-4301-BD6F-772761DFAE16}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -104,11 +104,15 @@
     <Compile Include="Dependency.cs" />
     <Compile Include="Interfaces\IDependency.cs" />
     <Compile Include="Interfaces\IServiceInfo.cs" />
+    <Compile Include="Interfaces\IServiceLoader.cs" />
     <Compile Include="Interfaces\IServiceMapBuilder.cs" />
+    <Compile Include="Interfaces\IServicePicker.cs" />
     <Compile Include="Interfaces\ITypeFilter.cs" />
     <Compile Include="Interfaces\ITypeLoader.cs" />
     <Compile Include="Loaders\AssemblyLoader.cs" />
+    <Compile Include="Loaders\DefaultServiceResolver.cs" />
     <Compile Include="Loaders\ServiceLoader.cs" />
+    <Compile Include="Loaders\ServicePicker.cs" />
     <Compile Include="Loaders\TypeFilter.cs" />
     <Compile Include="Loaders\TypeLoader.cs" />
     <Compile Include="MethodDefinitionExtensions.cs" />

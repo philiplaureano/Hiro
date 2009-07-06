@@ -62,10 +62,17 @@ namespace Hiro.UnitTests
         }
 
         [Test]
-        [Ignore("TODO: Finish this")]
         public void ShouldAssignDefaultServiceWhenMultipleImplementationsOfTheSameInterfaceExist()
         {
-            throw new NotImplementedException();
+            var loader = new ServiceLoader();
+            IEnumerable<IServiceInfo> list = loader.Load(hostAssembly);
+
+            var serviceResolver = new DefaultServiceResolver();
+            IServiceInfo serviceInfo = serviceResolver.GetDefaultService(typeof(IVehicle), list);
+
+            Assert.AreEqual("Vehicle", serviceInfo.ServiceName);
+            Assert.AreEqual(typeof(IVehicle), serviceInfo.ServiceType);
+            Assert.AreEqual(typeof(Vehicle), serviceInfo.ImplementingType);
         }
     }
 }
