@@ -6,7 +6,7 @@ using Hiro.Interfaces;
 namespace Hiro.Loaders
 {
     /// <summary>
-    /// Represents a class that determines the default service when multiple implementations of the same type exist
+    /// Represents a class that determines the default service when multiple implementations of the same type already exist.
     /// </summary>
     public class DefaultServiceResolver
     {
