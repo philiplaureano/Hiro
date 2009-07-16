@@ -123,5 +123,33 @@ namespace Hiro.UnitTests
             var vehicle = container.GetInstance<IVehicle>();
             Assert.IsNotNull(vehicle);
         }
+
+        [Test]
+        public void ShouldLoadAndCreateContainerFromSingleAssembly()
+        {
+            var loader = new DependencyMapLoader();
+
+            var map = loader.LoadFrom(typeof(IPerson).Assembly);
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            var vehicle = container.GetInstance<IVehicle>();
+            Assert.IsNotNull(vehicle);
+        }
+
+        [Test]
+        public void ShouldLoadAndCreateContainerFromDirectory()
+        {
+            var loader = new DependencyMapLoader();
+
+            var map = loader.LoadFrom(AppDomain.CurrentDomain.BaseDirectory, "*.UnitTests.dll");
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            var vehicle = container.GetInstance<IVehicle>();
+            Assert.IsNotNull(vehicle);
+        }
     }
 }

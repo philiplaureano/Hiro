@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using Hiro.Interfaces;
-using System.Reflection;
 using NGenerics.DataStructures.General;
 
 namespace Hiro.Loaders
@@ -37,6 +38,16 @@ namespace Hiro.Loaders
         /// <summary>
         /// Loads a dependency map using the types in the given <paramref name="assemblies"/>.
         /// </summary>
+        /// <param name="assemblies">The assembly that will be used to construct the dependency map.</param>
+        /// <returns>A dependency map.</returns>
+        public DependencyMap LoadFrom(Assembly assembly)
+        {
+            return LoadFrom(new Assembly[] { assembly });
+        }
+
+        /// <summary>
+        /// Loads a dependency map using the types in the given <paramref name="assemblies"/>.
+        /// </summary>
         /// <param name="assemblies">The list of assemblies that will be used to construct the dependency map.</param>
         /// <returns>A dependency map.</returns>
         public DependencyMap LoadFrom(IEnumerable<Assembly> assemblies)
@@ -50,6 +61,38 @@ namespace Hiro.Loaders
             map.RegisterDefaultServices(defaultServices);
 
             return map;
+        }
+
+        /// <summary>
+        /// Loads a dependency map using the assemblies located in the target directory.
+        /// </summary>
+        /// <param name="directory">The directory that contains the assemblies that will be loaded into the dependency map.</param>
+        /// <param name="filePattern">The search pattern that describes which assemblies will be loaded.</param>
+        /// <returns>A dependency map.</returns>
+        public DependencyMap LoadFrom(string directory, string filePattern)
+        {
+            return LoadFrom(directory, filePattern, new AssemblyLoader());
+        }
+
+        /// <summary>
+        /// Loads a dependency map using the assemblies located in the target directory.
+        /// </summary>
+        /// <param name="directory">The directory that contains the assemblies that will be loaded into the dependency map.</param>
+        /// <param name="filePattern">The search pattern that describes which assemblies will be loaded.</param>
+        /// <param name="assemblyLoader">The assembly loader that will load assemblies into memory.</param>
+        /// <returns>A dependency map.</returns>
+        public DependencyMap LoadFrom(string directory, string filePattern, IAssemblyLoader assemblyLoader)
+        {
+            // Load the assemblies from the target directory
+            var files = Directory.GetFiles(directory, filePattern);
+            var assemblies = new List<Assembly>();
+            foreach (var file in files)
+            {
+                var assembly = assemblyLoader.Load(file);
+                assemblies.Add(assembly);
+            }
+
+            return LoadFrom(assemblies);
         }
 
         /// <summary>
