@@ -13,6 +13,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Moq;
 using NUnit.Framework;
+using Hiro.Loaders;
 
 namespace Hiro.UnitTests
 {
@@ -30,7 +31,7 @@ namespace Hiro.UnitTests
         {
             _assemblyBuilder = null;
         }
-
+       
         [Test]
         public void ShouldNotCauseStackOverflowExceptionWhenCallingGetAllInstancesOnTheNextContainerAndNextContainerIsSelf()
         {

@@ -108,5 +108,20 @@ namespace Hiro.UnitTests
             Assert.IsTrue(map.Contains(new Dependency(typeof(IVehicle), "Truck")));
             Assert.IsTrue(map.Contains(new Dependency(typeof(IVehicle))));
         }
+
+        [Test]
+        public void ShouldLoadAndCreateContainerFromSampleAssembly()
+        {
+            var loader = new DependencyMapLoader();
+            var assemblies = new Assembly[] { typeof(IPerson).Assembly };
+
+            var map = loader.LoadFrom(assemblies);
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            var vehicle = container.GetInstance<IVehicle>();
+            Assert.IsNotNull(vehicle);
+        }
     }
 }
