@@ -86,14 +86,17 @@
     <Compile Include="ConstructorNotFoundException.cs" />
     <Compile Include="ContainerCompiler.cs" />
     <Compile Include="DependencyMap.cs" />
+    <Compile Include="Loaders\DependencyMapExtensions.cs" />
     <Compile Include="Implementations\ConstructorCall.cs" />
     <Compile Include="Implementations\PropertyInjectionCall.cs" />
     <Compile Include="Implementations\PropertyInjector.cs" />
     <Compile Include="Implementations\SingletonType.cs" />
     <Compile Include="Implementations\TransientType.cs" />
     <Compile Include="InstanceContainer.cs" />
+    <Compile Include="Interfaces\IAssemblyLoader.cs" />
     <Compile Include="Interfaces\IContainsMethodImplementor.cs" />
     <Compile Include="Interfaces\ICreateContainerType.cs" />
+    <Compile Include="Interfaces\IDefaultServiceResolver.cs" />
     <Compile Include="Interfaces\IDependencyMap.cs" />
     <Compile Include="Interfaces\IGetAllInstancesMethodImplementor.cs" />
     <Compile Include="Interfaces\IGetInstanceMethodImplementor.cs" />
@@ -111,6 +114,7 @@
     <Compile Include="Interfaces\ITypeLoader.cs" />
     <Compile Include="Loaders\AssemblyLoader.cs" />
     <Compile Include="Loaders\DefaultServiceResolver.cs" />
+    <Compile Include="Loaders\DependencyMapLoader.cs" />
     <Compile Include="Loaders\ServiceLoader.cs" />
     <Compile Include="Loaders\ServicePicker.cs" />
     <Compile Include="Loaders\TypeFilter.cs" />

@@ -8,6 +8,7 @@ using Hiro.UnitTests.SampleDomain;
 using NUnit.Framework;
 using NGenerics.DataStructures.General;
 using Hiro.Interfaces;
+using Moq;
 
 namespace Hiro.UnitTests
 {
@@ -54,7 +55,7 @@ namespace Hiro.UnitTests
             IEnumerable<IServiceInfo> list = loader.Load(hostAssembly);
 
             Assert.IsTrue(list.Count() > 0);
-            foreach(var service in list)
+            foreach (var service in list)
             {
                 var serviceName = service.ServiceName;
                 Assert.IsFalse(string.IsNullOrEmpty(serviceName));
@@ -73,6 +74,39 @@ namespace Hiro.UnitTests
             Assert.AreEqual("Vehicle", serviceInfo.ServiceName);
             Assert.AreEqual(typeof(IVehicle), serviceInfo.ServiceType);
             Assert.AreEqual(typeof(Vehicle), serviceInfo.ImplementingType);
+        }
+
+        [Test]
+        public void ShouldLoadServicesUsingTheGivenServiceLoaderAndAssemblyLoaderAndServiceResolverInstances()
+        {
+            var serviceLoader = new Mock<IServiceLoader>();
+            var resolver = new Mock<IDefaultServiceResolver>();
+            var assemblyLoader = new Mock<IAssemblyLoader>();
+
+            var assembly = typeof(IPerson).Assembly;
+            var assemblies = new Assembly[] { assembly };
+            var serviceType = typeof(IVehicle);
+            var serviceList = new List<IServiceInfo>();
+            IEnumerable<IServiceInfo> services = serviceList;
+
+            var defaultService = new ServiceInfo(typeof(IVehicle), typeof(Vehicle), "Vehicle");
+
+            serviceList.Add(new ServiceInfo(typeof(IVehicle), typeof(Truck), "Truck"));
+            serviceList.Add(defaultService);
+
+            resolver.Expect(r => r.GetDefaultService(It.IsAny<Type>(), It.IsAny<IEnumerable<IServiceInfo>>())).Returns(defaultService);
+            serviceLoader.Expect(s => s.Load(assembly)).Returns(services);
+
+            var loader = new DependencyMapLoader(serviceLoader.Object, resolver.Object);
+            DependencyMap map = loader.LoadFrom(assemblies);
+
+            resolver.VerifyAll();
+            serviceLoader.VerifyAll();
+
+            // Make sure the services are loaded into the dependency map
+            Assert.IsTrue(map.Contains(new Dependency(typeof(IVehicle), "Vehicle")));
+            Assert.IsTrue(map.Contains(new Dependency(typeof(IVehicle), "Truck")));
+            Assert.IsTrue(map.Contains(new Dependency(typeof(IVehicle))));
         }
     }
 }
