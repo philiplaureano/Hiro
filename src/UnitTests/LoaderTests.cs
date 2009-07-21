@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
+using Hiro.Interfaces;
 using Hiro.Loaders;
 using Hiro.UnitTests.SampleDomain;
-using NUnit.Framework;
-using NGenerics.DataStructures.General;
-using Hiro.Interfaces;
 using Moq;
+using NGenerics.DataStructures.General;
+using NUnit.Framework;
 
 namespace Hiro.UnitTests
 {
@@ -32,9 +31,10 @@ namespace Hiro.UnitTests
         {
             var loader = new ServiceLoader();
             IEnumerable<IServiceInfo> list = loader.Load(hostAssembly);
-
             Assert.IsNotNull(list);
-            Assert.IsTrue(list.Count() > 0);
+
+            var items = new List<IServiceInfo>(list);            
+            Assert.IsTrue(items.Count > 0);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace Hiro.UnitTests
             IEnumerable<IServiceInfo> list = loader.Load(hostAssembly);
 
             var expectedService = new ServiceInfo(typeof(IPerson), typeof(Person), "Person");
-            var serviceList = new HashSet<IServiceInfo>(list);
+            var serviceList = new List<IServiceInfo>(list);
             Assert.IsTrue(serviceList.Contains(expectedService));
         }
 
@@ -54,7 +54,8 @@ namespace Hiro.UnitTests
             var loader = new ServiceLoader();
             IEnumerable<IServiceInfo> list = loader.Load(hostAssembly);
 
-            Assert.IsTrue(list.Count() > 0);
+            var items = new List<IServiceInfo>(list);
+            Assert.IsTrue(items.Count > 0);
             foreach (var service in list)
             {
                 var serviceName = service.ServiceName;
@@ -150,6 +151,26 @@ namespace Hiro.UnitTests
 
             var vehicle = container.GetInstance<IVehicle>();
             Assert.IsNotNull(vehicle);
+        }
+
+        [Test]
+        public void ShouldBeAbleToFilterLoadedServicesUsingASinglePredicate()
+        {
+            Predicate<IServiceInfo> serviceFilter = service => service.ServiceType != typeof(IVehicle);
+
+            var loader = new DependencyMapLoader();
+            loader.ServiceFilter = serviceFilter;
+
+            var map = loader.LoadFrom(AppDomain.CurrentDomain.BaseDirectory, "*.UnitTests.dll");
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            // There should be no IVehicle container instances
+            // in this container since the IVehicle service has been filtered
+            // out of the container
+            var vehicle = container.GetInstance<IVehicle>();
+            Assert.IsNull(vehicle);
         }
     }
 }

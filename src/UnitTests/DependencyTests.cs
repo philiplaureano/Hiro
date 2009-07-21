@@ -13,7 +13,7 @@ namespace Hiro.UnitTests
 {
     [TestFixture]
     public class DependencyTests : BaseFixture
-    {
+    {       
         [Test]
         public void ShouldCallImplementationInjectorIfItExists()
         {

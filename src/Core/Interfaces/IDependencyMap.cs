@@ -14,6 +14,6 @@ namespace Hiro.Interfaces
         /// </summary>
         /// <param name="dependency">The dependency that will be associated with the implementation.</param>
         /// <param name="implementation">The implementation itself.</param>
-        void AddService(IDependency dependency, IImplementation implementation);
+        void AddService(IDependency dependency, IImplementation implementation);       
     }
 }

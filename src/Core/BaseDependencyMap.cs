@@ -58,7 +58,7 @@ namespace Hiro
 
             _entries.Add(dependency, currentImplementation);
         }
-
+       
         /// <summary>
         /// Gets the current list of implementations for the current dependency.
         /// </summary>
@@ -80,6 +80,6 @@ namespace Hiro
                 if (completed || (!completed && addIncompleteImplementations))
                     yield return item;
             }
-        }
+        }       
     }
 }

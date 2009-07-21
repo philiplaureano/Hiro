@@ -36,6 +36,16 @@ namespace Hiro.Loaders
         }
 
         /// <summary>
+        /// Gets or sets the value indicating the predicate that will determine the services that will be loaded into the dependency map.
+        /// </summary>
+        /// <value>The predicate that will be used to determine which services will be loaded into the dependency map.</value>
+        public Predicate<IServiceInfo> ServiceFilter
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Loads a dependency map using the types in the given <paramref name="assemblies"/>.
         /// </summary>
         /// <param name="assemblies">The assembly that will be used to construct the dependency map.</param>
@@ -56,9 +66,33 @@ namespace Hiro.Loaders
             var serviceList = GetServiceList(assemblies);
 
             var defaultServices = GetDefaultServices(serviceList);
+            var registeredServices = new List<IServiceInfo>();
 
-            map.RegisterNamedServices(serviceList);
-            map.RegisterDefaultServices(defaultServices);
+            // Apply the service filter to the list of services
+            // that will be added to the map
+            Predicate<IServiceInfo> nullPredicate = info => true;
+            Predicate<IServiceInfo> filter = ServiceFilter ?? nullPredicate;
+            foreach (var service in defaultServices)
+            {
+                if (!filter(service))
+                    continue;
+
+                registeredServices.Add(service);
+            }
+
+            foreach (var list in serviceList.Values)
+            {
+                var filteredList = new List<IServiceInfo>();
+                foreach (var service in list)
+                {
+                    if (!filter(service))
+                        continue;
+
+                    registeredServices.Add(service);
+                }
+            }
+
+            map.Register(registeredServices);
 
             return map;
         }
