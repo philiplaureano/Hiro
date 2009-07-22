@@ -137,5 +137,20 @@ namespace Hiro.UnitTests
                 Assert.IsTrue(map.Dependencies.Contains(dependency.Object));
             }
         }
+
+        [Test]
+        public void ShouldBeAbleToCombineDependencyMaps()
+        {
+            var firstMap = new DependencyMap();
+            var secondMap = new DependencyMap();
+
+            firstMap.AddService(typeof(IPerson), typeof(Person));
+            secondMap.AddService(typeof(IVehicle), typeof(Vehicle));
+
+            DependencyMap combinedMap = firstMap + secondMap;
+            var container = combinedMap.CreateContainer();
+            Assert.IsNotNull(container.GetInstance<IVehicle>());
+            Assert.IsNotNull(container.GetInstance<IPerson>());
+        }
     }
 }

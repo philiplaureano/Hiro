@@ -14,7 +14,7 @@ namespace Hiro
         /// <summary>
         /// The list of dependencies in the current map.
         /// </summary>
-        private HashList<IDependency, IImplementation> _entries = new HashList<IDependency, IImplementation>();
+        protected HashList<IDependency, IImplementation> _entries = new HashList<IDependency, IImplementation>();        
 
         /// <summary>
         /// Gets or sets the value indicating the <see cref="IImplementationInjector"/> instance that will be used to intercept <see cref="IImplementation"/> instances.

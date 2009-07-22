@@ -130,6 +130,28 @@ namespace Hiro.Loaders
         }
 
         /// <summary>
+        /// Loads a dependency map using the assemblies located in the base application directory.
+        /// </summary>
+        /// <param name="filePattern">The search pattern that describes which assemblies will be loaded.</param>
+        /// <param name="assemblyLoader">The assembly loader that will load assemblies into memory.</param>
+        /// <returns>A dependency map.</returns>
+        public DependencyMap LoadFromBaseDirectory(string filePattern)
+        {
+            return LoadFromBaseDirectory(filePattern, new AssemblyLoader());
+        }
+
+        /// <summary>
+        /// Loads a dependency map using the assemblies located in the base application directory.
+        /// </summary>
+        /// <param name="filePattern">The search pattern that describes which assemblies will be loaded.</param>
+        /// <param name="assemblyLoader">The assembly loader that will load assemblies into memory.</param>
+        /// <returns>A dependency map.</returns>
+        public DependencyMap LoadFromBaseDirectory(string filePattern, IAssemblyLoader assemblyLoader)
+        {
+            return LoadFrom(AppDomain.CurrentDomain.BaseDirectory, filePattern, assemblyLoader);
+        }
+
+        /// <summary>
         /// Gets the list of default services from a given service list.
         /// </summary>
         /// <param name="serviceList">The list of service implementations that will be used to determine the default service for each service type.</param>

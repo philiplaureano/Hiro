@@ -154,6 +154,20 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldLoadAndCreateContainerFromBaseDirectory()
+        {
+            var loader = new DependencyMapLoader();
+
+            var map = loader.LoadFromBaseDirectory("*.UnitTests.dll");
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            var vehicle = container.GetInstance<IVehicle>();
+            Assert.IsNotNull(vehicle);
+        }
+
+        [Test]
         public void ShouldBeAbleToFilterLoadedServicesUsingASinglePredicate()
         {
             Predicate<IServiceInfo> serviceFilter = service => service.ServiceType != typeof(IVehicle);

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Hiro.Containers;
 using Hiro.Implementations;
+using Hiro.Interfaces;
+using NGenerics.DataStructures.General;
 
 namespace Hiro
 {
@@ -10,6 +12,35 @@ namespace Hiro
     /// </summary>
     public class DependencyMap : BaseDependencyMap
     {
+        /// <summary>
+        /// Merges two dependency maps into a single dependency map.
+        /// </summary>
+        /// <param name="left">The left-hand dependency map.</param>
+        /// <param name="right">The right-hand dependency map.</param>
+        /// <returns>A combined dependency map.</returns>
+        public static DependencyMap operator +(DependencyMap left, DependencyMap right)
+        {
+            var leftEntries = left._entries;
+            var rightEntries = right._entries;
+
+            // Merge the two entries into a single entry
+            var combinedEntries = new HashList<IDependency, IImplementation>();
+            foreach (var key in leftEntries.Keys)
+            {
+                combinedEntries.Add(key, leftEntries[key]);
+            }
+
+            foreach (var key in rightEntries.Keys)
+            {
+                combinedEntries.Add(key, rightEntries[key]);
+            }
+
+            var map = new DependencyMap();
+            map._entries = combinedEntries;
+
+            return map;
+        }
+
         /// <summary>
         /// Adds a service to the dependency map.
         /// </summary>
