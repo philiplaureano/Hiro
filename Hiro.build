@@ -21,6 +21,10 @@
     <call target="compile-core"/>
   </target>
   
+  <target name="merge" depends="clean, compile, run-unit-tests">
+    <msbuild project="src\MergeAll.MSBuild"/>
+  </target>
+
   <target name="compile-container-interfaces" description="Compiles the container interface assembly">
     <mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}"/>
     <property name="output.dir" value="${build.dir}\${target.framework}"/>

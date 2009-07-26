@@ -1,0 +1,13 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ProjectToBuild Include="ILMerge.MSBuild">
+      <Properties>TargetFramework=net-2.0</Properties>
+    </ProjectToBuild>
+    <ProjectToBuild Include="ILMerge.MSBuild">
+      <Properties>TargetFramework=net-3.5</Properties>
+    </ProjectToBuild>
+  </ItemGroup>
+  <Target Name="Build">
+    <MSBuild Projects="@(ProjectToBuild)"/>
+  </Target>
+</Project>
