@@ -56,7 +56,12 @@ namespace Hiro
         /// <param name="containsMethodImplementor">The class that will implement the Contains method.</param>
         /// <param name="createContainerType">The class that will define the container type.</param>
         /// <param name="serviceMapBuilder">The class that will define the service map.</param>
-        public ContainerCompiler(IGetInstanceMethodImplementor getInstanceMethodImplementor, IContainsMethodImplementor containsMethodImplementor, ICreateContainerType createContainerType, IServiceMapBuilder serviceMapBuilder, IGetAllInstancesMethodImplementor getAllInstancesMethodImplementor)
+        /// <param name="getAllInstancesMethodImplementor">The class that will implement the GetAllInstances method.</param>
+        public ContainerCompiler(IGetInstanceMethodImplementor getInstanceMethodImplementor, 
+            IContainsMethodImplementor containsMethodImplementor, 
+            ICreateContainerType createContainerType, 
+            IServiceMapBuilder serviceMapBuilder, 
+            IGetAllInstancesMethodImplementor getAllInstancesMethodImplementor)
         {
             _getInstanceMethodImplementor = getInstanceMethodImplementor;
             _containsMethodImplementor = containsMethodImplementor;

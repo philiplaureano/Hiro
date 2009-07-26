@@ -48,7 +48,7 @@ namespace Hiro.Loaders
         /// <summary>
         /// Loads a dependency map using the types in the given <paramref name="assemblies"/>.
         /// </summary>
-        /// <param name="assemblies">The assembly that will be used to construct the dependency map.</param>
+        /// <param name="assembly">The assembly that will be used to construct the dependency map.</param>
         /// <returns>A dependency map.</returns>
         public DependencyMap LoadFrom(Assembly assembly)
         {
@@ -133,7 +133,6 @@ namespace Hiro.Loaders
         /// Loads a dependency map using the assemblies located in the base application directory.
         /// </summary>
         /// <param name="filePattern">The search pattern that describes which assemblies will be loaded.</param>
-        /// <param name="assemblyLoader">The assembly loader that will load assemblies into memory.</param>
         /// <returns>A dependency map.</returns>
         public DependencyMap LoadFromBaseDirectory(string filePattern)
         {

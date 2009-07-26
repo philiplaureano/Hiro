@@ -154,7 +154,6 @@ namespace Hiro
         /// <summary>
         /// Determines whether or not a service exists within the dependency map.
         /// </summary>
-        /// <param name="map">The dependency map.</param>
         /// <param name="serviceType">The service type.</param>
         /// <returns><c>true</c> if the service exists; otherwise, it will return <c>false</c>.</returns>
         public bool Contains(Type serviceType)
@@ -165,7 +164,6 @@ namespace Hiro
         /// <summary>
         /// Compiles and instantiates a container instance using the current dependencies in the dependency map.
         /// </summary>
-        /// <param name="map">The dependency map.</param>
         /// <returns>A <see cref="IMicroContainer"/> instance.</returns>
         public IMicroContainer CreateContainer()
         {

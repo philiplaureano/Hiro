@@ -73,7 +73,7 @@ namespace Hiro
         /// Adds a new method to the <paramref name="typeDef">target type</paramref>.
         /// </summary>
         /// <param name="typeDef">The type that will hold the newly-created method.</param>
-        /// <param name="attributes">The <see cref="MethodAttributes"/> parameter that describes the characteristics of the method.</param>
+        /// <param name="attributes">The <see cref="Mono.Cecil.MethodAttributes"/> parameter that describes the characteristics of the method.</param>
         /// <param name="methodName">The name to be given to the new method.</param>
         /// <param name="returnType">The method return type.</param>        
         /// <param name="parameterTypes">The list of argument types that will be used to define the method signature.</param>

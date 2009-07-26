@@ -4,6 +4,9 @@ using Mono.Cecil;
 
 namespace Hiro
 {
+    /// <summary>
+    /// Represents an extension class that allows users to convert assembly definitions into running assemblies.
+    /// </summary>
     public static class AssemblyDefinitionExtensions
     {
         /// <summary>
