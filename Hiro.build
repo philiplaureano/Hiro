@@ -4,6 +4,8 @@
   <property name="library.dir" value="lib"/>
   <property name="target.framework" value="net-3.5" readonly="false" />
   <property name="ilmerge.dir" value="C:\Program Files\Microsoft\ILMerge"/>
+  <property name="ilmerge.executable.file" value="${path::combine(ilmerge.dir, 'ilmerge.exe')}"/>
+  <property name="ilmerge.exists" value="${file::exists(ilmerge.executable.file)}"/>
 	<property name="nant.settings.currentframework" value="net-3.5" />
   <property name="debug" value="false"/>
 
@@ -124,11 +126,12 @@
   
 	<target name="compile" description="Compiles using the AutomatedDebug Configuration">
     <call target="net-2.0"/>
-    <call target="net-3.5"/>
+    <call target="net-3.5"/>    
   </target>
 
   <target name="test" depends="compile, run-unit-tests"
 		description="Compile and Run Tests">
+    <call target="merge" if="${ilmerge.exists}"/>
     <property name="build.dir.path" value="${path::get-full-path(build.dir)}"/>
     <echo message="Please Note: The compiled Hiro binaries have been copied to the following directories:"/>
     <echo message="${path::combine(build.dir.path, 'net-2.0')}"/>
@@ -154,12 +157,7 @@
     <delete dir="${unittest.dir}" if="${directory::exists(unittest.dir)}"/>
 	</target>
 	
-	<target name="dist" depends="clean">
-    <property name="ilmerge.executable.file" value="${path::combine(ilmerge.dir, 'ilmerge.exe')}"/>
-    <property name="ilmerge.exists" value="${file::exists(ilmerge.executable.file)}"/>
-    
-    <call target="compile" unless="${ilmerge.exists}"/>
-    <call target="merge" if="${ilmerge.exists}"/>
+	<target name="dist" depends="clean, compile">        
     <mkdir dir="${build.dir}\dist" />
     <mkdir dir="${build.dir}\dist\net-2.0" />
     <mkdir dir="${build.dir}\dist\net-3.5" />
