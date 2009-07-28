@@ -3,6 +3,7 @@
 	<property name="build.dir" value="build" />
   <property name="library.dir" value="lib"/>
   <property name="target.framework" value="net-3.5" readonly="false" />
+  <property name="ilmerge.dir" value="C:\Program Files\Microsoft\ILMerge"/>
 	<property name="nant.settings.currentframework" value="net-3.5" />
   <property name="debug" value="false"/>
 
@@ -22,24 +23,24 @@
   </target>
   
   <target name="merge" depends="clean, compile, run-unit-tests">
-    <msbuild project="src\MergeAll.MSBuild"/>
+    <msbuild project="src\ILMerge.MSBuild">
+      <property name="TargetFramework" value="net-2.0"/>
+    </msbuild>
+    <msbuild project="src\ILMerge.MSBuild">
+      <property name="TargetFramework" value="net-3.5"/>
+    </msbuild>
   </target>
 
   <target name="compile-container-interfaces" description="Compiles the container interface assembly">
     <mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}"/>
-    <property name="output.dir" value="${build.dir}\${target.framework}"/>
+    <property name="output.dir" value="..\..\${build.dir}\${target.framework}"/>
 
-    <mkdir dir="${output.dir}" unless="${directory::exists(output.dir)}"/>
-    <csc target="library" doc="${output.dir}\Hiro.Containers.xml" output="${output.dir}\Hiro.Containers.dll" debug="${debug}">
-      <sources>
-        <include name="src/Hiro.Containers/**/*.cs" />
-      </sources>
-      <references>
-        <include name="System.dll" />
-        <include name="System.Data.dll" />
-        <include name="System.Xml.dll" />
-      </references>
-    </csc>   
+    <mkdir dir="${output.dir}" unless="${directory::exists(output.dir)}"/>    
+    <msbuild project="src\Hiro.Containers\Hiro.Containers.csproj">
+      <property name="Configuration" value="AutomatedDebug"/>
+      <property name="OutputPath" value="${output.dir}"/>
+      <property name="DocumentationFile" value="${output.dir}\Hiro.Containers.XML"/>
+    </msbuild>
   </target>
   
   <target name="compile-core" depends="compile-container-interfaces" description="Compiles the core project assembly">
@@ -153,7 +154,12 @@
     <delete dir="${unittest.dir}" if="${directory::exists(unittest.dir)}"/>
 	</target>
 	
-	<target name="dist" depends="clean, compile">
+	<target name="dist" depends="clean">
+    <property name="ilmerge.executable.file" value="${path::combine(ilmerge.dir, 'ilmerge.exe')}"/>
+    <property name="ilmerge.exists" value="${file::exists(ilmerge.executable.file)}"/>
+    
+    <call target="compile" unless="${ilmerge.exists}"/>
+    <call target="merge" if="${ilmerge.exists}"/>
     <mkdir dir="${build.dir}\dist" />
     <mkdir dir="${build.dir}\dist\net-2.0" />
     <mkdir dir="${build.dir}\dist\net-3.5" />

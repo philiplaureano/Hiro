@@ -1,21 +1,34 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <PropertyGroup>
-	<TargetFramework Condition=" '$(TargetFramework)' == '' ">net-3.5</TargetFramework>
-        <MainAssembly>$(MSBuildProjectDirectory)\..\build\$(TargetFramework)\Hiro.dll</MainAssembly>
-	<TargetDirectory>$(MSBuildProjectDirectory)\..\build\$(TargetFramework)</TargetDirectory>
-    </PropertyGroup>
-    <ItemGroup>
-        <ILMergeAssemblies Include="$(TargetDirectory)\Hiro.Core.dll"/>
-        <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.dll"/>
-        <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.Generic.dll"/>
-        <ILMergeAssemblies Include="$(TargetDirectory)\Mono.Cecil.dll"/>
-        <ILMergeAssemblies Include="$(TargetDirectory)\NGenerics.dll"/>
-    </ItemGroup>
-   
-    <Target Name="Merge">
-	<Message Text="-- Begin ILMerge --" />
-	<Exec Command="&quot;$(ProgramFiles)\Microsoft\Ilmerge\Ilmerge.exe&quot; /xmldocs /v2 /log /out:&quot;$(MainAssembly)&quot; @(ILMergeAssemblies->'&quot;%(FullPath)&quot;', ' ') /keyfile:&quot;$(MSBuildProjectDirectory)\..\Hiro.snk&quot;" />
-	<Message Text="-- End ILMerge   --" />
+  <PropertyGroup>
+    <TargetFramework Condition=" '$(TargetFramework)' == '' ">net-3.5</TargetFramework>
+    <MainAssembly>$(MSBuildProjectDirectory)\..\build\$(TargetFramework)\Hiro.dll</MainAssembly>
+    <TargetDirectory>$(MSBuildProjectDirectory)\..\build\$(TargetFramework)</TargetDirectory>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net-3.5' ">
+    <ILMergeAssemblies Include="$(TargetDirectory)\Hiro.Core.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.Generic.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\Mono.Cecil.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\NGenerics.dll"/>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net-2.0' ">
+    <ILMergeAssemblies Include="$(TargetDirectory)\Hiro.Core.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.Generic.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\Mono.Cecil.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\NGenerics.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\LinqBridge.dll"/>
+  </ItemGroup>   
+  
+  <Target Name="Merge">
+    <CallTarget Targets="MergeInternal"/>
+  </Target>
+
+  <Target Name="MergeInternal">
+    <Message Text="-- Begin ILMerge --" />
+    <Exec Command="&quot;$(ProgramFiles)\Microsoft\Ilmerge\Ilmerge.exe&quot; /xmldocs /v2 /log /out:&quot;$(MainAssembly)&quot; @(ILMergeAssemblies->'&quot;%(FullPath)&quot;', ' ') /keyfile:&quot;$(MSBuildProjectDirectory)\..\Hiro.snk&quot;" />
+    <Message Text="-- End ILMerge   --" />
 
     <Delete Files="$(TargetDirectory)\Hiro.Core.dll" />
     <Delete Files="$(TargetDirectory)\Hiro.Core.xml" />
@@ -23,6 +36,7 @@
     <Delete Files="$(TargetDirectory)\Iesi.Collections.Generic.dll" />
     <Delete Files="$(TargetDirectory)\Mono.Cecil.dll" />
     <Delete Files="$(TargetDirectory)\NGenerics.dll" />
+    <Delete Files="$(TargetDirectory)\LinqBridge.dll" Condition=" '$(TargetFramework)' == 'net-2.0' "/>
 
-    </Target>
+  </Target>
 </Project>
