@@ -52,6 +52,9 @@ namespace Hiro.Loaders
         /// <returns>A dependency map.</returns>
         public DependencyMap LoadFrom(Assembly assembly)
         {
+            if (assembly == null)
+                throw new ArgumentNullException("assembly");
+
             return LoadFrom(new Assembly[] { assembly });
         }
 
@@ -62,6 +65,8 @@ namespace Hiro.Loaders
         /// <returns>A dependency map.</returns>
         public DependencyMap LoadFrom(IEnumerable<Assembly> assemblies)
         {
+            IEnumerable<Assembly> targetAssemblies = assemblies ?? new Assembly[0];
+
             var map = new DependencyMap();
             var serviceList = GetServiceList(assemblies);
 
@@ -82,7 +87,6 @@ namespace Hiro.Loaders
 
             foreach (var list in serviceList.Values)
             {
-                var filteredList = new List<IServiceInfo>();
                 foreach (var service in list)
                 {
                     if (!filter(service))
@@ -117,12 +121,19 @@ namespace Hiro.Loaders
         /// <returns>A dependency map.</returns>
         public DependencyMap LoadFrom(string directory, string filePattern, IAssemblyLoader assemblyLoader)
         {
+            if (assemblyLoader == null)
+                throw new ArgumentNullException("assemblyLoader");
+
             // Load the assemblies from the target directory
             var files = Directory.GetFiles(directory, filePattern);
             var assemblies = new List<Assembly>();
             foreach (var file in files)
             {
                 var assembly = assemblyLoader.Load(file);
+
+                if (assembly == null)
+                    continue;
+
                 assemblies.Add(assembly);
             }
 
@@ -147,6 +158,9 @@ namespace Hiro.Loaders
         /// <returns>A dependency map.</returns>
         public DependencyMap LoadFromBaseDirectory(string filePattern, IAssemblyLoader assemblyLoader)
         {
+            if (assemblyLoader == null)
+                throw new ArgumentNullException("assemblyLoader");
+
             return LoadFrom(AppDomain.CurrentDomain.BaseDirectory, filePattern, assemblyLoader);
         }
 
@@ -157,6 +171,9 @@ namespace Hiro.Loaders
         /// <returns></returns>
         private List<IServiceInfo> GetDefaultServices(HashList<Type, IServiceInfo> serviceList)
         {
+            if (serviceList == null)
+                throw new ArgumentNullException("serviceList");
+
             // Get the default services for each service type
             var defaultServices = new List<IServiceInfo>();
             foreach (var serviceType in serviceList.Keys)
@@ -180,6 +197,9 @@ namespace Hiro.Loaders
         /// <returns>A list of services grouped by type.</returns>
         private HashList<Type, IServiceInfo> GetServiceList(IEnumerable<Assembly> assemblies)
         {
+            if (assemblies == null)
+                throw new ArgumentNullException("assemblies");
+
             var serviceList = new HashList<Type, IServiceInfo>();
             foreach (var assembly in assemblies)
             {
