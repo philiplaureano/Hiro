@@ -143,6 +143,25 @@ namespace Hiro
         /// <summary>
         /// Adds a deferred service to the dependency map.
         /// </summary>
+        /// <typeparam name="TService">The service type that will be injected at runtime.</typeparam>
+        /// <param name="serviceName">The service name.</param>
+        public void AddDeferredService<TService>(string serviceName)
+        {
+            AddDeferredService(serviceName, typeof(TService));
+        }
+
+        /// <summary>
+        /// Adds a deferred service to the dependency map.
+        /// </summary>
+        /// <typeparam name="TService">The service type that will be injected at runtime.</typeparam>
+        public void AddDeferredService<TService>()
+        {
+            AddDeferredService(typeof(TService));
+        }
+
+        /// <summary>
+        /// Adds a deferred service to the dependency map.
+        /// </summary>
         /// <remarks>This method tells the dependency map that the <paramref name="serviceType"/> will be supplied to the container at runtime.</remarks>
         /// <param name="serviceType">The service type that will be injected at runtime.</param>
         public void AddDeferredService(Type serviceType)
