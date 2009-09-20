@@ -141,6 +141,31 @@ namespace Hiro
         }
 
         /// <summary>
+        /// Adds a deferred service to the dependency map.
+        /// </summary>
+        /// <remarks>This method tells the dependency map that the <paramref name="serviceType"/> will be supplied to the container at runtime.</remarks>
+        /// <param name="serviceType">The service type that will be injected at runtime.</param>
+        public void AddDeferredService(Type serviceType)
+        {
+            var dependency = new Dependency(serviceType);
+            var implementation = new NextContainerCall(serviceType, dependency.ServiceName);
+            AddService(dependency, implementation);
+        }
+
+        /// <summary>
+        /// Adds a deferred service to the dependency map.
+        /// </summary>
+        /// <remarks>This method tells the dependency map that the <paramref name="serviceType"/> will be supplied to the container at runtime.</remarks>
+        /// <param name="serviceName">The service name.</param>
+        /// <param name="serviceType">The service type that will be injected at runtime.</param>
+        public void AddDeferredService(string serviceName, Type serviceType)
+        {
+            var dependency = new Dependency(serviceType, serviceName);
+            var implementation = new NextContainerCall(serviceType, serviceName);
+            AddService(dependency, implementation);
+        }
+
+        /// <summary>
         /// Determines whether or not a service exists within the dependency map.
         /// </summary>
         /// <param name="serviceType">The service type.</param>

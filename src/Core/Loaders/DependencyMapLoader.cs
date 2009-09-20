@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using Hiro.Implementations;
 using Hiro.Interfaces;
 using NGenerics.DataStructures.General;
 
@@ -67,7 +68,8 @@ namespace Hiro.Loaders
         {
             IEnumerable<Assembly> targetAssemblies = assemblies ?? new Assembly[0];
 
-            var map = new DependencyMap();
+            var map = new DependencyMap { Injector = new PropertyInjector() };
+
             var serviceList = GetServiceList(assemblies);
 
             var defaultServices = GetDefaultServices(serviceList);
@@ -169,7 +171,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="serviceList">The list of service implementations that will be used to determine the default service for each service type.</param>
         /// <returns></returns>
-        private List<IServiceInfo> GetDefaultServices(HashList<Type, IServiceInfo> serviceList)
+        private List<IServiceInfo> GetDefaultServices(IDictionary<Type, IList<IServiceInfo>> serviceList)
         {
             if (serviceList == null)
                 throw new ArgumentNullException("serviceList");

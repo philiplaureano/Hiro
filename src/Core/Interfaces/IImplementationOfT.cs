@@ -8,7 +8,7 @@ namespace Hiro.Interfaces
     /// Represents a service implementation that can be emitted in IL.
     /// </summary>
     /// <typeparam name="TMember">The member type.</typeparam>
-    public interface IImplementation<TMember> : IImplementation
+    public interface IImplementation<TMember> : IStaticImplementation
     {
         /// <summary>
         /// Gets the value indicating the target member.

@@ -10,23 +10,23 @@ namespace Hiro.Implementations
     /// <summary>
     /// Represents a service implementation that will be instantiated as a singleton instance.
     /// </summary>
-    public class SingletonType : IImplementation
+    public class SingletonType : IStaticImplementation
     {
         /// <summary>
         /// The implementation that will be instantiated as a singleton.
         /// </summary>
-        private IImplementation _implementation;
+        private readonly IStaticImplementation _implementation;
 
         /// <summary>
         /// The singleton emitter that will generate the singleton types.
         /// </summary>
-        private SingletonEmitter _emitter = new SingletonEmitter();
+        private readonly SingletonEmitter _emitter = new SingletonEmitter();
 
         /// <summary>
         /// Initializes a new instance of the SingletonType class.
         /// </summary>
         /// <param name="implementation">The implementation that will be used to instantiate a service instance.</param>
-        public SingletonType(IImplementation implementation)
+        public SingletonType(IStaticImplementation implementation)
         {
             _implementation = implementation;
         }

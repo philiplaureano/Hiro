@@ -18,7 +18,13 @@ namespace Hiro.Implementations
         /// <returns>The <see cref="IImplementation"/> instance that will be injected in place of the original implementation.</returns>
         public IImplementation Inject(IDependency dependency, IImplementation originalImplementation)
         {
-            return new PropertyInjectionCall(originalImplementation);
+            var staticImplementation = originalImplementation as IStaticImplementation;
+
+            // Property injection can only be performend on early-bound instantiations
+            if (staticImplementation == null)
+                return originalImplementation;
+
+            return new PropertyInjectionCall(staticImplementation);
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
+using Hiro.Implementations;
+using Moq;
 using NUnit.Framework;
 using Hiro.UnitTests.SampleDomain;
 
@@ -38,7 +41,7 @@ namespace Hiro.UnitTests
         {
             var map = new DependencyMap();
             var person = new Person();
-            
+
             // Create a blank container
             var container = map.CreateContainer();
 
@@ -47,6 +50,31 @@ namespace Hiro.UnitTests
             // The container should return the added instance
             var result = container.GetInstance<IPerson>();
             Assert.AreSame(person, result);
+        }
+
+        [Test]
+        public void ShouldBeAbleToAddDeferredServiceToContainer()
+        {            
+            var map = new DependencyMap();            
+            map.AddDeferredService(typeof(IPerson));
+            
+            map.Injector = new PropertyInjector();
+            map.AddService(typeof(Truck), typeof(Truck));
+
+            var mockPerson = new Mock<IPerson>();
+            var container = map.CreateContainer();
+            container.AddService(mockPerson.Object);
+
+            // The container must instantiate the mock person type
+            var person = container.GetInstance<IPerson>();
+            Assert.AreSame(mockPerson.Object, person);
+            Assert.IsNotNull(person);
+
+            // Make sure the person instance is injected into
+            // the target property
+            var truck = container.GetInstance<Truck>();
+            Assert.IsNotNull(truck);
+            Assert.AreSame(truck.Driver, mockPerson.Object);
         }
     }
 }

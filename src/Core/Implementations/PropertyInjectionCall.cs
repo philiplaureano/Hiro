@@ -17,23 +17,23 @@ namespace Hiro.Implementations
         /// <summary>
         /// The implementation that will instantiate the target type.
         /// </summary>
-        private IImplementation _implementation;
+        private readonly IStaticImplementation _implementation;
 
         /// <summary>
         /// The functor that determines which properties will be injected.
         /// </summary>
-        private Func<PropertyInfo, bool> _propertyFilter;
+        private readonly Func<PropertyInfo, bool> _propertyFilter;
 
         /// <summary>
         /// The functor that determines the dependencies that will be injected into each property.
         /// </summary>
-        private Func<PropertyInfo, IDependency> _propertyDependencyResolver;
+        private readonly Func<PropertyInfo, IDependency> _propertyDependencyResolver;
 
         /// <summary>
         /// Initializes a new instance of the PropertyInjector class.
         /// </summary>
         /// <param name="implementation">The target implementation that will instantiate the service type.</param>
-        public PropertyInjectionCall(IImplementation implementation)
+        public PropertyInjectionCall(IStaticImplementation implementation)
             : this(implementation, p => p.CanWrite, p => new Dependency(p.PropertyType))
         {
         }
@@ -44,7 +44,7 @@ namespace Hiro.Implementations
         /// <param name="implementation">The target implementation that will instantiate the service type.</param>
         /// <param name="propertyFilter">The functor that determines which properties will be injected.</param>
         /// <param name="propertyDependencyResolver">The functor that determines the dependencies that will be injected into each property.</param>
-        public PropertyInjectionCall(IImplementation implementation, Func<PropertyInfo, bool> propertyFilter, Func<PropertyInfo, IDependency> propertyDependencyResolver)
+        public PropertyInjectionCall(IStaticImplementation implementation, Func<PropertyInfo, bool> propertyFilter, Func<PropertyInfo, IDependency> propertyDependencyResolver)
         {
             _implementation = implementation;
             _propertyFilter = propertyFilter;

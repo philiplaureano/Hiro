@@ -11,12 +11,6 @@ namespace Hiro.Interfaces
     public interface IImplementation
     {
         /// <summary>
-        /// Gets the value indicating the type that will be instantiated by this implementation.
-        /// </summary>
-        /// <value>The target type.</value>
-        Type TargetType { get; }
-
-        /// <summary>
         /// Gets the list of missing dependencies from the current implementation.
         /// </summary>
         /// <param name="map">The implementation map.</param>
