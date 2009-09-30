@@ -183,6 +183,9 @@ namespace Hiro.Loaders
                 var services = serviceList[serviceType];
                 var defaultService = _defaultServiceResolver.GetDefaultService(serviceType, services);
 
+                if (defaultService == null)
+                    continue;
+
                 // Use the default service as the anonymous service
                 var anonymousService = new ServiceInfo(defaultService.ServiceType, defaultService.ImplementingType, null);
                 defaultServices.Add(anonymousService);
