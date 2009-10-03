@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
+using Mono.Cecil;
 using NGenerics.DataStructures.General;
 
 namespace Hiro
@@ -12,6 +14,40 @@ namespace Hiro
     /// </summary>
     public class DependencyMap : BaseDependencyMap
     {
+        private readonly Dictionary<AssemblyDefinition, Assembly> _cache =
+            new Dictionary<AssemblyDefinition, Assembly>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependencyMap"/> class.
+        /// </summary>
+        public DependencyMap()
+            : this(new CachedContainerCompiler(new ContainerCompiler()))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependencyMap"/> class.
+        /// </summary>
+        /// <param name="compiler">The compiler that will be used to compile this map into an IOC container.</param>
+        public DependencyMap(IContainerCompiler compiler)
+        {
+            if (compiler == null)
+                throw new ArgumentNullException("compiler");
+
+            ContainerCompiler = compiler;
+        }
+
+        /// <summary>
+        /// Gets or sets the value indicating the <see cref="IContainerCompiler"/> that will be used to convert this map into
+        /// an IOC container assembly.
+        /// </summary>
+        /// <value>The container compiler.</value>
+        public IContainerCompiler ContainerCompiler
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Merges two dependency maps into a single dependency map.
         /// </summary>
@@ -211,9 +247,12 @@ namespace Hiro
         /// <returns>A <see cref="IMicroContainer"/> instance.</returns>
         public IMicroContainer CreateContainer()
         {
-            var compiler = new ContainerCompiler();
+            if (ContainerCompiler == null)
+                throw new NullReferenceException("The ContainerCompiler property cannot be null");
+
+            var compiler = ContainerCompiler;
             var assembly = compiler.Compile(this);
-            var loadedAssembly = assembly.ToAssembly();
+            Assembly loadedAssembly = CompileContainerAssembly(assembly);
 
             var containerTypes = new List<Type>();
             foreach (var type in loadedAssembly.GetTypes())
@@ -226,6 +265,28 @@ namespace Hiro
 
             var containerType = containerTypes[0];
             IMicroContainer result = (IMicroContainer)Activator.CreateInstance(containerType);
+
+            return result;
+        }
+
+        protected virtual Assembly CompileContainerAssembly(AssemblyDefinition assembly)
+        {
+            if (assembly == null)
+                throw new ArgumentNullException("assembly");
+
+            Assembly result;
+            lock (_cache)
+            {
+                // Reuse the cached results
+                if (_cache.ContainsKey(assembly))
+                    return _cache[assembly];
+
+                result = assembly.ToAssembly();
+
+                // Save the cached results
+                if (result != null)
+                    _cache[assembly] = result;
+            }
 
             return result;
         }

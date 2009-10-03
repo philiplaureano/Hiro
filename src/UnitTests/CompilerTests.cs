@@ -327,6 +327,18 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldBeAbleToCreateTheSameContainerTypeFromASingleDependencyMap()
+        {
+            var map = new DependencyMap();
+            map.AddService(typeof(IPerson), typeof(Person));
+
+
+            var firstContainer = map.CreateContainer();
+            var secondContainer = map.CreateContainer();
+
+            Assert.AreEqual(firstContainer.GetType(), secondContainer.GetType());
+        }
+        [Test]
         public void ShouldBeAbleToCreatePublicInstanceMethod()
         {
             TestCreatePublicMethod(false);

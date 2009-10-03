@@ -9,7 +9,7 @@ namespace Hiro
     /// <summary>
     /// Represents a class that can map dependencies to implementations.
     /// </summary>
-    public class BaseDependencyMap : IDependencyMap
+    public abstract class BaseDependencyMap : IDependencyMap
     {
         /// <summary>
         /// The list of dependencies in the current map.
@@ -80,6 +80,24 @@ namespace Hiro
                 if (completed || (!completed && addIncompleteImplementations))
                     yield return item;
             }
-        }       
+        }
+
+        public override bool Equals(object other)
+        {
+            return other.GetHashCode() == GetHashCode();
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 0;
+
+            foreach (var entry in _entries)
+            {
+                var dependency = entry.Key;
+                hash ^= dependency.GetHashCode();
+            }
+
+            return hash;
+        }
     }
 }

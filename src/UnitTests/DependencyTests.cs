@@ -152,5 +152,18 @@ namespace Hiro.UnitTests
             Assert.IsNotNull(container.GetInstance<IVehicle>());
             Assert.IsNotNull(container.GetInstance<IPerson>());
         }
+
+        [Test]
+        public void ShouldHaveTwoEqualDependencyMapsIfBothMapsContainTheSameDependencies()
+        {
+            var firstMap = new DependencyMap();
+            var secondMap = new DependencyMap();
+
+            firstMap.AddService(typeof(IPerson), typeof(Person));
+            secondMap.AddService(typeof(IPerson), typeof(Person));
+
+            Assert.AreEqual(firstMap, secondMap);
+            Assert.AreEqual(firstMap.GetHashCode(), secondMap.GetHashCode());
+        }
     }
 }

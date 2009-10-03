@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Hiro.Containers;
 using Hiro.Implementations;
 using Moq;
 using NUnit.Framework;
@@ -75,6 +76,22 @@ namespace Hiro.UnitTests
             var truck = container.GetInstance<Truck>();
             Assert.IsNotNull(truck);
             Assert.AreSame(truck.Driver, mockPerson.Object);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ServiceNotFoundException))]
+        public void ShouldThrowServiceNotFoundExceptionIfDeferredServiceIsNotAvailableAtRuntime()
+        {
+            var map = new DependencyMap();
+            map.AddDeferredService(typeof(IPerson));
+
+            var container = map.CreateContainer();
+
+            // The exception should be thrown on this line of code
+            var person = container.GetInstance<IPerson>();
+
+            // This line of code should never be executed
+            person.ToString();
         }
     }
 }

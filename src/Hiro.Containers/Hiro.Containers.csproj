@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="IMicroContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Hiro.snk" />

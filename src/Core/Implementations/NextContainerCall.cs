@@ -8,11 +8,20 @@ using Mono.Cecil.Cil;
 
 namespace Hiro.Implementations
 {
+    /// <summary>
+    /// Represents an implementation that will use the next container in the <see cref="IMicroContainer"/>
+    /// chain to instantiate a particular service name and service type.
+    /// </summary>
     public class NextContainerCall : IImplementation
     {
         private readonly Type _serviceType;
         private readonly string _serviceName;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NextContainerCall"/> class.
+        /// </summary>
+        /// <param name="serviceType">The service type.</param>
+        /// <param name="serviceName">The service name.</param>
         public NextContainerCall(Type serviceType, string serviceName)
         {
             _serviceType = serviceType;
@@ -87,7 +96,17 @@ namespace Hiro.Implementations
             worker.Emit(OpCodes.Br, endLabel);
 
             worker.Append(skipCreate);
-            worker.Emit(OpCodes.Ldnull);
+
+
+            var serviceNotFoundExceptionCtor = module.ImportConstructor<ServiceNotFoundException>(typeof(string),
+                                                                                                  typeof(Type));
+            var serviceName = dependency.ServiceName ?? string.Empty;
+            worker.Emit(OpCodes.Ldstr, serviceName);
+            worker.Emit(OpCodes.Ldtoken, serviceType);
+            worker.Emit(OpCodes.Call, getTypeFromHandle);
+            
+            worker.Emit(OpCodes.Newobj, serviceNotFoundExceptionCtor);
+            worker.Emit(OpCodes.Throw);
 
             worker.Append(endLabel);
 

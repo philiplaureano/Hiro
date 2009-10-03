@@ -146,14 +146,10 @@
     <property name="debug.dir" value="${build.dir}\Debug"/>
     <property name="unittest.dir" value="${debug.dir}\UnitTests"/>
 		<mkdir dir="${build.dir}\test-reports" />
-		<exec program="regsvr32" workingdir="tools\NCover" commandline="/s CoverLib.dll" />
-		<exec program="tools\ncover\NCover.Console.exe" 
-			workingdir="${build.dir}\Debug\UnitTests">
-			<arg value="//w &quot;.&quot;" />
-			<arg value="//x &quot;..\..\test-reports\Coverage.xml&quot;" />
-			<arg value="&quot;..\..\..\tools\nunit\nunit-console.exe&quot;" />
-			<arg value="&quot;Hiro.UnitTests.dll&quot; &quot;/xml:..\..\test-reports\UnitTests.xml&quot; &quot;/nologo&quot;" />
-		</exec>
+		
+    <exec program="tools\nunit\nunit-console.exe" workingdir="${build.dir}\Debug\UnitTests">
+      <arg value="&quot;Hiro.UnitTests.dll&quot; &quot;/xml:..\..\test-reports\UnitTests.xml&quot; &quot;/nologo&quot;"/>
+    </exec>
     <delete dir="${unittest.dir}" if="${directory::exists(unittest.dir)}"/>
 	</target>
 	

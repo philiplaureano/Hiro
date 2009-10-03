@@ -69,6 +69,7 @@
     <Compile Include="AssemblyDefinitionExtensions.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseDependencyMap.cs" />
+    <Compile Include="CachedContainerCompiler.cs" />
     <Compile Include="Compilers\AssemblyBuilder.cs" />
     <Compile Include="Compilers\ContainsMethodImplementor.cs" />
     <Compile Include="Compilers\CreateContainerStub.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="ConstructorNotFoundException.cs" />
     <Compile Include="ContainerCompiler.cs" />
     <Compile Include="DependencyMap.cs" />
+    <Compile Include="Interfaces\IContainerCompiler.cs" />
     <Compile Include="Implementations\NextContainerCall.cs" />
     <Compile Include="Interfaces\IStaticImplementation.cs" />
     <Compile Include="Loaders\DependencyMapExtensions.cs" />

@@ -14,7 +14,7 @@ namespace Hiro
     /// <summary>
     /// A class that compile a dependency graph into an inversion of control container.
     /// </summary>
-    public class ContainerCompiler
+    public class ContainerCompiler : IContainerCompiler
     {
         /// <summary>
         /// The class that will implement the GetInstance method.

@@ -28,6 +28,7 @@ namespace Hiro.UnitTests
             Assert.IsNotNull(result.Driver);
             Assert.IsTrue(result.Driver is Person);
         }
+
         [Test]
         public void ShouldInjectPropertyIfDependencyMapHasAPropertyInjectorAssignedToTheInjectorProperty()
         {

@@ -85,14 +85,9 @@ namespace Hiro.Implementations
             var body = targetMethod.Body;
             var worker = body.CilWorker;
 
-            // Instantiate the parameter values
-            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-            var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
-            var getInstanceMethod = module.ImportMethod<IMicroContainer>("GetInstance");
+            // Instantiate the parameter values            
             foreach (var currentDependency in GetRequiredDependencies())
             {
-                var serviceType = module.Import(currentDependency.ServiceType);
-
                 var implementation = serviceMap[currentDependency];
                 implementation.Emit(currentDependency, serviceMap, targetMethod);
             }
