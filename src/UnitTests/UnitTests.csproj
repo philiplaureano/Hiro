@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseFixture.cs" />
+    <Compile Include="BugFixes\LoaderTests.cs" />
     <Compile Include="CompilerTests.cs" />
     <Compile Include="DependencyTests.cs" />
     <Compile Include="ImplementationTests.cs" />
@@ -90,6 +91,10 @@
     <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
       <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
       <Name>Hiro.Containers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SampleAssembly\SampleAssembly.csproj">
+      <Project>{C4F4397A-C810-437F-8449-9910C7215946}</Project>
+      <Name>SampleAssembly</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

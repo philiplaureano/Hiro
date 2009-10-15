@@ -88,12 +88,38 @@ namespace Hiro.Implementations
             // Instantiate the parameter values            
             foreach (var currentDependency in GetRequiredDependencies())
             {
-                var implementation = serviceMap[currentDependency];
-                implementation.Emit(currentDependency, serviceMap, targetMethod);
+                EmitDependency(currentDependency, targetMethod, serviceMap);
             }
 
             var targetConstructor = module.Import(Target);
             worker.Emit(OpCodes.Newobj, targetConstructor);
+        }
+
+        /// <summary>
+        /// Emits the necessary IL to instantiate a given service type.
+        /// </summary>
+        /// <param name="currentDependency">The dependency that will be instantiated.</param>
+        /// <param name="targetMethod">The target method that will instantiate the service instance.</param>
+        /// <param name="serviceMap">The service map that contains the target dependency to be instantiated.</param>
+        private void EmitDependency(IDependency currentDependency, MethodDefinition targetMethod, IDictionary<IDependency, IImplementation> serviceMap)
+        {
+            IImplementation implementation = Resolve(serviceMap, currentDependency);
+            implementation.Emit(currentDependency, serviceMap, targetMethod);
+        }
+
+        /// <summary>
+        /// Resolves an <see cref="IImplementation"/> from the given <paramref name="currentDependency">dependency</paramref> and <paramref name="serviceMap"/>.
+        /// </summary>
+        /// <param name="serviceMap">The service map that contains the target dependency to be instantiated.</param>
+        /// <param name="currentDependency">The dependency that will be instantiated.</param>
+        /// <returns>The <see cref="IImplementation"/> instance that will be used to instantiate the dependency.</returns>
+        protected virtual IImplementation Resolve(IDictionary<IDependency, IImplementation> serviceMap, IDependency currentDependency)
+        {
+            if (serviceMap.ContainsKey(currentDependency))
+                return serviceMap[currentDependency];
+
+            // HACK: Get the service instance at runtime if it can't be resolved at compile time
+            return new ContainerCall(currentDependency.ServiceType, currentDependency.ServiceName);
         }       
 
         /// <summary>
