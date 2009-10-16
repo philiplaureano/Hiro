@@ -8,6 +8,7 @@
   <property name="ilmerge.exists" value="${file::exists(ilmerge.executable.file)}"/>
 	<property name="nant.settings.currentframework" value="net-3.5" />
   <property name="debug" value="false"/>
+  <property name="include.pdb.files" value="false"/>
 
 	<!-- User targets -->
 	<target name="clean" description="Delete Automated Build artifacts">
@@ -78,7 +79,22 @@
     </copy>
   </target>
 
-  <target name="compile-unit-tests" depends="compile-core" description="Compiles the unit tests for the core assembly">    
+  <target name="compile-sample-assembly" depends="create-output-directories">
+    <property name="debug.dir" value="${build.dir}\Debug"/>
+    <property name="unittest.dir" value="${debug.dir}\UnitTests"/>
+    <csc target="library" noconfig="true" output="${unittest.dir}\SampleAssembly.dll" debug="${debug}">
+      <sources>
+        <include name="src/SampleAssembly/**/*.cs" />
+      </sources>
+      <references>
+        <include name="System.dll" />
+        <include name="System.Core.dll"/>
+        <include name="System.Data.dll"/>
+        <include name="System.Xml.dll" />
+      </references>
+    </csc>    
+  </target>
+  <target name="create-output-directories">
     <property name="debug.dir" value="${build.dir}\Debug"/>
     <property name="unittest.dir" value="${debug.dir}\UnitTests"/>
     <property name="output.dir" value="${build.dir}\${target.framework}"/>
@@ -86,7 +102,8 @@
     <mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}"/>
     <mkdir dir="${debug.dir}" unless="${directory::exists(debug.dir)}"/>
     <mkdir dir="${unittest.dir}" unless="${directory::exists(unittest.dir)}"/>
-
+  </target>
+  <target name="compile-unit-tests" depends="create-output-directories, compile-sample-assembly, compile-core" description="Compiles the unit tests for the core assembly">                      
     <csc target="library" noconfig="true" output="${unittest.dir}\Hiro.UnitTests.dll" debug="${debug}">
       <sources>
         <include name="src/UnitTests/**/*.cs" />
@@ -96,6 +113,7 @@
         <include name="System.Core.dll"/>
         <include name="System.Data.dll"/>
         <include name="System.Xml.dll" />
+        <include name="${unittest.dir}\SampleAssembly.dll"/>
         <include name="${output.dir}\Hiro.Containers.dll"/>
         <include name="${output.dir}\Hiro.Core.dll"/>
         <include name="${library.dir}\Iesi.Collections.dll"/>
@@ -162,7 +180,6 @@
 		<copy todir="${build.dir}\dist\net-2.0">
 			<fileset basedir="${build.dir}\net-2.0">
 				<include name="**\*"/>
-				<exclude name="**\*.pdb" />
 			</fileset>
 		</copy>
 
@@ -170,7 +187,6 @@
     <copy todir="${build.dir}\dist\net-3.5">
       <fileset basedir="${build.dir}\net-3.5">
         <include name="**\*"/>
-        <exclude name="**\*.pdb" />
       </fileset>
     </copy>
     
