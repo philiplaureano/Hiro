@@ -11,8 +11,7 @@ namespace Hiro
     public static class MicroContainerExtensions
     {
         /// <summary>
-        /// Obtains an object instance that matches the given service type
-        /// and <paramref name="key">service name</paramref>.
+        /// Obtains an object instance that matches the given service type.
         /// </summary>
         /// <typeparam name="T">The service type.</typeparam>
         /// <param name="container">The target container.</param>
