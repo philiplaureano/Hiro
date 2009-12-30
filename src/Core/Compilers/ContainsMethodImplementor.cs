@@ -35,6 +35,7 @@ namespace Hiro.Compilers
             var containsMethod = targetMethods[0];
             var body = containsMethod.Body;
             var worker = body.CilWorker;
+            body.InitLocals = true;
 
             // Remove the stub implementation
             body.Instructions.Clear();

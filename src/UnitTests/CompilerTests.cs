@@ -168,6 +168,21 @@ namespace Hiro.UnitTests
         }
 
         [Test]
+        public void ShouldBeAbleToReturnTheSameSingletonInstance()
+        {
+            var map = new DependencyMap();
+            map.AddSingletonService(typeof(IPerson), typeof(Person));
+
+            var container = map.CreateContainer();
+            var result = container.GetInstance(typeof(IPerson), null);
+            for(var i = 0; i < 100; i++)
+            {
+                var currentResult = container.GetInstance(typeof(IPerson), null);
+                Assert.AreSame(result, currentResult);
+            }
+        }
+
+        [Test]
         public void ShouldBeAbleToAddNamedServiceToMapUsingExtensionMethod()
         {
             var map = new DependencyMap();
