@@ -61,7 +61,6 @@ namespace Hiro.Implementations
         /// <param name="targetMethod">The target method.</param>
         public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
         {
-            var worker = targetMethod.Body.CilWorker;
             _emitter.EmitService(targetMethod, dependency, _implementation, serviceMap);
         }
 

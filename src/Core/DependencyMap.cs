@@ -269,6 +269,11 @@ namespace Hiro
             return result;
         }
 
+        /// <summary>
+        /// Compiles the given <paramref name="assembly">assembly</paramref> definition that contains the compiled service container type.
+        /// </summary>
+        /// <param name="assembly">The assembly definition that contains the compiled service container type.</param>
+        /// <returns>An <see cref="Assembly"/> that contains the compiled service container type.</returns>
         protected virtual Assembly CompileContainerAssembly(AssemblyDefinition assembly)
         {
             if (assembly == null)

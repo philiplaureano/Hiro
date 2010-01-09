@@ -47,10 +47,12 @@ namespace Hiro.Compilers
 
             var typeName = serviceType.Name;
             var singletonName = string.Format("{0}ServiceSingleton-{1}", typeName, dependency.GetHashCode());
-            var typeAttributes = TypeAttributes.NotPublic | TypeAttributes.AutoClass | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit;
+            var typeAttributes = TypeAttributes.NotPublic | TypeAttributes.AutoClass | TypeAttributes.Sealed |
+                                 TypeAttributes.BeforeFieldInit;
             var objectType = module.Import(typeof(object));
 
             var singletonType = AddDefaultSingletonConstructor(module, singletonName, typeAttributes, objectType);
+
             var instanceField = new FieldDefinition("__instance", objectType, FieldAttributes.Assembly | FieldAttributes.InitOnly | FieldAttributes.Static);
 
             DefineNestedType(module, containerType, dependency, implementation, serviceMap, objectType, singletonType, instanceField);
@@ -78,9 +80,12 @@ namespace Hiro.Compilers
         {
             // Add a default constructor and make it private
             var singletonType = module.DefineClass(singletonName, "Hiro.Containers.Internal", typeAttributes, objectType);
-            singletonType.AddDefaultConstructor();
-            singletonType.Constructors[0].IsPublic = false;
 
+            singletonType.AddDefaultConstructor();
+            var constructor = singletonType.Constructors[0];
+
+            constructor.IsFamilyOrAssembly = true;
+            
             return singletonType;
         }
 
@@ -98,7 +103,7 @@ namespace Hiro.Compilers
         private static void DefineNestedType(ModuleDefinition module, TypeDefinition containerType, IDependency dependency, IImplementation implementation, IDictionary<IDependency, IImplementation> serviceMap, TypeReference objectType, TypeDefinition singletonType, FieldDefinition instanceField)
         {
             var nestedName = string.Format("Nested-{0}", dependency.GetHashCode());
-            var nestedAttributes = TypeAttributes.NestedPrivate | TypeAttributes.Sealed | TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.AnsiClass;
+            var nestedAttributes = TypeAttributes.NestedFamORAssem | TypeAttributes.Sealed | TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.AnsiClass;
             var nestedType = module.DefineClass(nestedName, "Hiro.Containers.Internal", nestedAttributes, objectType);
             singletonType.NestedTypes.Add(nestedType);
 
@@ -107,7 +112,7 @@ namespace Hiro.Compilers
 
             // Emit the static constructor body
             var cctor = DefineNestedConstructors(module, nestedType);
-            var worker = cctor.GetILGenerator();
+
             var containerLocal = new VariableDefinition(microContainerInterfaceType);
             cctor.Body.Variables.Add(containerLocal);
             var containerConstructor = containerType.Constructors[0];
@@ -159,11 +164,10 @@ namespace Hiro.Compilers
             // Define the constructor for the nested t ype
             nestedType.AddDefaultConstructor();
             var defaultConstructor = nestedType.Constructors[0];
-            defaultConstructor.IsPublic = false;
-            defaultConstructor.IsPrivate = true;
+            defaultConstructor.IsPublic = true;            
 
             var cctor = DefineStaticConstructor(module, nestedType);
-            cctor.Body.InitLocals = true;
+            cctor.IsPublic = true;
 
             return cctor;
         }
