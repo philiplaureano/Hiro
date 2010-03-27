@@ -31,7 +31,7 @@ namespace Hiro.UnitTests
         {
             _assemblyBuilder = null;
         }
-       
+
         [Test]
         public void ShouldNotCauseStackOverflowExceptionWhenCallingGetAllInstancesOnTheNextContainerAndNextContainerIsSelf()
         {
@@ -175,7 +175,7 @@ namespace Hiro.UnitTests
 
             var container = map.CreateContainer();
             var result = container.GetInstance(typeof(IPerson), null);
-            for(var i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 var currentResult = container.GetInstance(typeof(IPerson), null);
                 Assert.AreSame(result, currentResult);
@@ -456,6 +456,20 @@ namespace Hiro.UnitTests
 
             var result = container.GetInstance(typeof(IVehicle), string.Empty);
             Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void ShouldIntroduceContainerInstanceToTypesThatHaveTheMicroContainerDependencyInTheirConstructors()
+        {
+            var map = new DependencyMap();
+            map.AddService(typeof(SampleContainerAwareType), typeof(SampleContainerAwareType));
+
+            var container = map.CreateContainer();
+            var instance = container.GetInstance<SampleContainerAwareType>();
+            Assert.IsNotNull(instance);
+
+            Assert.IsNotNull(instance.Container);
+            Assert.AreSame(container, instance.Container);
         }
 
         private static IMicroContainer Compile(DependencyMap map)

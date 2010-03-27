@@ -35,6 +35,10 @@ namespace Hiro
                 throw new ArgumentNullException("compiler");
 
             ContainerCompiler = compiler;
+
+            // Allow the container to introduce itself to the types that it instantiates
+            var dependency = new Dependency(typeof (IMicroContainer));
+            AddService(dependency, new ContainerInstanceCall());
         }
 
         /// <summary>
