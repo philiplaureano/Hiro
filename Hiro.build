@@ -91,6 +91,7 @@
         <include name="System.Core.dll"/>
         <include name="System.Data.dll"/>
         <include name="System.Xml.dll" />
+        <include name="${output.dir}\Hiro.Containers.dll"/>
       </references>
     </csc>    
   </target>
