@@ -78,6 +78,9 @@ namespace Hiro.Loaders
                 var embeddedTypes = _typeLoader.LoadTypes(assembly);
                 foreach (var type in embeddedTypes)
                 {
+                    if (type.IsInterface || type.IsAbstract || type.IsGenericTypeDefinition || type.IsValueType)
+                        continue;
+
                     RegisterNamedFactoryType(type, defaultImplementations, map);
                 }
             }
