@@ -13,7 +13,7 @@ namespace Hiro.Implementations
     /// Represents an implementation that emits a constructor call.
     /// </summary>
     public class ConstructorCall : IImplementation<ConstructorInfo>
-    {
+    {   
         /// <summary>
         /// Initializes a new instance of the ConstructorCall class.
         /// </summary>

@@ -91,6 +91,7 @@
     <Compile Include="Implementations\BaseContainerCall.cs" />
     <Compile Include="Implementations\ContainerCall.cs" />
     <Compile Include="Implementations\ContainerInstanceCall.cs" />
+    <Compile Include="Implementations\FactoryCall.cs" />
     <Compile Include="Interfaces\IContainerCompiler.cs" />
     <Compile Include="Implementations\NextContainerCall.cs" />
     <Compile Include="Interfaces\IStaticImplementation.cs" />

@@ -63,7 +63,7 @@ namespace Hiro.Loaders
             IEnumerable<Type> loadedTypes = TypeLoader.LoadTypes(targetAssembly);
 
             // Load all public types that can be instantiated
-            Predicate<Type> concreteTypeFilter = t => t.IsPublic && !t.IsAbstract && !t.IsInterface && !t.IsValueType;
+            Predicate<Type> concreteTypeFilter = t => t.IsPublic && !t.IsAbstract && !t.IsInterface && !t.IsValueType && !t.IsGenericTypeDefinition;
             var types = TypeFilter.GetTypes(loadedTypes, concreteTypeFilter);
 
             foreach (var type in types)

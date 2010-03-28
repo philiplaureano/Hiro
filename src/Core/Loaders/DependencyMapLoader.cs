@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
 using NGenerics.DataStructures.General;
@@ -14,24 +15,27 @@ namespace Hiro.Loaders
     /// </summary>
     public class DependencyMapLoader
     {
-        private IServiceLoader _serviceLoader;
-        private IDefaultServiceResolver _defaultServiceResolver;
+        private readonly ITypeLoader _typeLoader;
+        private readonly IServiceLoader _serviceLoader;
+        private readonly IDefaultServiceResolver _defaultServiceResolver;
 
         /// <summary>
         /// Initializes a new instance of the DependencyMapLoader class.
         /// </summary>
         public DependencyMapLoader()
-            : this(new ServiceLoader(), new DefaultServiceResolver())
+            : this(new TypeLoader(), new ServiceLoader(), new DefaultServiceResolver())
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the DependencyMapLoader class.
         /// </summary>
+        /// <param name="typeLoader">The type loader that will load the service types from each assembly.</param>
         /// <param name="serviceLoader">The service loader that will load services from a given assembly.</param>
         /// <param name="defaultServiceResolver">The resolver that will determine the default anonymous implementation for a particular service type.</param>
-        public DependencyMapLoader(IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver)
+        public DependencyMapLoader(ITypeLoader typeLoader, IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver)
         {
+            _typeLoader = typeLoader;
             _serviceLoader = serviceLoader;
             _defaultServiceResolver = defaultServiceResolver;
         }
@@ -47,7 +51,7 @@ namespace Hiro.Loaders
         }
 
         /// <summary>
-        /// Loads a dependency map using the types in the given <paramref name="assemblies"/>.
+        /// Loads a dependency map using the types in the given <paramref name="assembly"/>.
         /// </summary>
         /// <param name="assembly">The assembly that will be used to construct the dependency map.</param>
         /// <returns>A dependency map.</returns>
@@ -66,10 +70,74 @@ namespace Hiro.Loaders
         /// <returns>A dependency map.</returns>
         public DependencyMap LoadFrom(IEnumerable<Assembly> assemblies)
         {
-            IEnumerable<Assembly> targetAssemblies = assemblies ?? new Assembly[0];
-
             var map = new DependencyMap { Injector = new PropertyInjector() };
 
+            var defaultImplementations = new Dictionary<Type, IImplementation>();
+            foreach (var assembly in assemblies)
+            {
+                var embeddedTypes = _typeLoader.LoadTypes(assembly);
+                foreach (var type in embeddedTypes)
+                {
+                    RegisterNamedFactoryType(type, defaultImplementations, map);
+                }
+            }
+
+            foreach(var serviceType in defaultImplementations.Keys)
+            {
+                var dependency = new Dependency(serviceType);
+                var implementation = defaultImplementations[serviceType];
+                map.AddService(dependency, implementation);
+            }
+
+            RegisterServicesFrom(assemblies, map);
+
+            return map;
+        }
+
+        /// <summary>
+        /// Registers a type as a factory type if it implements the <see cref="IFactory{T}"/> interface.
+        /// </summary>
+        /// <param name="type">The target type</param>
+        /// <param name="defaultImplementations">The list of default implementations per service type.</param>
+        /// <param name="map">The dependency map.</param>
+        private void RegisterNamedFactoryType(Type type, IDictionary<Type, IImplementation> defaultImplementations, IDependencyMap map)
+        {
+            var factoryTypeDefinition = typeof(IFactory<>);
+            var interfaces = type.GetInterfaces();
+            foreach (var interfaceType in interfaces)
+            {
+                if (!interfaceType.IsGenericType)
+                    continue;
+
+                var definitionType = interfaceType.GetGenericTypeDefinition();
+                if (definitionType != factoryTypeDefinition)
+                    continue;
+
+                var genericArguments = interfaceType.GetGenericArguments();
+                var actualServiceType = genericArguments[0];
+                var serviceName = type.Name;
+
+                var nameLength = serviceName.Length;
+                var hasSpecialName = serviceName.EndsWith("Factory") && nameLength > 7;
+                serviceName = hasSpecialName ? serviceName.Substring(0, nameLength - 7) : serviceName;
+                var implementation = new FactoryCall(actualServiceType, type.Name);
+
+                // Register the default implementation if necessary
+                if (!defaultImplementations.ContainsKey(actualServiceType))
+                    defaultImplementations[actualServiceType] = implementation;
+
+                var dependency = new Dependency(actualServiceType, serviceName);
+                map.AddService(dependency, implementation);
+            }
+        }
+
+        /// <summary>
+        /// Registers services from the given list of <paramref name="assemblies"/>.
+        /// </summary>
+        /// <param name="assemblies">The list of assemblies that contain the service types.</param>
+        /// <param name="map">The dependency map.</param>
+        private void RegisterServicesFrom(IEnumerable<Assembly> assemblies, DependencyMap map)
+        {
             var serviceList = GetServiceList(assemblies);
 
             var defaultServices = GetDefaultServices(serviceList);
@@ -99,8 +167,6 @@ namespace Hiro.Loaders
             }
 
             map.Register(registeredServices);
-
-            return map;
         }
 
         /// <summary>
@@ -211,7 +277,6 @@ namespace Hiro.Loaders
                 var services = _serviceLoader.Load(assembly);
                 foreach (var service in services)
                 {
-                    var serviceName = service.ServiceName;
                     var serviceType = service.ServiceType;
 
                     // Group the services by service type

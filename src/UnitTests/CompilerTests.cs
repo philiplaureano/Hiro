@@ -472,6 +472,30 @@ namespace Hiro.UnitTests
             Assert.AreSame(container, instance.Container);
         }
 
+        [Test]
+        public void ShouldUseFactoryToCreateTypesIfFactoryTypeIsAvailable()
+        {
+            var loader = new DependencyMapLoader();
+            var map = loader.LoadFromBaseDirectory("SampleAssembly.dll");
+
+            var container = map.CreateContainer();
+            var result = container.GetInstance<object>("Sample");
+
+            Assert.AreEqual(42, result);
+        }
+
+        [Test]
+        public void ShouldUseDefaultAnonymousFactoryToCreateTypesIfFactoryTypeIsAvailable()
+        {
+            var loader = new DependencyMapLoader();
+            var map = loader.LoadFromBaseDirectory("SampleAssembly.dll");
+
+            var container = map.CreateContainer();
+            var result = container.GetInstance<object>();
+
+            Assert.AreEqual(42, result);
+        }
+
         private static IMicroContainer Compile(DependencyMap map)
         {
             var compiler = new ContainerCompiler();

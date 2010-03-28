@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C4F4397A-C810-437F-8449-9910C7215946}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -49,7 +49,14 @@
     <Compile Include="IDbConnection.cs" />
     <Compile Include="ITestRepo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleFactory.cs" />
     <Compile Include="TestRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
+      <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
+      <Name>Hiro.Containers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -33,7 +33,7 @@ namespace Hiro.UnitTests
             IEnumerable<IServiceInfo> list = loader.Load(hostAssembly);
             Assert.IsNotNull(list);
 
-            var items = new List<IServiceInfo>(list);            
+            var items = new List<IServiceInfo>(list);
             Assert.IsTrue(items.Count > 0);
         }
 
@@ -82,11 +82,10 @@ namespace Hiro.UnitTests
         {
             var serviceLoader = new Mock<IServiceLoader>();
             var resolver = new Mock<IDefaultServiceResolver>();
-            var assemblyLoader = new Mock<IAssemblyLoader>();
+            var typeLoader = new Mock<ITypeLoader>();
 
             var assembly = typeof(IPerson).Assembly;
             var assemblies = new Assembly[] { assembly };
-            var serviceType = typeof(IVehicle);
             var serviceList = new List<IServiceInfo>();
             IEnumerable<IServiceInfo> services = serviceList;
 
@@ -95,12 +94,14 @@ namespace Hiro.UnitTests
             serviceList.Add(new ServiceInfo(typeof(IVehicle), typeof(Truck), "Truck"));
             serviceList.Add(defaultService);
 
+            typeLoader.Expect(l => l.LoadTypes(It.IsAny<Assembly>())).Returns(new Type[0]);
             resolver.Expect(r => r.GetDefaultService(It.IsAny<Type>(), It.IsAny<IEnumerable<IServiceInfo>>())).Returns(defaultService);
             serviceLoader.Expect(s => s.Load(assembly)).Returns(services);
 
-            var loader = new DependencyMapLoader(serviceLoader.Object, resolver.Object);
+            var loader = new DependencyMapLoader(typeLoader.Object, serviceLoader.Object, resolver.Object);
             DependencyMap map = loader.LoadFrom(assemblies);
 
+            typeLoader.VerifyAll();
             resolver.VerifyAll();
             serviceLoader.VerifyAll();
 
