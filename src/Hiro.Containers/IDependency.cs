@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Hiro.Interfaces
+namespace Hiro.Containers
 {
     /// <summary>
     /// Represents a service dependency.

@@ -80,6 +80,8 @@
     <Compile Include="SampleDomain\IVehicle.cs" />
     <Compile Include="SampleDomain\Person.cs" />
     <Compile Include="SampleDomain\SampleContainerAwareType.cs" />
+    <Compile Include="SampleDomain\SampleInitialize.cs" />
+    <Compile Include="SampleDomain\SamplePlugin.cs" />
     <Compile Include="SampleDomain\Truck.cs" />
     <Compile Include="SampleDomain\Vehicle.cs" />
   </ItemGroup>

@@ -255,7 +255,7 @@ namespace Hiro
                 throw new NullReferenceException("The ContainerCompiler property cannot be null");
 
             var compiler = ContainerCompiler;
-            var assembly = compiler.Compile(this);
+            var assembly = compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", this);
             Assembly loadedAssembly = CompileContainerAssembly(assembly);
 
             var containerTypes = new List<Type>();

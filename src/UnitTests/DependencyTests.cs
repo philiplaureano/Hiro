@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
 using Hiro.UnitTests.SampleDomain;

@@ -10,7 +10,25 @@ namespace Hiro.Compilers
 {
     internal class GetAllInstancesMethodImplementor : IGetAllInstancesMethodImplementor
     {
-        public void DefineGetAllInstancesMethod(Mono.Cecil.TypeDefinition containerType, Mono.Cecil.ModuleDefinition module, 
+        private readonly IServiceInitializer _initializer;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetAllInstancesMethodImplementor"/> class.
+        /// </summary>
+        public GetAllInstancesMethodImplementor() : this(new ServiceInitializer())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetAllInstancesMethodImplementor"/> class.
+        /// </summary>
+        /// <param name="initializer">The <see cref="IServiceInitializer"/> instance that will initialize the service types with the current container.</param>
+        public GetAllInstancesMethodImplementor(IServiceInitializer initializer)
+        {
+            _initializer = initializer;
+        }
+
+        public void DefineGetAllInstancesMethod(TypeDefinition containerType, ModuleDefinition module, 
             IDictionary<IDependency, IImplementation> serviceMap)
         {
             var targetMethods = new List<MethodDefinition>();
@@ -48,6 +66,8 @@ namespace Hiro.Compilers
             var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
             var addItem = module.ImportMethod<List<object>>("Add");
 
+            var currentService = getAllInstancesMethod.AddLocal<object>();
+
             foreach (var currentType in dependenciesByType.Keys)
             {
                 var currentTypeRef = module.Import(currentType);
@@ -68,6 +88,12 @@ namespace Hiro.Compilers
                     worker.Emit(OpCodes.Ldloc, listVariable);
                     var implementation = serviceMap[dependency];
                     implementation.Emit(dependency, serviceMap, getAllInstancesMethod);
+                    worker.Emit(OpCodes.Stloc, currentService);
+
+                    // Call IInitialize.Initialize(container) on the current service type
+                    _initializer.Initialize(worker, module, currentService);
+
+                    worker.Emit(OpCodes.Ldloc, currentService);
                     worker.Emit(OpCodes.Callvirt, addItem);
                 }
 

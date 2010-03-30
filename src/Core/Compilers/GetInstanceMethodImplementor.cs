@@ -14,7 +14,25 @@ namespace Hiro.Compilers
     /// </summary>
     internal class GetInstanceMethodImplementor : IGetInstanceMethodImplementor
     {
-        #region The GetInstanceMethod implementation
+        private readonly IServiceInitializer _initializer;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetInstanceMethodImplementor"/> class.
+        /// </summary>
+        public GetInstanceMethodImplementor()
+            : this(new ServiceInitializer())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GetInstanceMethodImplementor"/> class.
+        /// </summary>
+        /// <param name="initializer">The <see cref="IServiceInitializer"/> instance that will initialize the target given services.</param>
+        public GetInstanceMethodImplementor(IServiceInitializer initializer)
+        {
+            _initializer = initializer;
+        }
+
         /// <summary>
         /// Defines the <see cref="IMicroContainer.GetInstance"/> method implementation for the container type.
         /// </summary>
@@ -56,7 +74,7 @@ namespace Hiro.Compilers
         protected virtual void EmitService(MethodDefinition getInstanceMethod, IDependency dependency, IImplementation implementation, IDictionary<IDependency, IImplementation> serviceMap)
         {
             implementation.Emit(dependency, serviceMap, getInstanceMethod);
-        }                
+        }
 
         /// <summary>
         /// Defines the instructions that create each service type in the <paramref name="serviceMap"/>.
@@ -115,6 +133,16 @@ namespace Hiro.Compilers
                 if (serviceType.IsValueType)
                     worker.Emit(OpCodes.Box, serviceType);
 
+                worker.Emit(OpCodes.Stloc, returnValue);
+
+                var serviceInstance = returnValue;
+
+                // Call IInitialize.Initialize(this) on the current type
+                if (_initializer != null)
+                    _initializer.Initialize(worker, module, serviceInstance);
+
+                worker.Emit(OpCodes.Ldloc, returnValue);
+
                 worker.Emit(OpCodes.Br, endLabel);
 
                 // Fall through to the next if-then-else case
@@ -130,7 +158,7 @@ namespace Hiro.Compilers
 
             // if (otherContainer != null ) {
             var skipOtherContainerCall = worker.Create(OpCodes.Nop);
-            worker.Emit(OpCodes.Ldloc, otherContainer);            
+            worker.Emit(OpCodes.Ldloc, otherContainer);
             worker.Emit(OpCodes.Brfalse, skipOtherContainerCall);
 
             // Prevent the container from calling itself
@@ -148,11 +176,10 @@ namespace Hiro.Compilers
             worker.Emit(OpCodes.Callvirt, otherGetInstanceMethod);
             worker.Emit(OpCodes.Br, endLabel);
             // }
-            
+
             worker.Append(skipOtherContainerCall);
             worker.Emit(OpCodes.Ldnull);
             worker.Append(endLabel);
         }
-        #endregion
     }
 }

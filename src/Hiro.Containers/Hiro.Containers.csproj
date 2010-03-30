@@ -39,8 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dependency.cs" />
+    <Compile Include="IDependency.cs" />
     <Compile Include="IFactory.cs" />
+    <Compile Include="IInitialize.cs" />
     <Compile Include="IMicroContainer.cs" />
+    <Compile Include="IContainerPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceNotFoundException.cs" />
   </ItemGroup>

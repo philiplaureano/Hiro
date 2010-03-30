@@ -31,7 +31,7 @@ namespace Hiro
         /// </summary>
         /// <param name="dependencyContainer">The <see cref="IDependencyContainer"/> instance that contains the services that will be instantiated by compiled container.</param>
         /// <returns>An assembly containing the compiled IOC container.</returns>
-        public AssemblyDefinition Compile(IDependencyContainer dependencyContainer)
+        public AssemblyDefinition Compile(string typeName, string namespaceName, string assemblyName, IDependencyContainer dependencyContainer)
         {
             var hash = dependencyContainer.GetHashCode();
 
@@ -43,7 +43,7 @@ namespace Hiro
 
 
                 // Cache the result
-                result = _compiler.Compile(dependencyContainer);
+                result = _compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", dependencyContainer);
 
                 _cache[hash] = result;
             }

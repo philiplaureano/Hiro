@@ -8,6 +8,7 @@ using Hiro.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using NGenerics.DataStructures.General;
+using FieldAttributes = Mono.Cecil.FieldAttributes;
 
 namespace Hiro
 {
@@ -19,27 +20,27 @@ namespace Hiro
         /// <summary>
         /// The class that will implement the GetInstance method.
         /// </summary>
-        private IGetInstanceMethodImplementor _getInstanceMethodImplementor;
+        private readonly IGetInstanceMethodImplementor _getInstanceMethodImplementor;
 
         /// <summary>
         /// The class that will implement the Contains method.
         /// </summary>
-        private IContainsMethodImplementor _containsMethodImplementor;
+        private readonly IContainsMethodImplementor _containsMethodImplementor;
 
         /// <summary>
         /// The class that will implement the GetAllInstances method.
         /// </summary>
-        private IGetAllInstancesMethodImplementor _getAllInstancesMethodImplementor;
+        private readonly IGetAllInstancesMethodImplementor _getAllInstancesMethodImplementor;
 
         /// <summary>
         /// The class that will define the container type.
         /// </summary>
-        private ICreateContainerType _createContainerType;
+        private readonly ICreateContainerType _createContainerType;
 
         /// <summary>
         /// The class that will define the service map.
         /// </summary>
-        private IServiceMapBuilder _serviceMapBuilder;
+        private readonly IServiceMapBuilder _serviceMapBuilder;
 
         /// <summary>
         /// Initializes a new instance of the ContainerCompiler class.
@@ -57,10 +58,10 @@ namespace Hiro
         /// <param name="createContainerType">The class that will define the container type.</param>
         /// <param name="serviceMapBuilder">The class that will define the service map.</param>
         /// <param name="getAllInstancesMethodImplementor">The class that will implement the GetAllInstances method.</param>
-        public ContainerCompiler(IGetInstanceMethodImplementor getInstanceMethodImplementor, 
-            IContainsMethodImplementor containsMethodImplementor, 
-            ICreateContainerType createContainerType, 
-            IServiceMapBuilder serviceMapBuilder, 
+        public ContainerCompiler(IGetInstanceMethodImplementor getInstanceMethodImplementor,
+            IContainsMethodImplementor containsMethodImplementor,
+            ICreateContainerType createContainerType,
+            IServiceMapBuilder serviceMapBuilder,
             IGetAllInstancesMethodImplementor getAllInstancesMethodImplementor)
         {
             _getInstanceMethodImplementor = getInstanceMethodImplementor;
@@ -75,11 +76,13 @@ namespace Hiro
         /// Compiles a dependency graph into an IOC container.
         /// </summary>
         /// <param name="dependencyContainer">The <see cref="IDependencyContainer"/> instance that contains the services that will be instantiated by compiled container.</param>
+        /// <param name="typeName">The name of the <see cref="IMicroContainer"/> type.</param>
+        /// <param name="namespaceName">The namespace name that will be associated with the container type.</param>
+        /// <param name="assemblyName">The name of the assembly that will contain the container type.</param>
         /// <returns>An assembly containing the compiled IOC container.</returns>
-        public AssemblyDefinition Compile(IDependencyContainer dependencyContainer)
+        public AssemblyDefinition Compile(string typeName, string namespaceName, string assemblyName, IDependencyContainer dependencyContainer)
         {
-            TypeDefinition containerType = _createContainerType.CreateContainerType("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers");
-
+            var containerType = _createContainerType.CreateContainerType(typeName, namespaceName, assemblyName);
             var module = containerType.Module;
             var assembly = module.Assembly;
 
@@ -95,10 +98,18 @@ namespace Hiro
             // Map the switch labels in the default constructor
             AddJumpEntries(module, jumpTargetField, containerType, getServiceHash, serviceMap, jumpTargets);
 
+            var defaultConstructor = containerType.Constructors[0];
+            var body = defaultConstructor.Body;
+            var worker = body.CilWorker;
+            
+            AddInitializationMap(containerType, module, fieldEmitter);
+
+            InitializeContainerPlugins(module, dependencyContainer, worker);
+
+            worker.Emit(OpCodes.Ret);
+
             _containsMethodImplementor.DefineContainsMethod(containerType, module, getServiceHash, jumpTargetField);
-
             _getInstanceMethodImplementor.DefineGetInstanceMethod(containerType, module, getServiceHash, jumpTargetField, serviceMap);
-
             _getAllInstancesMethodImplementor.DefineGetAllInstancesMethod(containerType, module, serviceMap);
 
             // Remove the NextContainer property stub
@@ -117,6 +128,76 @@ namespace Hiro
             containerType.AddProperty("NextContainer", typeof(IMicroContainer));
 
             return assembly;
+        }
+
+        /// <summary>
+        /// Emits the instructions that introduce the <see cref="IContainerPlugin"/> instances to the current <see cref="IMicroContainer"/> instance.
+        /// </summary>
+        /// <param name="module">The target module.</param>
+        /// <param name="dependencyContainer">The <see cref="IDependencyContainer"/> instance that contains the services that will be instantiated by compiled container.</param>
+        /// <param name="worker">The current <see cref="CilWorker"/> instance that points to the current method body.</param>
+        private void InitializeContainerPlugins(ModuleDefinition module, IDependencyContainer dependencyContainer, CilWorker worker)
+        {
+            var pluginDependencies = new List<IDependency>(dependencyContainer.Dependencies);
+
+            Predicate<IDependency> predicate = dependency =>
+                                                   {
+                                                       if (dependency.ServiceType != typeof(IContainerPlugin))
+                                                           return false;
+
+                                                       var matches = dependencyContainer.GetImplementations(dependency, false);
+                                                       var matchList = new List<IImplementation>(matches);
+
+                                                       return matchList.Count > 0;
+                                                   };
+
+            pluginDependencies = pluginDependencies.FindAll(predicate);
+
+            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
+            var getInstanceMethod = module.ImportMethod<IMicroContainer>("GetInstance");
+            foreach (var currentDependency in pluginDependencies)
+            {
+                var currentType = module.Import(currentDependency.ServiceType);
+                var serviceName = currentDependency.ServiceName;
+
+                worker.Emit(OpCodes.Ldarg_0);
+                worker.Emit(OpCodes.Ldtoken, currentType);
+                worker.Emit(OpCodes.Call, getTypeFromHandle);
+
+                var loadString = serviceName == null
+                                     ? worker.Create(OpCodes.Ldnull)
+                                     : worker.Create(OpCodes.Ldstr, serviceName);
+                worker.Append(loadString);
+
+                worker.Emit(OpCodes.Callvirt, getInstanceMethod);
+                worker.Emit(OpCodes.Pop);
+            }
+        }
+
+        /// <summary>
+        /// Modifies the default constructor to initialize the "__initializedServices" field so that it can ensure that all
+        /// services called with the <see cref="IInitialize.Initialize"/> are initialized once per object lifetime.
+        /// </summary>
+        /// <param name="containerType">The container type.</param>
+        /// <param name="module">The module.</param>
+        /// <param name="fieldEmitter">The field builder.</param>
+        private void AddInitializationMap(TypeDefinition containerType, ModuleDefinition module, FieldBuilder fieldEmitter)
+        {
+            var initializationMapType = module.Import(typeof(Dictionary<int, int>));
+            var initializationMapField = new FieldDefinition("__initializedServices", initializationMapType,
+                                                             FieldAttributes.Private | FieldAttributes.InitOnly);
+            containerType.Fields.Add(initializationMapField);
+
+            var defaultConstructor = containerType.Constructors[0];
+            var body = defaultConstructor.Body;
+
+            // __initializedServices = new Dictionary<int, int>();
+            var worker = body.CilWorker;
+            var dictionaryCtor = module.ImportConstructor<Dictionary<int, int>>();
+            worker.Emit(OpCodes.Ldarg_0);
+            worker.Emit(OpCodes.Newobj, dictionaryCtor);
+            worker.Emit(OpCodes.Stfld, initializationMapField);
         }
 
         /// <summary>
@@ -178,8 +259,6 @@ namespace Hiro
                 worker.Emit(OpCodes.Ldc_I4, index++);
                 worker.Emit(OpCodes.Callvirt, addMethod);
             }
-
-            worker.Emit(OpCodes.Ret);
         }
 
         /// <summary>
@@ -192,7 +271,6 @@ namespace Hiro
 
             if (instructions.Count > 0)
             {
-                var lastInstruction = instructions[0];
                 instructions.RemoveAt(instructions.Count - 1);
             }
         }

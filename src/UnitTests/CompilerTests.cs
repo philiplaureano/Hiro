@@ -227,7 +227,7 @@ namespace Hiro.UnitTests
             map.Expect(m => m.GetImplementations(It.IsAny<IDependency>(), It.IsAny<bool>())).Returns(new IImplementation[] { implementation.Object });
 
             var compiler = new ContainerCompiler();
-            compiler.Compile(map.Object);
+            compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", map.Object);
             map.VerifyAll();
         }
 
@@ -411,7 +411,7 @@ namespace Hiro.UnitTests
             map.AddService("Truck", typeof(IVehicle), typeof(Truck));
 
             var compiler = new ContainerCompiler();
-            var assembly = compiler.Compile(map);
+            var assembly = compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", map);
 
             var container = Compile(map);
             var instances = container.GetAllInstances(typeof(IVehicle));
@@ -496,10 +496,64 @@ namespace Hiro.UnitTests
             Assert.AreEqual(42, result);
         }
 
+        [Test]
+        public void ShouldCallInitializeOnTransientTypeThatImplementsIInitialize()
+        {
+            var map = new DependencyMap();
+            map.AddService<IInitialize, SampleInitialize>();
+
+            var container = map.CreateContainer();
+            var result = (SampleInitialize) container.GetInstance<IInitialize>();
+
+            Assert.AreSame(container, result.Container);
+            Assert.IsTrue(result.NumberOfTimesInitialized == 1);
+        }
+
+
+        [Test]
+        public void ShouldCallInitializeOnTransientTypeThatImplementsIInitializeWhenCallingGetAllInstances()
+        {
+            var map = new DependencyMap();
+            map.AddService<IInitialize, SampleInitialize>();
+
+            var container = map.CreateContainer();
+            var result = (SampleInitialize)container.GetAllInstances(typeof(IInitialize)).Cast<IInitialize>().First();
+
+            Assert.AreSame(container, result.Container);
+            Assert.IsTrue(result.NumberOfTimesInitialized == 1);
+        }
+
+        [Test]
+        public void ShouldCallInitializeOnSingletonTypeThatImplementsIInitializeOnceAndOnlyOnce()
+        {
+            var map = new DependencyMap();
+            map.AddSingletonService<IInitialize, SampleInitialize>();
+
+            var container = map.CreateContainer();
+            var result = (SampleInitialize)container.GetInstance<IInitialize>();
+            for (var i = 0; i < 100; i++ )
+            {
+                result = (SampleInitialize)container.GetInstance<IInitialize>();
+            }
+                
+            Assert.AreSame(container, result.Container);
+            Assert.IsTrue(result.NumberOfTimesInitialized == 1);
+        }
+
+        [Test]
+        public void ShouldCallContainerPluginOnceContainerIsInstantiated()
+        {
+            var map = new DependencyMap();
+            map.AddService<IContainerPlugin, SamplePlugin>();
+
+            var container = map.CreateContainer();
+            Assert.IsTrue(SamplePlugin.HasBeenCalled);
+        }
+
         private static IMicroContainer Compile(DependencyMap map)
         {
             var compiler = new ContainerCompiler();
-            var assembly = compiler.Compile(map);
+            var assembly = compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", map);
 
             try
             {

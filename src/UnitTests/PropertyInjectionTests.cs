@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Hiro.Containers;
 using NUnit.Framework;
 using Hiro.UnitTests.SampleDomain;
 using Hiro.Implementations;

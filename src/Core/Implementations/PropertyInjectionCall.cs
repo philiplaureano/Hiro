@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using Hiro.Containers;
 using Hiro.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
