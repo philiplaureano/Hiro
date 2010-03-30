@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseFixture.cs" />
+    <Compile Include="BugFixes\BugFixTests.cs" />
     <Compile Include="CompilerTests.cs" />
     <Compile Include="DependencyTests.cs" />
     <Compile Include="ImplementationTests.cs" />
@@ -98,9 +99,6 @@
       <Project>{C4F4397A-C810-437F-8449-9910C7215946}</Project>
       <Name>SampleAssembly</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BugFixes\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

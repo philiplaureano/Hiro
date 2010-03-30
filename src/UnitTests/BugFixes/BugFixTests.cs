@@ -33,7 +33,7 @@ namespace Hiro.UnitTests.BugFixes
             map.AddSingletonService(typeof(IPerson), typeof(Person));
 
             var compiler = map.ContainerCompiler;
-            var outputAssembly = compiler.Compile(map);
+            var outputAssembly = compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", map);
             AssemblyFactory.SaveAssembly(outputAssembly, "singletonOutputAssembly.dll");
 
             var container = map.CreateContainer();
