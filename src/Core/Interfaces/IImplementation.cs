@@ -21,8 +21,9 @@ namespace Hiro.Interfaces
         /// <summary>
         /// Returns the dependencies required by the current implementation.
         /// </summary>
+        /// <param name="map">The implementation map.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        IEnumerable<IDependency> GetRequiredDependencies();
+        IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map);
 
         /// <summary>
         /// Emits the instructions that will instantiate the current implementation.

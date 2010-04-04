@@ -8,7 +8,8 @@
     <ILMergeAssemblies Include="$(TargetDirectory)\Hiro.Core.dll"/>
     <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.dll"/>
     <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.Generic.dll"/>
-    <ILMergeAssemblies Include="$(TargetDirectory)\Mono.Cecil.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\LinFu.Finders.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\Mono.Cecil.dll"/>    
     <ILMergeAssemblies Include="$(TargetDirectory)\NGenerics.dll"/>
   </ItemGroup>
 
@@ -16,9 +17,10 @@
     <ILMergeAssemblies Include="$(TargetDirectory)\Hiro.Core.dll"/>
     <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.dll"/>
     <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.Generic.dll"/>
-    <ILMergeAssemblies Include="$(TargetDirectory)\Mono.Cecil.dll"/>
-    <ILMergeAssemblies Include="$(TargetDirectory)\NGenerics.dll"/>
     <ILMergeAssemblies Include="$(TargetDirectory)\LinqBridge.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\LinFu.Finders.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\Mono.Cecil.dll"/>
+    <ILMergeAssemblies Include="$(TargetDirectory)\NGenerics.dll"/>   
   </ItemGroup>   
   
   <Target Name="Merge">
@@ -36,6 +38,7 @@
     <Delete Files="$(TargetDirectory)\Iesi.Collections.Generic.dll" />
     <Delete Files="$(TargetDirectory)\Mono.Cecil.dll" />
     <Delete Files="$(TargetDirectory)\NGenerics.dll" />
+    <Delete Files="$(TargetDirectory)\LinFu.Finders.dll" />
     <Delete Files="$(TargetDirectory)\LinqBridge.dll" Condition=" '$(TargetFramework)' == 'net-2.0' "/>
 
   </Target>

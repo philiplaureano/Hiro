@@ -27,9 +27,10 @@ namespace Hiro.UnitTests
 
             var map = new Mock<IDependencyContainer>();
             map.Expect(m => m.Contains(It.IsAny<Dependency>())).Returns(true);
+            map.Expect(m => m.Dependencies).Returns(new IDependency[] {});
 
-            var constructorResolver = new ConstructorResolver(constructorImplementations);
-            IImplementation<ConstructorInfo> result = constructorResolver.ResolveFrom(map.Object);
+            var constructorResolver = new ConstructorResolver();
+            IImplementation<ConstructorInfo> result = constructorResolver.ResolveFrom(targetType, map.Object);
 
             Assert.AreEqual(expectedImplementation.Target, result.Target);
 
@@ -41,9 +42,9 @@ namespace Hiro.UnitTests
         {
             var map = new Mock<IDependencyContainer>();
             map.Expect(m => m.Contains(It.IsAny<Dependency>())).Returns(true);
+            map.Expect(m => m.Dependencies).Returns(new IDependency[] { });
 
             var expectedConstructor = typeof(Vehicle).GetConstructor(new Type[] { typeof(IPerson) });
-            var targetType = typeof(Vehicle);
             IImplementation<ConstructorInfo> implementation = new TransientType(typeof(Vehicle), map.Object);
 
             Assert.AreSame(implementation.Target, expectedConstructor);

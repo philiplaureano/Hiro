@@ -44,6 +44,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Iesi.Collections.Generic.dll</HintPath>
     </Reference>
+    <Reference Include="LinFu.Finders, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3addbe3eede3dde9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\LinFu.Finders.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Cecil, Version=0.6.9.0, Culture=neutral, PublicKeyToken=f8308f98b9861962, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Mono.Cecil.dll</HintPath>
@@ -77,6 +81,7 @@
     <Compile Include="LoaderTests.cs" />
     <Compile Include="MicroContainerExtensionTests.cs" />
     <Compile Include="PropertyInjectionTests.cs" />
+    <Compile Include="SampleDomain\Garage.cs" />
     <Compile Include="SampleDomain\IPerson.cs" />
     <Compile Include="SampleDomain\IVehicle.cs" />
     <Compile Include="SampleDomain\Person.cs" />

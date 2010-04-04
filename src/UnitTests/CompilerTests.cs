@@ -503,7 +503,7 @@ namespace Hiro.UnitTests
             map.AddService<IInitialize, SampleInitialize>();
 
             var container = map.CreateContainer();
-            var result = (SampleInitialize) container.GetInstance<IInitialize>();
+            var result = (SampleInitialize)container.GetInstance<IInitialize>();
 
             Assert.AreSame(container, result.Container);
             Assert.IsTrue(result.NumberOfTimesInitialized == 1);
@@ -531,11 +531,11 @@ namespace Hiro.UnitTests
 
             var container = map.CreateContainer();
             var result = (SampleInitialize)container.GetInstance<IInitialize>();
-            for (var i = 0; i < 100; i++ )
+            for (var i = 0; i < 100; i++)
             {
                 result = (SampleInitialize)container.GetInstance<IInitialize>();
             }
-                
+
             Assert.AreSame(container, result.Container);
             Assert.IsTrue(result.NumberOfTimesInitialized == 1);
         }
@@ -548,6 +548,35 @@ namespace Hiro.UnitTests
 
             var container = map.CreateContainer();
             Assert.IsTrue(SamplePlugin.HasBeenCalled);
+        }
+
+        [Test]
+        public void ShouldUseFirstNamedServiceInstanceIfNoDefaultServiceIsAvailable()
+        {
+            var map = new DependencyMap();
+            map.AddService<Garage, Garage>();
+            map.AddService<IVehicle, Truck>("Truck");
+
+            var container = map.CreateContainer();
+
+            var garage = container.GetInstance<Garage>();
+            Assert.IsNotNull(garage.Vehicle);
+            Assert.IsInstanceOfType(typeof(Truck), garage.Vehicle);
+        }
+
+        [Test]
+        public void ShouldUseConstructorParameterNameToInjectNamedServiceInstanceIfTheNamedServiceExists()
+        {
+            var map = new DependencyMap();
+            map.AddService<IVehicle, Vehicle>("Vehicle");
+            map.AddService<IVehicle, Truck>("Truck");
+            map.AddService<Garage, Garage>();
+
+            var container = map.CreateContainer();
+
+            var garage = container.GetInstance<Garage>();
+            Assert.IsNotNull(garage.Vehicle);
+            Assert.IsInstanceOfType(typeof(Vehicle), garage.Vehicle);
         }
 
         private static IMicroContainer Compile(DependencyMap map)

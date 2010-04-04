@@ -71,7 +71,7 @@ namespace Hiro.Implementations
         /// <returns>A list of missing dependencies.</returns>
         public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
         {
-            foreach (var dependency in GetRequiredDependencies())
+            foreach (var dependency in GetRequiredDependencies(map))
             {
                 if (!map.Contains(dependency))
                     yield return dependency;
@@ -81,10 +81,11 @@ namespace Hiro.Implementations
         /// <summary>
         /// Returns the dependencies required by the current implementation.
         /// </summary>
+        /// <param name="map">The implementation map.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetRequiredDependencies()
+        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
         {
-            var requiredDependencies = _implementation.GetRequiredDependencies();
+            var requiredDependencies = _implementation.GetRequiredDependencies(map);
             var dependencyList = new List<IDependency>(requiredDependencies);
             var results = new HashedSet<IDependency>(dependencyList);
 

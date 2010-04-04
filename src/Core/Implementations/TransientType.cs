@@ -25,30 +25,39 @@ namespace Hiro.Implementations
         private IDependencyContainer _container;
 
         /// <summary>
+        /// The constructor resolver that will select the constructor with the most resolvable parameters.
+        /// </summary>
+        private readonly IConstructorResolver _resolver;
+
+        /// <summary>
         /// The functor that determines which constructor implementation will be used to instantiate the target type.
         /// </summary>
         private Func<IImplementation<ConstructorInfo>> _getConstructorImplementation;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:System.Object"/> class.
+        /// </summary>
+        /// <param name="targetType">The target type.</param>
+        /// <param name="container">The dependency container.</param>
+        public TransientType(Type targetType, IDependencyContainer container) : this(targetType, container, new ConstructorResolver())
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the TransientType class.
         /// </summary>
         /// <param name="targetType">The target type.</param>
         /// <param name="container">The dependency container.</param>
-        public TransientType(Type targetType, IDependencyContainer container)
+        /// <param name="resolver">The constructor resolver.</param>
+        public TransientType(Type targetType, IDependencyContainer container, IConstructorResolver resolver)
         {
             _targetType = targetType;
             _container = container;
-
-            var constructorImplementations = new List<IImplementation<ConstructorInfo>>();
-            foreach(var constructor in targetType.GetConstructors())
-            {
-                constructorImplementations.Add(new ConstructorCall(constructor));
-            }
+            _resolver = resolver;
 
             _getConstructorImplementation = () =>
-                {
-                    var resolver = new ConstructorResolver(constructorImplementations);
-                    var result = resolver.ResolveFrom(_container);
+                {                    
+                    var result = _resolver.ResolveFrom(targetType, _container);
 
                     if (result == null)
                     {
@@ -58,7 +67,7 @@ namespace Hiro.Implementations
 
                     return result;
                 };
-        }
+        }        
 
         /// <summary>
         /// Gets the value indicating the type that will be instantiated by this implementation.
@@ -110,10 +119,11 @@ namespace Hiro.Implementations
         /// <summary>
         /// Returns the dependencies required by the current implementation.
         /// </summary>
+        /// <param name="map">The implementation map.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetRequiredDependencies()
+        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
         {
-            return TargetImplementation.GetRequiredDependencies();
+            return TargetImplementation.GetRequiredDependencies(map);
         }
 
         /// <summary>

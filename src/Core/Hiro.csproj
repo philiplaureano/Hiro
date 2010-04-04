@@ -49,6 +49,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Iesi.Collections.Generic.dll</HintPath>
     </Reference>
+    <Reference Include="LinFu.Finders, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3addbe3eede3dde9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\LinFu.Finders.dll</HintPath>
+    </Reference>
     <Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\LinqBridge.dll</HintPath>
@@ -133,6 +137,7 @@
     <Compile Include="MicroContainerExtensions.cs" />
     <Compile Include="ModuleDefinitionExtensions.cs" />
     <Compile Include="Resolvers\ConstructorResolver.cs" />
+    <Compile Include="Interfaces\IConstructorResolver.cs" />
     <Compile Include="ServiceInfo.cs" />
     <Compile Include="TypeDefinitionExtensions.cs" />
   </ItemGroup>

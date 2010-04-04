@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Text;
 using Hiro.Containers;
 using Hiro.Interfaces;
+using LinFu.Finders;
+using LinFu.Finders.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -13,7 +15,7 @@ namespace Hiro.Implementations
     /// Represents an implementation that emits a constructor call.
     /// </summary>
     public class ConstructorCall : IImplementation<ConstructorInfo>
-    {   
+    {
         /// <summary>
         /// Initializes a new instance of the ConstructorCall class.
         /// </summary>
@@ -52,7 +54,7 @@ namespace Hiro.Implementations
         /// <returns>A list of missing dependencies.</returns>
         public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
         {
-            foreach (var dependency in GetRequiredDependencies())
+            foreach (var dependency in GetRequiredDependencies(map))
             {
                 if (!map.Contains(dependency))
                     yield return dependency;
@@ -62,12 +64,14 @@ namespace Hiro.Implementations
         /// <summary>
         /// Returns the dependencies required by the current implementation.
         /// </summary>
+        /// <param name="map">The implementation map.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetRequiredDependencies()
+        public virtual IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
         {
-            foreach (var parameter in Target.GetParameters())
+            var dependencies = new List<IDependency>(map.Dependencies);
+            foreach(var parameter in Target.GetParameters())
             {
-                var dependency = GetDependency(parameter);
+                var dependency = GetNamedParameterDependencyIfPossible(dependencies, parameter);
                 yield return dependency;
             }
         }
@@ -85,14 +89,43 @@ namespace Hiro.Implementations
             var body = targetMethod.Body;
             var worker = body.CilWorker;
 
+            var dependencies = serviceMap.Keys;
+
             // Instantiate the parameter values            
-            foreach (var currentDependency in GetRequiredDependencies())
+            foreach (var parameter in Target.GetParameters())
             {
+                IDependency currentDependency = GetNamedParameterDependencyIfPossible(dependencies, parameter);
+
                 EmitDependency(currentDependency, targetMethod, serviceMap);
             }
 
             var targetConstructor = module.Import(Target);
             worker.Emit(OpCodes.Newobj, targetConstructor);
+        }
+
+        /// <summary>
+        /// Attempts to resolve the service that matches the parameter name and parameter type if possible, and if the given service cannot be resolved,
+        /// the dependency will fall back to the default parameter type.
+        /// </summary>
+        /// <param name="dependencies">The list of dependencies in the current container.</param>
+        /// <param name="parameter">The target parameter.</param>
+        /// <returns>The required dependency.</returns>
+        private IDependency GetNamedParameterDependencyIfPossible(ICollection<IDependency> dependencies, ParameterInfo parameter)
+        {
+            var parameterType = parameter.ParameterType;
+            IDependency currentDependency = new Dependency(parameterType, string.Empty);
+
+            // Use the named parameter dependency if it exists
+            var parameterName = parameter.Name;
+            var dependencyList = dependencies.AsFuzzyList();
+            dependencyList.AddCriteria(d => d.ServiceType == parameterType, CriteriaType.Critical);
+            dependencyList.AddCriteria(d => d.ServiceName != null && d.ServiceName.ToLowerInvariant() == parameterName.ToLowerInvariant());
+
+            var bestMatch = dependencyList.BestMatch();
+            if (bestMatch != null)
+                currentDependency = bestMatch.Item;
+
+            return currentDependency;
         }
 
         /// <summary>
@@ -105,7 +138,7 @@ namespace Hiro.Implementations
         {
             IImplementation implementation = Resolve(serviceMap, currentDependency);
             implementation.Emit(currentDependency, serviceMap, targetMethod);
-        }
+        }        
 
         /// <summary>
         /// Resolves an <see cref="IImplementation"/> from the given <paramref name="currentDependency">dependency</paramref> and <paramref name="serviceMap"/>.
@@ -120,7 +153,7 @@ namespace Hiro.Implementations
 
             // HACK: Get the service instance at runtime if it can't be resolved at compile time
             return new ContainerCall(currentDependency.ServiceType, currentDependency.ServiceName);
-        }       
+        }
 
         /// <summary>
         /// Determines which dependency should be used for the target parameter.

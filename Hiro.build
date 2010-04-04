@@ -61,6 +61,7 @@
         <include name="System.Data.dll"/>        
         <include name="System.Xml.dll" />
         <include name="${output.dir}\Hiro.Containers.dll"/>
+        <include name="${library.dir}\LinFu.Finders.dll"/>
         <include name="${library.dir}\Iesi.Collections.dll"/>
         <include name="${library.dir}\Iesi.Collections.Generic.dll"/>
         <include name="${library.dir}\Mono.Cecil.dll"/>
@@ -72,6 +73,7 @@
       <fileset basedir="${library.dir}">
         <include name="Iesi.Collections.dll"/>
         <include name="Iesi.Collections.Generic.dll"/>
+        <include name="${library.dir}\LinFu.Finders.dll"/>
         <include name="Mono.Cecil.dll"/>
         <include name="NGenerics.dll"/>
         <include name="LinqBridge.dll" if="${target.framework == 'net-2.0'}"/>
@@ -117,6 +119,7 @@
         <include name="${unittest.dir}\SampleAssembly.dll"/>
         <include name="${output.dir}\Hiro.Containers.dll"/>
         <include name="${output.dir}\Hiro.Core.dll"/>
+        <include name="${library.dir}\LinFu.Finders.dll"/>
         <include name="${library.dir}\Iesi.Collections.dll"/>
         <include name="${library.dir}\Iesi.Collections.Generic.dll"/>
         <include name="${library.dir}\Mono.Cecil.dll"/>
@@ -128,6 +131,7 @@
     <copy todir="${unittest.dir}">
       <fileset basedir="${library.dir}">        
         <include name="Iesi.Collections.dll"/>
+        <include name="LinFu.Finders.dll"/>
         <include name="Iesi.Collections.Generic.dll"/>
         <include name="Mono.Cecil.dll"/>
         <include name="NGenerics.dll"/>

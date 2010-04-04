@@ -27,7 +27,7 @@ namespace Hiro.Implementations
         /// Returns the dependencies required by the current implementation.
         /// </summary>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetRequiredDependencies()
+        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
         {
             yield break;
         }
