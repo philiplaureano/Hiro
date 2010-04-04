@@ -88,5 +88,12 @@ namespace Hiro
 
             return hash;
         }
+
+        public override string ToString()
+        {
+            var serviceName = ServiceName ?? "{null}";
+            return string.Format("Service Name: {0}, Service Type: {1}, ImplementingType {2}", serviceName,
+                                 ServiceType.FullName, ImplementingType.FullName);
+        }
     }
 }

@@ -9,6 +9,7 @@ using Hiro.UnitTests.SampleDomain;
 using Moq;
 using NGenerics.DataStructures.General;
 using NUnit.Framework;
+using SampleAssembly;
 
 namespace Hiro.UnitTests
 {
@@ -47,6 +48,20 @@ namespace Hiro.UnitTests
             var expectedService = new ServiceInfo(typeof(IPerson), typeof(Person), "Person");
             var serviceList = new List<IServiceInfo>(list);
             Assert.IsTrue(serviceList.Contains(expectedService));
+        }
+
+        [Test]
+        public void ShouldBeAbleToAutomaticallyInjectBaseGenericInterfaceTypes()
+        {
+            var loader = new DependencyMapLoader();
+            var map = loader.LoadFromBaseDirectory("Sample*.dll");
+            map.AddService<IFoo<int>, SampleGenericImplementation>();
+
+            var dependencies = map.Dependencies;
+            
+            var container = map.CreateContainer();
+            Assert.IsTrue(container.Contains(typeof(IBaz<int>), "SampleGenericImplementation"));
+            Assert.IsTrue(container.Contains(typeof(IFoo<int>), "SampleGenericImplementation"));            
         }
 
         [Test]

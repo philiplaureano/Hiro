@@ -21,6 +21,11 @@ namespace Hiro.Implementations
         {
             var staticImplementation = originalImplementation as IStaticImplementation;
 
+            // HACK: Ignore primitive types by default
+            var serviceType = dependency.ServiceType;
+            if (serviceType.IsValueType)
+                return originalImplementation;
+
             // Property injection can only be performend on early-bound instantiations
             if (staticImplementation == null)
                 return originalImplementation;

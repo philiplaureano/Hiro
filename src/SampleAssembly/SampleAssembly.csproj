@@ -46,10 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbConTest.cs" />
+    <Compile Include="IBaz.cs" />
     <Compile Include="IDbConnection.cs" />
+    <Compile Include="IFoo.cs" />
     <Compile Include="ITestRepo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleFactory.cs" />
+    <Compile Include="SampleGenericImplementation.cs" />
     <Compile Include="TestRepository.cs" />
   </ItemGroup>
   <ItemGroup>
