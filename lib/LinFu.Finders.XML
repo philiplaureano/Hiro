@@ -1,0 +1,260 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LinFu.Finders</name>
+    </assembly>
+    <members>
+        <member name="T:LinFu.Finders.Interfaces.ICriteria`1">
+            <summary>
+            Represents a class that describes the search criteria
+            for a given item <typeparamref name="T">type</typeparamref>.
+            </summary>
+            <typeparam name="T">The target item type.</typeparam>
+        </member>
+        <member name="P:LinFu.Finders.Interfaces.ICriteria`1.Type">
+            <summary>
+            Gets or sets a value indicating the <see cref="T:LinFu.Finders.Interfaces.CriteriaType"/>
+            of the current <see cref="T:LinFu.Finders.Interfaces.ICriteria`1"/>.
+            </summary>
+        </member>
+        <member name="P:LinFu.Finders.Interfaces.ICriteria`1.Predicate">
+            <summary>
+            The condition that will determine whether or not
+            the target item matches the criteria.
+            </summary>
+        </member>
+        <member name="P:LinFu.Finders.Interfaces.ICriteria`1.Weight">
+            <summary>
+            Gets or sets a value indicating the weight of the given <see cref="P:LinFu.Finders.Interfaces.ICriteria`1.Predicate"/>.
+            </summary>
+        </member>
+        <member name="T:LinFu.Finders.FuzzyItem`1">
+            <summary>
+            Represents the default implementation of a weighted item in
+            a fuzzy list.
+            </summary>
+            <typeparam name="T">The item type to be tested.</typeparam>
+        </member>
+        <member name="T:LinFu.Finders.Interfaces.IFuzzyItem`1">
+            <summary>
+            Represents a search item in a fuzzy search list.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:LinFu.Finders.Interfaces.IFuzzyItem`1.Test(LinFu.Finders.Interfaces.ICriteria{`0})">
+            <summary>
+            Tests if the current item matches the given
+            <paramref name="criteria"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:LinFu.Finders.Interfaces.ICriteria`1"/> that determines whether or not the <see cref="P:LinFu.Finders.Interfaces.IFuzzyItem`1.Item"/> meets a particular description.</param>
+        </member>
+        <member name="M:LinFu.Finders.Interfaces.IFuzzyItem`1.Reset">
+            <summary>
+            Resets the item back to its initial state.
+            </summary>
+        </member>
+        <member name="P:LinFu.Finders.Interfaces.IFuzzyItem`1.Confidence">
+            <summary>
+            Reports the probability of a match
+            based on the <see cref="T:LinFu.Finders.Interfaces.ICriteria`1"/>
+            that has been tested so far. 
+            
+            A value of 1.0 indicates a 100% match;
+            A value of 0.0 equals a zero percent match.
+            </summary>
+        </member>
+        <member name="P:LinFu.Finders.Interfaces.IFuzzyItem`1.Item">
+            <summary>
+            Gets the target item.
+            </summary>
+        </member>
+        <member name="M:LinFu.Finders.FuzzyItem`1.#ctor(`0)">
+            <summary>
+            Initializes the <see cref="T:LinFu.Finders.FuzzyItem`1"/> class with the given <paramref name="item"/>.
+            </summary>
+            <param name="item">An instance of the <typeparamref name="T">item type</typeparamref> that will be tested.</param>
+        </member>
+        <member name="M:LinFu.Finders.FuzzyItem`1.Test(LinFu.Finders.Interfaces.ICriteria{`0})">
+            <summary>
+            Tests if the current item matches the given
+            <paramref name="criteria"/>.
+            </summary>
+            <param name="criteria">The <see cref="T:LinFu.Finders.Interfaces.ICriteria`1"/> that determines whether or not the <see cref="P:LinFu.Finders.FuzzyItem`1.Item"/> meets a particular description.</param>
+        </member>
+        <member name="M:LinFu.Finders.FuzzyItem`1.Reset">
+            <summary>
+            Resets the item back to its initial state.
+            </summary>
+        </member>
+        <member name="P:LinFu.Finders.FuzzyItem`1.Confidence">
+            <summary>
+            Reports the probability of a match
+            based on the <see cref="T:LinFu.Finders.Interfaces.ICriteria`1"/>
+            that has been tested so far. 
+            
+            A value of 1.0 indicates a 100% match;
+            A value of 0.0 equals a zero percent match.
+            </summary>
+        </member>
+        <member name="P:LinFu.Finders.FuzzyItem`1.Item">
+            <summary>
+            Gets the target item.
+            </summary>
+        </member>
+        <member name="T:LinFu.Finders.PredicateExtensions">
+            <summary>
+            A class that adds logical extensions to the <see cref="T:System.Predicate`1"/> predicate
+            class.
+            </summary>
+        </member>
+        <member name="M:LinFu.Finders.PredicateExtensions.Or``1(System.Predicate{``0},System.Predicate{``0})">
+            <summary>
+            Logically ORs two <see cref="T:System.Predicate`1"/> predicates together.
+            </summary>
+            <typeparam name="TItem">The type of item being compared.</typeparam>
+            <param name="left">The left hand predicate.</param>
+            <param name="right">The right hand predicate.</param>
+            <returns>A predicate that will return <c>true</c> if and only if one of the given predicates is <c>true</c>; otherwise, it will return <c>false</c>.</returns>
+        </member>
+        <member name="M:LinFu.Finders.PredicateExtensions.And``1(System.Predicate{``0},System.Predicate{``0})">
+            <summary>
+            Logically ANDs two <see cref="T:System.Predicate`1"/> predicates together.
+            </summary>
+            <typeparam name="TItem">The type of item being compared.</typeparam>
+            <param name="left">The left hand predicate.</param>
+            <param name="right">The right hand predicate.</param>
+            <returns>A predicate that will return <c>true</c> if and only if both of the given predicates are <c>true</c>; otherwise, it will return <c>false</c>.</returns>
+        </member>
+        <member name="M:LinFu.Finders.PredicateExtensions.Inverse``1(System.Predicate{``0})">
+            <summary>
+            Logically negates a single predicate.
+            </summary>
+            <typeparam name="TItem">The type of item being compared.</typeparam>
+            <param name="predicate">The predicate to negate.</param>
+            <returns>Returns <c>true</c> if the given predicate is <c>false</c>.</returns>
+        </member>
+        <member name="T:LinFu.Finders.Criteria`1">
+            <summary>
+            Represents the default implementation of the <see cref="T:LinFu.Finders.Interfaces.ICriteria`1"/> interface.
+            </summary>
+            <typeparam name="T">The type of item to test.</typeparam>
+        </member>
+        <member name="P:LinFu.Finders.Criteria`1.Type">
+            <summary>
+            Gets or sets a value indicating the <see cref="T:LinFu.Finders.Interfaces.CriteriaType"/>
+            of the current <see cref="T:LinFu.Finders.Criteria`1"/>.
+            </summary>
+        </member>
+        <member name="P:LinFu.Finders.Criteria`1.Predicate">
+            <summary>
+            The condition that will determine whether or not
+            the target item matches the criteria.
+            </summary>
+        </member>
+        <member name="P:LinFu.Finders.Criteria`1.Weight">
+            <summary>
+            The weight of the given <see cref="P:LinFu.Finders.Criteria`1.Predicate"/>.
+            </summary>
+        </member>
+        <member name="T:LinFu.Finders.Interfaces.CriteriaType">
+            <summary>
+            The enumeration that determines how a <see cref="T:LinFu.Finders.Interfaces.ICriteria`1"/> instance should
+            be handled if the criteria test fails.
+            </summary>
+        </member>
+        <member name="F:LinFu.Finders.Interfaces.CriteriaType.Standard">
+            <summary>
+            A failure in a criteria test will result in a lower weighted
+            score for a target item.
+            </summary>
+        </member>
+        <member name="F:LinFu.Finders.Interfaces.CriteriaType.Optional">
+            <summary>
+            A failure in a criteria test will be ignored, and hence,
+            the criteria will be optional.
+            </summary>
+        </member>
+        <member name="F:LinFu.Finders.Interfaces.CriteriaType.Critical">
+            <summary>
+            A failure in a criteria test will cause all previous and remaining
+            tests against the criteria to fail.
+            </summary>
+        </member>
+        <member name="T:LinFu.Finders.FinderExtensions">
+            <summary>
+            A class that adds fuzzy search support to <see cref="T:System.Collections.Generic.IList`1"/> instances.
+            </summary>
+        </member>
+        <member name="M:LinFu.Finders.FinderExtensions.AddCriteria``1(System.Collections.Generic.IList{LinFu.Finders.Interfaces.IFuzzyItem{``0}},LinFu.Finders.Interfaces.ICriteria{``0})">
+            <summary>
+            Applies a criteria to the <paramref name="list"/> of 
+            fuzzy items.
+            </summary>
+            <typeparam name="TItem">The type of item to test.</typeparam>
+            <param name="list">The list of <see cref="T:LinFu.Finders.Interfaces.IFuzzyItem`1"/> instances that represent a single test case in a fuzzy search.</param>
+            <param name="criteria">The criteria to test against each item in the list.</param>
+        </member>
+        <member name="M:LinFu.Finders.FinderExtensions.AddCriteria``1(System.Collections.Generic.IList{LinFu.Finders.Interfaces.IFuzzyItem{``0}},System.Predicate{``0})">
+            <summary>
+            Applies a criteria to the <paramref name="list"/> of 
+            fuzzy items using the given <paramref name="predicate"/>.
+            </summary>
+            <typeparam name="TItem">The type of item to test.</typeparam>
+            <param name="list">The list of <see cref="T:LinFu.Finders.Interfaces.IFuzzyItem`1"/> instances that represent a single test case in a fuzzy search.</param>
+            <param name="predicate">The condition that will be used to test the target item.</param>        
+        </member>
+        <member name="M:LinFu.Finders.FinderExtensions.AddCriteria``1(System.Collections.Generic.IList{LinFu.Finders.Interfaces.IFuzzyItem{``0}},System.Predicate{``0},LinFu.Finders.Interfaces.CriteriaType)">
+            <summary>
+            Applies a criteria to the <paramref name="list"/> of 
+            fuzzy items using the given <paramref name="predicate"/>.
+            </summary>
+            <typeparam name="TItem">The type of item to test.</typeparam>
+            <param name="list">The list of <see cref="T:LinFu.Finders.Interfaces.IFuzzyItem`1"/> instances that represent a single test case in a fuzzy search.</param>
+            <param name="predicate">The condition that will be used to test the target item.</param>        
+            <param name="criteriaType">The <see cref="T:LinFu.Finders.Interfaces.CriteriaType"/> to associate with the predicate.</param>        
+        </member>
+        <member name="M:LinFu.Finders.FinderExtensions.AddCriteria``1(System.Collections.Generic.IList{LinFu.Finders.Interfaces.IFuzzyItem{``0}},System.Predicate{``0},LinFu.Finders.Interfaces.CriteriaType,System.Int32)">
+            <summary>
+            Applies a criteria to the <paramref name="list"/> of 
+            fuzzy items using the given <paramref name="predicate"/>.
+            </summary>
+            <typeparam name="TItem">The type of item to test.</typeparam>
+            <param name="list">The list of <see cref="T:LinFu.Finders.Interfaces.IFuzzyItem`1"/> instances that represent a single test case in a fuzzy search.</param>
+            <param name="predicate">The condition that will be used to test the target item.</param>        
+            <param name="criteriaType">The <see cref="T:LinFu.Finders.Interfaces.CriteriaType"/> to associate with the predicate.</param>        
+            <param name="weight">The weight of the predicate value expressed in the number of tests that will be counted for/against the target item as a result of the predicate.</param>
+        </member>
+        <member name="M:LinFu.Finders.FinderExtensions.Add``1(System.Collections.Generic.IList{LinFu.Finders.Interfaces.IFuzzyItem{``0}},``0)">
+            <summary>
+            Adds an item to a fuzzy list.
+            </summary>
+            <typeparam name="T">The type of the item being added.</typeparam>
+            <param name="list">The fuzzy list that will contain the new item.</param>
+            <param name="item">The item being added.</param>
+        </member>
+        <member name="M:LinFu.Finders.FinderExtensions.BestMatch``1(System.Collections.Generic.IList{LinFu.Finders.Interfaces.IFuzzyItem{``0}})">
+            <summary>
+            Returns the FuzzyItem with the highest confidence score in a given
+            <see cref="T:LinFu.Finders.Interfaces.IFuzzyItem`1"/> list.
+            </summary>
+            <typeparam name="TItem">The type of item being compared.</typeparam>
+            <param name="list">The fuzzy list that contains the list of possible matches.</param>
+            <returns>The item with the highest match.</returns>
+        </member>
+        <member name="M:LinFu.Finders.FinderExtensions.Reset``1(System.Collections.Generic.IList{LinFu.Finders.Interfaces.IFuzzyItem{``0}})">
+            <summary>
+            Resets the scores of all fuzzy items in the current list.
+            </summary>
+            <typeparam name="TItem">The target item type.</typeparam>
+            <param name="list">The fuzzy list itself.</param>
+        </member>
+        <member name="M:LinFu.Finders.FinderExtensions.AsFuzzyList``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Converts a list into a list of <see cref="T:LinFu.Finders.Interfaces.IFuzzyItem`1"/> objects.
+            </summary>
+            <typeparam name="TItem">The item type will be used in the fuzzy search.</typeparam>
+            <param name="items">The target list to be converted.</param>
+            <returns>A fuzzy list containing the elements from the given list.</returns>
+        </member>
+    </members>
+</doc>
