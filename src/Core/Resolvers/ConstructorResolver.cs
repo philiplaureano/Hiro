@@ -26,7 +26,8 @@ namespace Hiro.Resolvers
             var constructors = new List<IImplementation<ConstructorInfo>>();
             foreach(var constructor in targetType.GetConstructors())
             {
-                constructors.Add(new ConstructorCall(constructor));
+                var constructorCall = CreateConstructorCall(constructor);
+                constructors.Add(constructorCall);
             }
 
             var bestParameterCount = 0;
@@ -50,6 +51,16 @@ namespace Hiro.Resolvers
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Creates the <see cref="IImplementation"/> instance that will generate the given constructor call.
+        /// </summary>
+        /// <param name="constructor">The target constructor.</param>
+        /// <returns>The target implementation.</returns>
+        protected virtual IImplementation<ConstructorInfo> CreateConstructorCall(ConstructorInfo constructor)
+        {
+            return new ConstructorCall(constructor);
         }
     }
 }

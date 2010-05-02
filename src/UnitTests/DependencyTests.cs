@@ -6,6 +6,7 @@ using System.Text;
 using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
+using Hiro.Resolvers;
 using Hiro.UnitTests.SampleDomain;
 using Moq;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace Hiro.UnitTests
             var map = new DependencyMap();
             map.Injector = injector.Object;
 
-            injector.Expect(i => i.Inject(It.IsAny<IDependency>(), It.IsAny<IImplementation>())).Returns(new TransientType(typeof(Vehicle), map));
+            injector.Expect(i => i.Inject(It.IsAny<IDependency>(), It.IsAny<IImplementation>())).Returns(new TransientType(typeof(Vehicle), map, new ConstructorResolver()));
 
             map.AddService<IVehicle, Vehicle>();
             injector.VerifyAll();

@@ -81,6 +81,7 @@
     <Compile Include="Compilers\FieldBuilder.cs" />
     <Compile Include="Compilers\GetAllInstancesMethodImplementor.cs" />
     <Compile Include="Compilers\GetInstanceMethodImplementor.cs" />
+    <Compile Include="Implementations\BaseConstructorCall.cs" />
     <Compile Include="Interfaces\IServiceInitializer.cs" />
     <Compile Include="Compilers\MethodBuilder.cs" />
     <Compile Include="Compilers\MethodBuilderOptions.cs" />

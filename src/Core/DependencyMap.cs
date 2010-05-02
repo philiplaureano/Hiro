@@ -4,6 +4,7 @@ using System.Reflection;
 using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
+using Hiro.Resolvers;
 using Mono.Cecil;
 using NGenerics.DataStructures.General;
 
@@ -14,6 +15,8 @@ namespace Hiro
     /// </summary>
     public class DependencyMap : BaseDependencyMap
     {
+        private readonly IConstructorResolver _constructorResolver;
+
         private readonly Dictionary<AssemblyDefinition, Assembly> _cache =
             new Dictionary<AssemblyDefinition, Assembly>();
 
@@ -21,7 +24,7 @@ namespace Hiro
         /// Initializes a new instance of the <see cref="DependencyMap"/> class.
         /// </summary>
         public DependencyMap()
-            : this(new CachedContainerCompiler(new ContainerCompiler()))
+            : this(new CachedContainerCompiler(new ContainerCompiler()), new ConstructorResolver())
         {
         }
 
@@ -29,10 +32,17 @@ namespace Hiro
         /// Initializes a new instance of the <see cref="DependencyMap"/> class.
         /// </summary>
         /// <param name="compiler">The compiler that will be used to compile this map into an IOC container.</param>
-        public DependencyMap(IContainerCompiler compiler)
+        /// <param name="constructorResolver">The resolver that will be used to determine the constructor that will be used to instantiate a given object instance.</param>
+        public DependencyMap(IContainerCompiler compiler, IConstructorResolver constructorResolver)
         {
+            
             if (compiler == null)
                 throw new ArgumentNullException("compiler");
+
+            if (constructorResolver == null)
+                throw new ArgumentNullException("constructorResolver");
+
+            _constructorResolver = constructorResolver;
 
             ContainerCompiler = compiler;
 
@@ -115,7 +125,7 @@ namespace Hiro
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
-            AddService(new Dependency(serviceType, serviceName), new TransientType(implementingType, this));
+            AddService(new Dependency(serviceType, serviceName), new TransientType(implementingType, this, _constructorResolver));
         }
 
         /// <summary>
@@ -128,7 +138,7 @@ namespace Hiro
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
-            AddService(new Dependency(serviceType), new TransientType(implementingType, this));
+            AddService(new Dependency(serviceType), new TransientType(implementingType, this, _constructorResolver));
         }
 
         /// <summary>
@@ -139,7 +149,7 @@ namespace Hiro
         public void AddSingletonService<TService, TImplementation>()
             where TImplementation : TService
         {
-            AddService(new Dependency(typeof(TService)), new SingletonType(typeof(TImplementation), this));
+            AddService(new Dependency(typeof(TService)), new SingletonType(typeof(TImplementation), this, _constructorResolver));
         }
 
         /// <summary>
@@ -150,7 +160,7 @@ namespace Hiro
         /// <param name="serviceName">The service name.</param>
         public void AddSingletonService<TService, TImplementation>(string serviceName)
         {
-            AddService(new Dependency(typeof(TService), serviceName), new SingletonType(typeof(TImplementation), this));
+            AddService(new Dependency(typeof(TService), serviceName), new SingletonType(typeof(TImplementation), this, _constructorResolver));
         }
 
         /// <summary>
@@ -163,7 +173,7 @@ namespace Hiro
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
-            AddService(new Dependency(serviceType), new SingletonType(implementingType, this));
+            AddService(new Dependency(serviceType), new SingletonType(implementingType, this, _constructorResolver));
         }
 
         /// <summary>
@@ -177,7 +187,7 @@ namespace Hiro
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
-            AddService(new Dependency(serviceType, serviceName), new SingletonType(implementingType, this));
+            AddService(new Dependency(serviceType, serviceName), new SingletonType(implementingType, this, _constructorResolver));
         }
 
         /// <summary>

@@ -8,6 +8,7 @@ using Hiro.Compilers;
 using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
+using Hiro.Resolvers;
 using Hiro.UnitTests.SampleDomain;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -388,7 +389,7 @@ namespace Hiro.UnitTests
             var map = new DependencyMap();
             var dependency = new Dependency(typeof(IVehicle));
 
-            map.AddService(dependency, new SingletonType(typeof(Vehicle), map));
+            map.AddService(dependency, new SingletonType(typeof(Vehicle), map, new ConstructorResolver()));
 
             var container = Compile(map);
             var first = container.GetInstance(typeof(IVehicle), null);

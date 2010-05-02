@@ -34,14 +34,14 @@ namespace Hiro.Implementations
         /// </summary>
         private Func<IImplementation<ConstructorInfo>> _getConstructorImplementation;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Object"/> class.
-        /// </summary>
-        /// <param name="targetType">The target type.</param>
-        /// <param name="container">The dependency container.</param>
-        public TransientType(Type targetType, IDependencyContainer container) : this(targetType, container, new ConstructorResolver())
-        {
-        }
+        ///// <summary>
+        ///// Initializes a new instance of the <see cref="T:System.Object"/> class.
+        ///// </summary>
+        ///// <param name="targetType">The target type.</param>
+        ///// <param name="container">The dependency container.</param>
+        //public TransientType(Type targetType, IDependencyContainer container) : this(targetType, container, new ConstructorResolver())
+        //{
+        //}
 
         /// <summary>
         /// Initializes a new instance of the TransientType class.

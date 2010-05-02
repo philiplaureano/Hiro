@@ -4,6 +4,7 @@ using System.Text;
 using Hiro.Compilers;
 using Hiro.Containers;
 using Hiro.Interfaces;
+using Hiro.Resolvers;
 using Mono.Cecil;
 
 namespace Hiro.Implementations
@@ -37,8 +38,9 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="targetType">The concrete service type.</param>
         /// <param name="container">The dependency container that contains the dependencies that will be used by the target type.</param>
-        public SingletonType(Type targetType, IDependencyContainer container)
-            : this(new TransientType(targetType, container))
+        /// <param name="constructorResolver">The constructor resolver.</param>
+        public SingletonType(Type targetType, IDependencyContainer container, IConstructorResolver constructorResolver)
+            : this(new TransientType(targetType, container, constructorResolver))
         {
         }
 
