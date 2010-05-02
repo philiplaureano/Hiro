@@ -23,17 +23,26 @@ namespace Hiro
         /// <summary>
         /// Initializes a new instance of the <see cref="DependencyMap"/> class.
         /// </summary>
-        public DependencyMap()
-            : this(new CachedContainerCompiler(new ContainerCompiler()), new ConstructorResolver())
+        /// <param name="constructorResolver">The resolver that will be used to determine the constructor that will be used to instantiate a given object instance.</param>
+        public DependencyMap(IConstructorResolver constructorResolver)
+            : this(constructorResolver, new CachedContainerCompiler(new ContainerCompiler()))
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependencyMap"/> class.
         /// </summary>
-        /// <param name="compiler">The compiler that will be used to compile this map into an IOC container.</param>
+        public DependencyMap()
+            : this(new ConstructorResolver(), new CachedContainerCompiler(new ContainerCompiler()))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependencyMap"/> class.
+        /// </summary>
         /// <param name="constructorResolver">The resolver that will be used to determine the constructor that will be used to instantiate a given object instance.</param>
-        public DependencyMap(IContainerCompiler compiler, IConstructorResolver constructorResolver)
+        /// <param name="compiler">The compiler that will be used to compile this map into an IOC container.</param>
+        public DependencyMap(IConstructorResolver constructorResolver, IContainerCompiler compiler)
         {
             
             if (compiler == null)

@@ -6,6 +6,7 @@ using System.Text;
 using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
+using Hiro.Resolvers;
 using NGenerics.DataStructures.General;
 
 namespace Hiro.Loaders
@@ -15,6 +16,7 @@ namespace Hiro.Loaders
     /// </summary>
     public class DependencyMapLoader
     {
+        private readonly IConstructorResolver _constructorResolver;
         private readonly ITypeLoader _typeLoader;
         private readonly IServiceLoader _serviceLoader;
         private readonly IDefaultServiceResolver _defaultServiceResolver;
@@ -30,11 +32,32 @@ namespace Hiro.Loaders
         /// <summary>
         /// Initializes a new instance of the DependencyMapLoader class.
         /// </summary>
+        public DependencyMapLoader(IConstructorResolver constructorResolver)
+            : this(constructorResolver, new TypeLoader(), new ServiceLoader(), new DefaultServiceResolver())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the DependencyMapLoader class.
+        /// </summary>
         /// <param name="typeLoader">The type loader that will load the service types from each assembly.</param>
         /// <param name="serviceLoader">The service loader that will load services from a given assembly.</param>
         /// <param name="defaultServiceResolver">The resolver that will determine the default anonymous implementation for a particular service type.</param>
         public DependencyMapLoader(ITypeLoader typeLoader, IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver)
+            : this(new ConstructorResolver(), typeLoader, serviceLoader, defaultServiceResolver)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the DependencyMapLoader class.
+        /// </summary>
+        /// <param name="constructorResolver"></param>
+        /// <param name="typeLoader">The type loader that will load the service types from each assembly.</param>
+        /// <param name="serviceLoader">The service loader that will load services from a given assembly.</param>
+        /// <param name="defaultServiceResolver">The resolver that will determine the default anonymous implementation for a particular service type.</param>
+        public DependencyMapLoader(IConstructorResolver constructorResolver, ITypeLoader typeLoader, IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver)
+        {
+            _constructorResolver = constructorResolver;
             _typeLoader = typeLoader;
             _serviceLoader = serviceLoader;
             _defaultServiceResolver = defaultServiceResolver;
@@ -70,7 +93,7 @@ namespace Hiro.Loaders
         /// <returns>A dependency map.</returns>
         public DependencyMap LoadFrom(IEnumerable<Assembly> assemblies)
         {
-            var map = new DependencyMap { Injector = new PropertyInjector() };
+            var map = new DependencyMap(_constructorResolver) { Injector = new PropertyInjector() };
 
             var defaultImplementations = new Dictionary<Type, IImplementation>();
             foreach (var assembly in assemblies)
@@ -85,7 +108,7 @@ namespace Hiro.Loaders
                 }
             }
 
-            foreach(var serviceType in defaultImplementations.Keys)
+            foreach (var serviceType in defaultImplementations.Keys)
             {
                 var dependency = new Dependency(serviceType);
                 var implementation = defaultImplementations[serviceType];
