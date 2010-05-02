@@ -9,7 +9,7 @@ namespace Hiro.Compilers
     /// <summary>
     /// Represents the default implementation of the <see cref="IServiceMapBuilder"/> interface.
     /// </summary>
-    internal class ServiceMapBuilder : IServiceMapBuilder
+    public class ServiceMapBuilder : IServiceMapBuilder
     {
         /// <summary>
         /// Gets the list of available services from the given dependency container.
@@ -18,7 +18,7 @@ namespace Hiro.Compilers
         /// <returns>The service map.</returns>
         public IDictionary<IDependency, IImplementation> GetAvailableServices(IDependencyContainer dependencyContainer)
         {
-            Dictionary<IDependency, IImplementation> serviceMap = new Dictionary<IDependency, IImplementation>();
+            var serviceMap = new Dictionary<IDependency, IImplementation>();
 
             var dependencies = dependencyContainer.Dependencies;
             foreach (var dependency in dependencies)
