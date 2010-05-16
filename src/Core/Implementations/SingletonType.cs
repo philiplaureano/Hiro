@@ -22,15 +22,29 @@ namespace Hiro.Implementations
         /// <summary>
         /// The singleton emitter that will generate the singleton types.
         /// </summary>
-        private readonly SingletonEmitter _emitter = new SingletonEmitter();
+        private readonly ISingletonEmitter _emitter = new ContainerBasedSingletonEmitter();
 
         /// <summary>
         /// Initializes a new instance of the SingletonType class.
         /// </summary>
-        /// <param name="implementation">The implementation that will be used to instantiate a service instance.</param>
-        public SingletonType(IStaticImplementation implementation)
+        /// <param name="singletonEmitter">The emitter that will be responsible for instantiating the singleton implementation.</param>
+        /// <param name="implementation">The implementation that will be used to emitting a service instance.</param>
+        public SingletonType(IStaticImplementation implementation, ISingletonEmitter singletonEmitter)
         {
             _implementation = implementation;
+            _emitter = singletonEmitter;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonType class.
+        /// </summary>
+        /// <param name="targetType">The concrete service type.</param>
+        /// <param name="container">The dependency container that contains the dependencies that will be used by the target type.</param>
+        /// <param name="constructorResolver">The constructor resolver.</param>
+        /// <param name="singletonEmitter">The emitter that will be responsible for emitting the singleton implementation.</param>
+        public SingletonType(Type targetType, IDependencyContainer container, IConstructorResolver constructorResolver, ISingletonEmitter singletonEmitter)
+            : this(new TransientType(targetType, container, constructorResolver), singletonEmitter)
+        {            
         }
 
         /// <summary>
@@ -40,7 +54,7 @@ namespace Hiro.Implementations
         /// <param name="container">The dependency container that contains the dependencies that will be used by the target type.</param>
         /// <param name="constructorResolver">The constructor resolver.</param>
         public SingletonType(Type targetType, IDependencyContainer container, IConstructorResolver constructorResolver)
-            : this(new TransientType(targetType, container, constructorResolver))
+            : this(new TransientType(targetType, container, constructorResolver), new ContainerBasedSingletonEmitter())
         {
         }
 

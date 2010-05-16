@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using Hiro.Containers;
 using Hiro.Interfaces;
 using Mono.Cecil;
@@ -9,27 +8,28 @@ using Mono.Cecil.Cil;
 namespace Hiro.Compilers
 {
     /// <summary>
-    /// Represents a class that creates singleton services.
+    /// Represents the basic implementation of a <see cref="ISingletonEmitter"/> instance.
     /// </summary>
-    internal class SingletonEmitter
+    public class SingletonEmitter : ISingletonEmitter
     {
         /// <summary>
         /// The dictionary that maps dependencies to the corresponding singleton factory methods.
         /// </summary>
-        private Dictionary<IDependency, MethodDefinition> _entries = new Dictionary<IDependency, MethodDefinition>();
+        private readonly Dictionary<IDependency, MethodDefinition> _entries = new Dictionary<IDependency, MethodDefinition>();
 
         /// <summary>
         /// Emits a service as a singleton type.
         /// </summary>
-        /// <param name="newMethod">The <see cref="IMicroContainer.GetInstance"/> method implementation.</param>
+        /// <param name="targetMethod">The <see cref="IMicroContainer.GetInstance"/> method implementation.</param>
         /// <param name="dependency">The dependency that will be instantiated by the container.</param>
         /// <param name="implementation">The implementation that will be used to instantiate the dependency.</param>
         /// <param name="serviceMap">The service map the contains the current application dependencies.</param>
-        public void EmitService(MethodDefinition newMethod, IDependency dependency, IImplementation implementation, IDictionary<IDependency, IImplementation> serviceMap)
+        public void EmitService(MethodDefinition targetMethod, IDependency dependency, 
+                                IImplementation implementation, IDictionary<IDependency, IImplementation> serviceMap)
         {
             MethodDefinition getInstanceMethod = null;
 
-            var worker = newMethod.GetILGenerator();
+            var worker = targetMethod.GetILGenerator();
 
             // Emit only one singleton per dependency and call
             // the singleton GetInstance() method on every subsequent emit call
@@ -40,22 +40,23 @@ namespace Hiro.Compilers
                 return;
             }
 
-            var declaringType = newMethod.DeclaringType;
+            var declaringType = targetMethod.DeclaringType;
             var module = declaringType.Module;
-            var containerType = newMethod.DeclaringType;
+
             var serviceType = dependency.ServiceType;
 
             var typeName = serviceType.Name;
             var singletonName = string.Format("{0}ServiceSingleton-{1}", typeName, dependency.GetHashCode());
-            var typeAttributes = TypeAttributes.NotPublic | TypeAttributes.AutoClass | TypeAttributes.Sealed |
-                                 TypeAttributes.BeforeFieldInit;
+            const TypeAttributes typeAttributes = TypeAttributes.NotPublic | TypeAttributes.AutoClass | TypeAttributes.Sealed |
+                                                  TypeAttributes.BeforeFieldInit;
             var objectType = module.Import(typeof(object));
 
             var singletonType = AddDefaultSingletonConstructor(module, singletonName, typeAttributes, objectType);
 
             var instanceField = new FieldDefinition("__instance", objectType, FieldAttributes.Assembly | FieldAttributes.InitOnly | FieldAttributes.Static);
 
-            DefineNestedType(module, containerType, dependency, implementation, serviceMap, objectType, singletonType, instanceField);
+            DefineNestedType(module, singletonType, instanceField, serviceMap, implementation, dependency,
+                             targetMethod);
 
             getInstanceMethod = DefineGetInstance(singletonType, worker, instanceField);
 
@@ -66,7 +67,7 @@ namespace Hiro.Compilers
 
             // Cache the singleton method
             _entries[dependency] = getInstanceMethod;
-        }        
+        }
 
         /// <summary>
         /// Adds a default constructor to the singleton type.
@@ -93,66 +94,54 @@ namespace Hiro.Compilers
         /// Defines the nested type that will instantiate the actual singleton service instance.
         /// </summary>
         /// <param name="module">The module that will host the singleton type.</param>
-        /// <param name="containerType">The container type.</param>
-        /// <param name="dependency">The dependency that will be instantiated by the singleton.</param>
-        /// <param name="implementation">The implementation that will instantiate the dependency.</param>
-        /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
-        /// <param name="objectType">The object type.</param>
         /// <param name="singletonType">The singleton type.</param>
         /// <param name="instanceField">The field that will hold the singleton instance.</param>
-        private static void DefineNestedType(ModuleDefinition module, TypeDefinition containerType, IDependency dependency, IImplementation implementation, IDictionary<IDependency, IImplementation> serviceMap, TypeReference objectType, TypeDefinition singletonType, FieldDefinition instanceField)
+        /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
+        /// <param name="implementation">The implementation that will instantiate the dependency.</param>
+        /// <param name="dependency">The dependency that will be instantiated by the singleton.</param>
+        /// <param name="targetMethod">The method that will be used to instantiate the actual service instance.</param>
+        private void DefineNestedType(ModuleDefinition module, TypeDefinition singletonType, FieldDefinition instanceField, IDictionary<IDependency, IImplementation> serviceMap, IImplementation implementation, IDependency dependency, MethodDefinition targetMethod)
         {
+            var objectType = module.ImportType(typeof (object));
             var nestedName = string.Format("Nested-{0}", dependency.GetHashCode());
-            var nestedAttributes = TypeAttributes.NestedFamORAssem | TypeAttributes.Sealed | TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.AnsiClass;
+
+            const TypeAttributes nestedAttributes = TypeAttributes.NestedFamORAssem | TypeAttributes.Sealed | TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.AnsiClass;
             var nestedType = module.DefineClass(nestedName, "Hiro.Containers.Internal", nestedAttributes, objectType);
             singletonType.NestedTypes.Add(nestedType);
 
             nestedType.Fields.Add(instanceField);
-            var microContainerInterfaceType = module.ImportType<IMicroContainer>();
 
             // Emit the static constructor body
             var cctor = DefineNestedConstructors(module, nestedType);
-
-            var containerLocal = new VariableDefinition(microContainerInterfaceType);
-            cctor.Body.Variables.Add(containerLocal);
-            var containerConstructor = containerType.Constructors[0];
-
-            DefineNestedStaticConstructorBody(module, dependency, implementation, serviceMap, instanceField, cctor, containerLocal, containerConstructor);
-        }
+            
+            EmitSingletonInstantiation(dependency, implementation, serviceMap, instanceField, cctor, module, targetMethod);                        
+        }   
 
         /// <summary>
         /// Defines the instructions that will instantiate the singleton instance itself.
         /// </summary>
-        /// <param name="module">The module that will host the singleton type.</param>
         /// <param name="dependency">The dependency that will be instantiated by the singleton.</param>
         /// <param name="implementation">The implementation that will instantiate the dependency.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="instanceField">The field that will hold the singleton instance.</param>
         /// <param name="cctor">The static constructor itself.</param>
-        /// <param name="containerLocal">The local variable that will hold the container instance.</param>
-        /// <param name="containerConstructor">The constructor that will be used to instantiate the container.</param>
-        private static void DefineNestedStaticConstructorBody(
+        /// <param name="module">The target module.</param>
+        /// <param name="targetMethod">The target method that will instantiate the service instance.</param>
+        protected virtual void EmitSingletonInstantiation(IDependency dependency, 
+            IImplementation implementation, 
+            IDictionary<IDependency, IImplementation> serviceMap, 
+            FieldDefinition instanceField, 
+            MethodDefinition cctor, 
             ModuleDefinition module,
-            IDependency dependency,
-            IImplementation implementation,
-            IDictionary<IDependency, IImplementation> serviceMap,
-            FieldDefinition instanceField,
-            MethodDefinition cctor,
-            VariableDefinition containerLocal,
-            MethodDefinition containerConstructor)
+            MethodDefinition targetMethod)
         {
             var worker = cctor.GetILGenerator();
-            worker.Emit(OpCodes.Newobj, containerConstructor);
-            worker.Emit(OpCodes.Stloc, containerLocal);
-
             implementation.Emit(dependency, serviceMap, cctor);
 
             worker.Emit(OpCodes.Stsfld, instanceField);
             worker.Emit(OpCodes.Ret);
-
-            ReplaceContainerCalls(cctor, containerLocal, worker);
         }
-
+       
         /// <summary>
         /// Defines the nested constructors for the singleton type.
         /// </summary>
@@ -173,32 +162,6 @@ namespace Hiro.Compilers
         }
 
         /// <summary>
-        /// Converts the self calls made to the <see cref="IMicroContainer.GetInstance"/> instance into method calls that use
-        /// a <see cref="IMicroContainer"/> instance stored in a local variable.
-        /// </summary>
-        /// <param name="cctor">The static constructor.</param>
-        /// <param name="containerLocal">The variable that will store the <see cref="IMicroContainer"/> instance.</param>
-        /// <param name="worker">The worker that points to the target method body.</param>
-        private static void ReplaceContainerCalls(MethodDefinition cctor, VariableDefinition containerLocal, CilWorker worker)
-        {
-            // Replace the calls to the 'this' pointer (ldarg0) with
-            // the local MicroContainer instance
-            var taggedInstructions = new Queue<Instruction>();
-            foreach (Instruction currentInstruction in cctor.Body.Instructions)
-            {
-                if (currentInstruction.OpCode != OpCodes.Ldarg_0)
-                    continue;
-
-                taggedInstructions.Enqueue(currentInstruction);
-            }
-
-            while (taggedInstructions.Count > 0)
-            {
-                worker.Replace(taggedInstructions.Dequeue(), worker.Create(OpCodes.Ldloc, containerLocal));
-            }
-        }
-
-        /// <summary>
         /// Defines the static constructor for the nested type.
         /// </summary>
         /// <param name="module">The target module.</param>
@@ -209,10 +172,10 @@ namespace Hiro.Compilers
             // Define the nested static constructor
             var voidType = module.ImportType(typeof(void));
             var attributes = MethodAttributes.Private |
-                           MethodAttributes.HideBySig |
-                           MethodAttributes.Static |
-                           MethodAttributes.RTSpecialName |
-                           MethodAttributes.SpecialName;
+                             MethodAttributes.HideBySig |
+                             MethodAttributes.Static |
+                             MethodAttributes.RTSpecialName |
+                             MethodAttributes.SpecialName;
 
             var cctor = new MethodDefinition(".cctor", attributes, voidType);
 

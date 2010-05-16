@@ -76,11 +76,13 @@
     <Compile Include="CachedContainerCompiler.cs" />
     <Compile Include="CilWorkerExtensions.cs" />
     <Compile Include="Compilers\AssemblyBuilder.cs" />
+    <Compile Include="Compilers\SingletonEmitter.cs" />
     <Compile Include="Compilers\ContainsMethodImplementor.cs" />
     <Compile Include="Compilers\CreateContainerStub.cs" />
     <Compile Include="Compilers\FieldBuilder.cs" />
     <Compile Include="Compilers\GetAllInstancesMethodImplementor.cs" />
     <Compile Include="Compilers\GetInstanceMethodImplementor.cs" />
+    <Compile Include="Compilers\ISingletonEmitter.cs" />
     <Compile Include="Implementations\BaseConstructorCall.cs" />
     <Compile Include="Interfaces\IServiceInitializer.cs" />
     <Compile Include="Compilers\MethodBuilder.cs" />
@@ -91,7 +93,7 @@
     <Compile Include="Compilers\ServiceHashEmitter.cs" />
     <Compile Include="Compilers\ServiceInitializer.cs" />
     <Compile Include="Compilers\ServiceMapBuilder.cs" />
-    <Compile Include="Compilers\SingletonEmitter.cs" />
+    <Compile Include="Compilers\ContainerBasedSingletonEmitter.cs" />
     <Compile Include="Compilers\TypeBuilder.cs" />
     <Compile Include="ConstructorNotFoundException.cs" />
     <Compile Include="ContainerCompiler.cs" />
