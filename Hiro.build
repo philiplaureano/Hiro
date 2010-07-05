@@ -61,22 +61,22 @@
         <include name="System.Data.dll"/>        
         <include name="System.Xml.dll" />
         <include name="${output.dir}\Hiro.Containers.dll"/>
-        <include name="${library.dir}\LinFu.Finders.dll"/>
-        <include name="${library.dir}\Iesi.Collections.dll"/>
-        <include name="${library.dir}\Iesi.Collections.Generic.dll"/>
-        <include name="${library.dir}\Mono.Cecil.dll"/>
-        <include name="${library.dir}\NGenerics.dll"/>
-        <include name="${library.dir}\LinqBridge.dll" if="${target.framework == 'net-2.0'}"/>
+        <include name="${library.dir}\common\LinFu.Finders.dll"/>
+        <include name="${library.dir}\common\Iesi.Collections.dll"/>
+        <include name="${library.dir}\common\Iesi.Collections.Generic.dll"/>
+        <include name="${library.dir}\common\NGenerics.dll"/>
+        <include name="${library.dir}\${target.framework}\Mono.Cecil.dll"/>
+        <include name="${library.dir}\${target.framework}\LinqBridge.dll" if="${target.framework == 'net-2.0'}"/>
       </references>
     </csc>
-    <copy todir="${output.dir}">
+    <copy todir="${output.dir}" flatten="true">
       <fileset basedir="${library.dir}">
-        <include name="Iesi.Collections.dll"/>
-        <include name="Iesi.Collections.Generic.dll"/>
-        <include name="${library.dir}\LinFu.Finders.dll"/>
-        <include name="Mono.Cecil.dll"/>
-        <include name="NGenerics.dll"/>
-        <include name="LinqBridge.dll" if="${target.framework == 'net-2.0'}"/>
+        <include name="common\Iesi.Collections.dll"/>
+        <include name="common\Iesi.Collections.Generic.dll"/>
+        <include name="common\LinFu.Finders.dll"/>
+        <include name="common\NGenerics.dll"/>
+        <include name="${target.framework}\Mono.Cecil.dll"/>
+        <include name="${target.framework}\LinqBridge.dll" if="${target.framework == 'net-2.0'}"/>
       </fileset>
     </copy>
   </target>
@@ -119,27 +119,27 @@
         <include name="${unittest.dir}\SampleAssembly.dll"/>
         <include name="${output.dir}\Hiro.Containers.dll"/>
         <include name="${output.dir}\Hiro.Core.dll"/>
-        <include name="${library.dir}\LinFu.Finders.dll"/>
-        <include name="${library.dir}\Iesi.Collections.dll"/>
-        <include name="${library.dir}\Iesi.Collections.Generic.dll"/>
-        <include name="${library.dir}\Mono.Cecil.dll"/>
-        <include name="${library.dir}\NGenerics.dll"/>                
-        <include name="${library.dir}\nunit.framework.dll"/>
-        <include name="${library.dir}\Moq.dll"/>
+        <include name="${library.dir}\common\LinFu.Finders.dll"/>
+        <include name="${library.dir}\common\Iesi.Collections.dll"/>
+        <include name="${library.dir}\common\Iesi.Collections.Generic.dll"/>
+        <include name="${library.dir}\common\NGenerics.dll"/>                
+        <include name="${library.dir}\common\nunit.framework.dll"/>
+        <include name="${library.dir}\common\Moq.dll"/>
+        <include name="${library.dir}\${target.framework}\Mono.Cecil.dll"/>
       </references>      
     </csc>
-    <copy todir="${unittest.dir}">
+    <copy todir="${unittest.dir}" flatten="true">
       <fileset basedir="${library.dir}">        
-        <include name="Iesi.Collections.dll"/>
-        <include name="LinFu.Finders.dll"/>
-        <include name="Iesi.Collections.Generic.dll"/>
-        <include name="Mono.Cecil.dll"/>
-        <include name="NGenerics.dll"/>
-        <include name="nunit.framework.dll"/>
-        <include name="Moq.dll"/>
+        <include name="common\Iesi.Collections.dll"/>
+        <include name="common\LinFu.Finders.dll"/>
+        <include name="common\Iesi.Collections.Generic.dll"/>
+        <include name="common\NGenerics.dll"/>
+        <include name="common\nunit.framework.dll"/>
+        <include name="common\Moq.dll"/>
+        <include name="${target.framework}\Mono.Cecil.dll"/>
       </fileset>
     </copy>
-    <copy todir="${unittest.dir}">
+    <copy todir="${unittest.dir}" flatten="true">
       <fileset basedir="${output.dir}">
         <include name="Hiro.Containers.dll"/>
         <include name="Hiro.Core.dll"/>        
@@ -173,8 +173,7 @@
     <exec program="tools\nunit\nunit-console.exe" workingdir="${build.dir}\Debug\UnitTests">
       <arg value="&quot;Hiro.UnitTests.dll&quot; &quot;/xml:..\..\test-reports\UnitTests.xml&quot; &quot;/nologo&quot;"/>
     </exec>
-    <delete dir="${unittest.dir}" if="${directory::exists(unittest.dir)}"/>
-	</target>
+   </target>
 	
 	<target name="dist" depends="clean, compile">        
     <mkdir dir="${build.dir}\dist" />

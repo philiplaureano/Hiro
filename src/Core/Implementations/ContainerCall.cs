@@ -26,11 +26,11 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="module">The target module.</param>
         /// <param name="microContainerType">The type reference that points to the <see cref="IMicroContainer"/> type.</param>
-        /// <param name="worker">The <see cref="CilWorker"/> that points to the <see cref="IMicroContainer.GetInstance"/> method body.</param>
+        /// <param name="il">The <see cref="ILProcessor"/> that points to the <see cref="IMicroContainer.GetInstance"/> method body.</param>
         /// <param name="skipCreate">The skip label that will be used if the service cannot be instantiated.</param>
-        protected override void EmitGetContainerInstance(ModuleDefinition module, TypeReference microContainerType, CilWorker worker, Instruction skipCreate)
+        protected override void EmitGetContainerInstance(ModuleDefinition module, TypeReference microContainerType, ILProcessor il, Instruction skipCreate)
         {
-            worker.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldarg_0);
         }
     }
 }

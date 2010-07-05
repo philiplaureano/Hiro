@@ -22,14 +22,20 @@ namespace Hiro.Compilers
         public IEnumerable<MethodDefinition> AddStubImplementationFor(Type interfaceType, TypeDefinition type)
         {
             var module = type.Module;            
-            var interfaceTypeRef = module.Import(interfaceType);
-            var interfaces = type.Interfaces;
-
-            if (!interfaces.Contains(interfaceTypeRef)) 
-                interfaces.Add(interfaceTypeRef);
+            if (!TypeImplements(type, interfaceType)) 
+                type.Interfaces.Add(module.Import(interfaceType));
 
             return CreateInterfaceStub(interfaceType, type);
         }
+
+		static bool TypeImplements(TypeDefinition type, Type interfaceType)
+		{
+			foreach (var iface in type.Interfaces)
+				if (iface.FullName == interfaceType.FullName)
+					return true;
+
+			return false;
+		}
 
         /// <summary>
         /// Overrides all methods in the given interface type with methods that throw a <see cref="NotImplementedException"/>.
@@ -68,10 +74,10 @@ namespace Hiro.Compilers
 
             // Create the method stub
             var body = currentMethod.Body;
-            var worker = body.CilWorker;
+            var il = body.GetILProcessor();
 
-            worker.Emit(OpCodes.Newobj, notImplementedCtor);
-            worker.Emit(OpCodes.Throw);
+            il.Emit(OpCodes.Newobj, notImplementedCtor);
+            il.Emit(OpCodes.Throw);
 
             return currentMethod;
         }

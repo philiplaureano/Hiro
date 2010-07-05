@@ -34,67 +34,67 @@ namespace Hiro.Compilers
 
             var containsMethod = targetMethods[0];
             var body = containsMethod.Body;
-            var worker = body.CilWorker;
+            var il = body.GetILProcessor();
             body.InitLocals = true;
 
             // Remove the stub implementation
             body.Instructions.Clear();
 
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ldfld, jumpTargetField);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, jumpTargetField);
 
             // Push the service type
-            worker.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Ldarg_1);
 
             // Push the service name
-            worker.Emit(OpCodes.Ldarg_2);
+            il.Emit(OpCodes.Ldarg_2);
 
             // Calculate the hash code using the service type and service name
-            worker.Emit(OpCodes.Call, getServiceHash);
+            il.Emit(OpCodes.Call, getServiceHash);
 
             var containsEntry = module.ImportMethod<Dictionary<int, int>>("ContainsKey");
-            worker.Emit(OpCodes.Callvirt, containsEntry);
+            il.Emit(OpCodes.Callvirt, containsEntry);
 
             var returnValue = containsMethod.AddLocal<bool>();
-            worker.Emit(OpCodes.Stloc, returnValue);
+            il.Emit(OpCodes.Stloc, returnValue);
 
-            var skipCall = worker.Create(OpCodes.Nop);
-            worker.Emit(OpCodes.Ldloc, returnValue);
-            worker.Emit(OpCodes.Brtrue, skipCall);
+            var skipCall = il.Create(OpCodes.Nop);
+            il.Emit(OpCodes.Ldloc, returnValue);
+            il.Emit(OpCodes.Brtrue, skipCall);
 
             
             var getNextContainer = module.ImportMethod<IMicroContainer>("get_NextContainer");
 
             
             var otherContainer = containsMethod.AddLocal<IMicroContainer>();
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Callvirt, getNextContainer);
-            worker.Emit(OpCodes.Stloc, otherContainer);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Callvirt, getNextContainer);
+            il.Emit(OpCodes.Stloc, otherContainer);
                         
             // if (otherContainer != null) {
-            worker.Emit(OpCodes.Ldloc, otherContainer);
-            worker.Emit(OpCodes.Brfalse, skipCall);
+            il.Emit(OpCodes.Ldloc, otherContainer);
+            il.Emit(OpCodes.Brfalse, skipCall);
 
             var otherContainsMethod = module.ImportMethod<IMicroContainer>("Contains");
 
             // Prevent the container from calling itself 
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ldloc, otherContainer);
-            worker.Emit(OpCodes.Ceq);
-            worker.Emit(OpCodes.Brtrue, skipCall);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldloc, otherContainer);
+            il.Emit(OpCodes.Ceq);
+            il.Emit(OpCodes.Brtrue, skipCall);
 
             // returnValue = otherContainer.Contains(Type, name);
-            worker.Emit(OpCodes.Ldloc, otherContainer);
-            worker.Emit(OpCodes.Ldarg_1);
-            worker.Emit(OpCodes.Ldarg_2);
-            worker.Emit(OpCodes.Callvirt, otherContainsMethod);
-            worker.Emit(OpCodes.Stloc, returnValue);
+            il.Emit(OpCodes.Ldloc, otherContainer);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Ldarg_2);
+            il.Emit(OpCodes.Callvirt, otherContainsMethod);
+            il.Emit(OpCodes.Stloc, returnValue);
 
-            worker.Append(skipCall);
+            il.Append(skipCall);
             // }
 
-            worker.Emit(OpCodes.Ldloc, returnValue);
-            worker.Emit(OpCodes.Ret);
+            il.Emit(OpCodes.Ldloc, returnValue);
+            il.Emit(OpCodes.Ret);
         }
     }
 }

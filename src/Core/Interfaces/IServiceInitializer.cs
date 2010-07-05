@@ -5,6 +5,6 @@ namespace Hiro.Interfaces
 {
     public interface IServiceInitializer
     {
-        void Initialize(CilWorker worker, ModuleDefinition module, VariableDefinition serviceInstance);
+        void Initialize(ILProcessor il, ModuleDefinition module, VariableDefinition serviceInstance);
     }
 }

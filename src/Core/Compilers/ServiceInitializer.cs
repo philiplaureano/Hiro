@@ -13,15 +13,15 @@ namespace Hiro.Compilers
     /// </summary>
     public class ServiceInitializer : IServiceInitializer
     {
-        /// <summary>
-        /// Emits the instructions that call <see cref="IInitialize.Initialize"/> on a given service instance.
-        /// </summary>
-        /// <param name="worker">The <see cref="CilWorker"/> that points to the target method body.</param>
-        /// <param name="module">The host module.</param>
-        /// <param name="serviceInstance">The local variable that points to the current service instance.</param>
-        public void Initialize(CilWorker worker, ModuleDefinition module, VariableDefinition serviceInstance)
+    	/// <summary>
+    	/// Emits the instructions that call <see cref="IInitialize.Initialize"/> on a given service instance.
+    	/// </summary>
+    	/// <param name="il"></param>
+    	/// <param name="module">The host module.</param>
+    	/// <param name="serviceInstance">The local variable that points to the current service instance.</param>
+    	public void Initialize(ILProcessor il, ModuleDefinition module, VariableDefinition serviceInstance)
         {
-            var body = worker.GetBody();
+            var body = il.Body;
             var method = body.Method;
             var declaringType = method.DeclaringType;
 
@@ -31,53 +31,53 @@ namespace Hiro.Compilers
 
             var initializeType = module.ImportType<IInitialize>();
 
-            worker.Emit(OpCodes.Ldloc, serviceInstance);
-            worker.Emit(OpCodes.Isinst, initializeType);
+            il.Emit(OpCodes.Ldloc, serviceInstance);
+            il.Emit(OpCodes.Isinst, initializeType);
 
             var initializeMethod = module.ImportMethod<IInitialize>("Initialize");
-            var skipInitializationCall = worker.Create(OpCodes.Nop);
-            worker.Emit(OpCodes.Brfalse, skipInitializationCall);
+            var skipInitializationCall = il.Create(OpCodes.Nop);
+            il.Emit(OpCodes.Brfalse, skipInitializationCall);
             
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ldfld, targetField);
-            GetServiceHash(worker, module, serviceInstance);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, targetField);
+            GetServiceHash(il, module, serviceInstance);
 
             var containsMethod = module.ImportMethod<Dictionary<int, int>>("ContainsKey");
-            worker.Emit(OpCodes.Callvirt, containsMethod);
-            worker.Emit(OpCodes.Brtrue, skipInitializationCall);
+            il.Emit(OpCodes.Callvirt, containsMethod);
+            il.Emit(OpCodes.Brtrue, skipInitializationCall);
 
             // if (!__initializedServices.ContainsKey(currentService.GetHashCode()) {
-            worker.Emit(OpCodes.Ldloc, serviceInstance);
-            worker.Emit(OpCodes.Isinst, initializeType);
-            worker.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldloc, serviceInstance);
+            il.Emit(OpCodes.Isinst, initializeType);
+            il.Emit(OpCodes.Ldarg_0);
 
-            worker.Emit(OpCodes.Callvirt, initializeMethod);
+            il.Emit(OpCodes.Callvirt, initializeMethod);
 
             // __initializedServices.Add(hashCode, 0);            
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ldfld, targetField);
-            GetServiceHash(worker, module, serviceInstance);
-            worker.Emit(OpCodes.Ldc_I4_1);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, targetField);
+            GetServiceHash(il, module, serviceInstance);
+            il.Emit(OpCodes.Ldc_I4_1);
 
             var addMethod = module.ImportMethod<Dictionary<int, int>>("Add");
-            worker.Emit(OpCodes.Callvirt, addMethod);
+            il.Emit(OpCodes.Callvirt, addMethod);
 
-            worker.Append(skipInitializationCall);
+            il.Append(skipInitializationCall);
             
         }
 
         /// <summary>
         /// Emits a call that obtains the hash code for the current service instance.
         /// </summary>
-        /// <param name="worker">The <see cref="CilWorker"/> that points to the method body.</param>
+        /// <param name="il">The <see cref="ILProcessor"/> that points to the method body.</param>
         /// <param name="module">The target module.</param>
         /// <param name="serviceInstance">The local variable that contains the service instance.</param>
-        private void GetServiceHash(CilWorker worker, ModuleDefinition module, VariableDefinition serviceInstance)
+        private void GetServiceHash(ILProcessor il, ModuleDefinition module, VariableDefinition serviceInstance)
         {
-            worker.Emit(OpCodes.Ldloc, serviceInstance);
+            il.Emit(OpCodes.Ldloc, serviceInstance);
 
             var getHashCodeMethod = module.ImportMethod<object>("GetHashCode");
-            worker.Emit(OpCodes.Callvirt, getHashCodeMethod);
+            il.Emit(OpCodes.Callvirt, getHashCodeMethod);
         }
 
         /// <summary>

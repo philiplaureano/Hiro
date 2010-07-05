@@ -199,7 +199,7 @@ namespace Hiro.UnitTests
         [Test]
         public void ShouldCreateJumpEntryFieldInTargetType()
         {
-            var assembly = _assemblyBuilder.CreateAssembly(Guid.NewGuid().ToString(), AssemblyKind.Dll);
+            var assembly = _assemblyBuilder.CreateAssembly(Guid.NewGuid().ToString(), ModuleKind.Dll);
             var module = assembly.MainModule;
 
             var objectType = module.ImportType(typeof(object));
@@ -235,7 +235,7 @@ namespace Hiro.UnitTests
         [Test]
         public void ShouldBeAbleToCreatePrivateStaticGetServiceHashCodeMethodForAGivenType()
         {
-            var assembly = _assemblyBuilder.CreateAssembly(Guid.NewGuid().ToString(), AssemblyKind.Dll);
+            var assembly = _assemblyBuilder.CreateAssembly(Guid.NewGuid().ToString(), ModuleKind.Dll);
             var module = assembly.MainModule;
 
             TypeReference baseType = module.Import(typeof(object));
@@ -307,16 +307,16 @@ namespace Hiro.UnitTests
         public void ShouldCreateDLLAssemblyType()
         {
             string assemblyName = "TestAssembly";
-            AssemblyDefinition result = _assemblyBuilder.CreateAssembly(assemblyName, AssemblyKind.Dll);
+            AssemblyDefinition result = _assemblyBuilder.CreateAssembly(assemblyName, ModuleKind.Dll);
 
             Assert.AreEqual(result.Name.Name, assemblyName);
-            Assert.AreEqual(result.Kind, AssemblyKind.Dll);
+            Assert.AreEqual(result.MainModule.Kind, ModuleKind.Dll);
         }
 
         [Test]
         public void ShouldCreateContainerType()
         {
-            var assembly = _assemblyBuilder.CreateAssembly(Guid.NewGuid().ToString(), AssemblyKind.Dll);
+            var assembly = _assemblyBuilder.CreateAssembly(Guid.NewGuid().ToString(), ModuleKind.Dll);
             var module = assembly.MainModule;
 
             TypeReference baseType = module.Import(typeof(object));
@@ -335,11 +335,12 @@ namespace Hiro.UnitTests
             Assert.IsTrue(result.IsBeforeFieldInit);
             Assert.IsTrue(result.IsPublic);
 
-            Assert.IsTrue(result.Interfaces.Contains(microContainerTypeRef));
+            Assert.IsTrue(TypeImplements(microContainerTypeRef, result));
 
             // Verify that the default constructor exists
-            Assert.IsTrue(result.Constructors.Count > 0);
-            Assert.IsTrue(result.Constructors[0].Parameters.Count == 0);
+			var constructor = result.GetDefaultConstructor();
+            Assert.IsNotNull(constructor);
+            Assert.IsTrue(constructor.Parameters.Count == 0);
         }
 
         [Test]
@@ -589,7 +590,8 @@ namespace Hiro.UnitTests
             {
                 if (File.Exists("output.dll"))
                     File.Delete("output.dll");
-                AssemblyFactory.SaveAssembly(assembly, "output.dll");
+
+				assembly.Write("output.dll");
             }
             catch
             {
@@ -615,7 +617,7 @@ namespace Hiro.UnitTests
         {
             MethodInfo targetMethod = typeof(T).GetMethod(methodName);
 
-            var assembly = _assemblyBuilder.CreateAssembly("Test", AssemblyKind.Dll);
+            var assembly = _assemblyBuilder.CreateAssembly("Test", ModuleKind.Dll);
             var module = assembly.MainModule;
 
             var objectType = module.Import(typeof(object));
@@ -638,7 +640,7 @@ namespace Hiro.UnitTests
                 var parameterTypeRef = module.Import(param.ParameterType);
                 var currentParameter = newMethod.Parameters[index];
 
-                Assert.AreEqual(currentParameter.ParameterType, parameterTypeRef);
+            	Assert.IsTrue(TypesAreEqual(currentParameter.ParameterType, parameterTypeRef));
                 index++;
             }
 
@@ -647,14 +649,14 @@ namespace Hiro.UnitTests
 
             if (!(returnTypeRef is GenericInstanceType))
             {
-                Assert.AreEqual(returnTypeRef, newMethod.ReturnType.ReturnType);
+				Assert.IsTrue(TypesAreEqual(returnTypeRef, newMethod.ReturnType));
             }
             else
             {
                 var first = (GenericInstanceType)returnTypeRef;
-                var second = (GenericInstanceType)newMethod.ReturnType.ReturnType;
+                var second = (GenericInstanceType)newMethod.ReturnType;
 
-                Assert.AreEqual(first.ElementType, second.ElementType);
+				Assert.IsTrue(TypesAreEqual(first.ElementType, second.ElementType));
             }
 
             // Verify the method attributes
@@ -664,13 +666,37 @@ namespace Hiro.UnitTests
             Assert.AreEqual(newMethod.IsHideBySig, targetMethod.IsHideBySig);
         }
 
+		private static bool TypesAreEqual(TypeReference expectedType, TypeReference type)
+		{
+			if (expectedType.FullName != type.FullName)
+				return false;
+
+			var expectedAssembly = GetAssemblyFromScope(expectedType.Scope);
+			var assembly = GetAssemblyFromScope(type.Scope);
+
+			return expectedAssembly.FullName == assembly.FullName;
+		}
+
+		private static AssemblyNameReference GetAssemblyFromScope(IMetadataScope scope)
+		{
+			switch (scope.MetadataScopeType)
+			{
+				case MetadataScopeType.AssemblyNameReference:
+					return (AssemblyNameReference)scope;
+				case MetadataScopeType.ModuleDefinition:
+					return ((ModuleDefinition) scope).Assembly.Name;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
         private void TestCreatePublicMethod(bool isStatic)
         {
             var typeBuilder = new ContainerTypeBuilder();
             var methodBuilder = new MethodBuilder();
             MethodBuilderOptions options = new MethodBuilderOptions();
 
-            var assembly = _assemblyBuilder.CreateAssembly("SomeAssembly", AssemblyKind.Dll);
+            var assembly = _assemblyBuilder.CreateAssembly("SomeAssembly", ModuleKind.Dll);
             var module = assembly.MainModule;
 
             var objectType = module.Import(typeof(object));
@@ -708,9 +734,10 @@ namespace Hiro.UnitTests
 
             foreach (ParameterDefinition param in result.Parameters)
             {
-                Assert.IsTrue(param.ParameterType == integerType);
+				Assert.IsTrue(TypesAreEqual(integerType, param.ParameterType));
             }
         }
+
         private void ShouldThrowNotImplementedExceptionWith<T>(Action<T> actionThatShouldTriggerException)
         {
             var interfaceType = typeof(T);
@@ -731,7 +758,7 @@ namespace Hiro.UnitTests
 
         private void CreateStub(string typeName, string assemblyName, Type interfaceType, out ModuleDefinition module, out TypeDefinition type)
         {
-            var assembly = _assemblyBuilder.CreateAssembly(assemblyName, AssemblyKind.Dll);
+            var assembly = _assemblyBuilder.CreateAssembly(assemblyName, ModuleKind.Dll);
             module = assembly.MainModule;
 
             var objectType = module.Import(typeof(object));
@@ -744,8 +771,17 @@ namespace Hiro.UnitTests
 
             var interfaceTypeRef = module.Import(interfaceType);
 
-            Assert.IsTrue(type.Interfaces.Contains(interfaceTypeRef));
+			Assert.IsTrue(TypeImplements(interfaceTypeRef, type));
         }
+
+		private static bool TypeImplements(TypeReference interfaceType, TypeDefinition type)
+		{
+			foreach (var iface in type.Interfaces)
+				if (TypesAreEqual(interfaceType, iface))
+					return true;
+
+			return false;
+		}
 
         private static void TestStubbedInterfaceImplementation(ModuleDefinition module, TypeDefinition type)
         {
@@ -754,25 +790,26 @@ namespace Hiro.UnitTests
             // All stub methods must throw a NotImplementedException
             foreach (MethodDefinition method in type.Methods)
             {
+				if (method.IsConstructor)
+					continue;
+
                 var body = method.Body;
                 var instructions = body.Instructions;
 
-                // Define the expected constructors
-                var IL = body.CilWorker;
-                var expectedInstructions = new Queue<Instruction>();
-                expectedInstructions.Enqueue(IL.Create(OpCodes.Newobj, notImplementedCtor));
-                expectedInstructions.Enqueue(IL.Create(OpCodes.Throw));
+				Assert.AreEqual(2, instructions.Count);
 
-                Assert.AreEqual(expectedInstructions.Count, instructions.Count);
-
-                foreach (Instruction instruction in instructions)
-                {
-                    var expectedInstruction = expectedInstructions.Dequeue();
-
-                    Assert.AreEqual(expectedInstruction.OpCode, instruction.OpCode);
-                    Assert.AreEqual(expectedInstruction.Operand, instruction.Operand);
-                }
+				Assert.AreEqual(OpCodes.Newobj, instructions[0].OpCode);
+            	Assert.IsTrue(MethodsAreEqual(notImplementedCtor, (MethodReference)instructions[0].Operand));
+				Assert.AreEqual(OpCodes.Throw, instructions[1].OpCode);
             }
         }
+
+		private static bool MethodsAreEqual(MethodReference expectedMethod, MethodReference method)
+		{
+			if (expectedMethod.FullName != method.FullName)
+				return false;
+
+			return TypesAreEqual(expectedMethod.DeclaringType, method.DeclaringType);
+		}
     }
 }

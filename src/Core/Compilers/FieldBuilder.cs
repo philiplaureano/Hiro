@@ -21,7 +21,7 @@ namespace Hiro.Compilers
         {
             var module = targetType.Module;
 
-            var targetField = new FieldDefinition(fieldName, fieldType, FieldAttributes.Private);
+            var targetField = new FieldDefinition(fieldName, FieldAttributes.Private, fieldType);
             targetType.Fields.Add(targetField);
 
             return targetField;

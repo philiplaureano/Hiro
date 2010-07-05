@@ -56,12 +56,12 @@ namespace Hiro.Compilers
             var body = getInstanceMethod.Body;
             body.InitLocals = true;
 
-            var worker = body.CilWorker;
+            var il = body.GetILProcessor();
 
             body.Instructions.Clear();
 
-            DefineServices(serviceMap, getInstanceMethod, worker);
-            worker.Emit(OpCodes.Ret);
+            DefineServices(serviceMap, getInstanceMethod, il);
+            il.Emit(OpCodes.Ret);
         }
 
         /// <summary>
@@ -81,12 +81,13 @@ namespace Hiro.Compilers
         /// </summary>
         /// <param name="serviceMap">The service map that contains the list of application dependencies.</param>
         /// <param name="getInstanceMethod">The method that will be used to instantiate the service types.</param>
-        /// <param name="worker">The <see cref="CilWorker"/> that points to the body of the factory method.</param>
-        private void DefineServices(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition getInstanceMethod, CilWorker worker)
+        /// <param name="il">The <see cref="ILProcessor"/> that points to the body of the factory method.</param>
+        private void DefineServices(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition getInstanceMethod, ILProcessor il)
         {
-            var endLabel = worker.Emit(OpCodes.Nop);
+        	var endLabel = Instruction.Create(OpCodes.Nop);
+            il.Append(endLabel);
 
-            var body = worker.GetBody();
+            var body = il.Body;
             body.InitLocals = true;
 
             var method = body.Method;
@@ -103,83 +104,83 @@ namespace Hiro.Compilers
                 var serviceType = module.ImportType(dependency.ServiceType);
 
                 // Match the service type
-                worker.Emit(OpCodes.Ldtoken, serviceType);
-                worker.Emit(OpCodes.Call, getTypeFromHandle);
-                worker.Emit(OpCodes.Ldarg_1);
-                worker.Emit(OpCodes.Ceq);
+                il.Emit(OpCodes.Ldtoken, serviceType);
+                il.Emit(OpCodes.Call, getTypeFromHandle);
+                il.Emit(OpCodes.Ldarg_1);
+                il.Emit(OpCodes.Ceq);
 
-                var skipCreate = worker.Create(OpCodes.Nop);
-                worker.Emit(OpCodes.Brfalse, skipCreate);
+                var skipCreate = il.Create(OpCodes.Nop);
+                il.Emit(OpCodes.Brfalse, skipCreate);
 
                 // Match the service name
                 var serviceName = dependency.ServiceName;
 
-                worker.Emit(OpCodes.Ldarg_2);
+                il.Emit(OpCodes.Ldarg_2);
 
                 // Push the service name onto the stack
                 var pushName = serviceName == null
-                                   ? worker.Create(OpCodes.Ldnull)
-                                   : worker.Create(OpCodes.Ldstr, serviceName);
+                                   ? il.Create(OpCodes.Ldnull)
+                                   : il.Create(OpCodes.Ldstr, serviceName);
 
-                worker.Append(pushName);
-                worker.Emit(OpCodes.Call, stringEquals);
+                il.Append(pushName);
+                il.Emit(OpCodes.Call, stringEquals);
 
-                worker.Emit(OpCodes.Brtrue, skipCreate);
+                il.Emit(OpCodes.Brtrue, skipCreate);
 
                 // Emit the implementation
                 var implementation = serviceMap[dependency];
                 EmitService(getInstanceMethod, dependency, implementation, serviceMap);
 
                 if (serviceType.IsValueType)
-                    worker.Emit(OpCodes.Box, serviceType);
+                    il.Emit(OpCodes.Box, serviceType);
 
-                worker.Emit(OpCodes.Stloc, returnValue);
+                il.Emit(OpCodes.Stloc, returnValue);
 
                 var serviceInstance = returnValue;
 
                 // Call IInitialize.Initialize(this) on the current type
                 if (_initializer != null)
-                    _initializer.Initialize(worker, module, serviceInstance);
+                    _initializer.Initialize(il, module, serviceInstance);
 
-                worker.Emit(OpCodes.Ldloc, returnValue);
+                il.Emit(OpCodes.Ldloc, returnValue);
 
-                worker.Emit(OpCodes.Br, endLabel);
+                il.Emit(OpCodes.Br, endLabel);
 
                 // Fall through to the next if-then-else case
-                worker.Append(skipCreate);
+                il.Append(skipCreate);
             }
 
             var getNextContainer = module.ImportMethod<IMicroContainer>("get_NextContainer");
             var otherContainer = method.AddLocal<IMicroContainer>();
 
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Callvirt, getNextContainer);
-            worker.Emit(OpCodes.Stloc, otherContainer);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Callvirt, getNextContainer);
+            il.Emit(OpCodes.Stloc, otherContainer);
 
             // if (otherContainer != null ) {
-            var skipOtherContainerCall = worker.Create(OpCodes.Nop);
-            worker.Emit(OpCodes.Ldloc, otherContainer);
-            worker.Emit(OpCodes.Brfalse, skipOtherContainerCall);
+            var skipOtherContainerCall = il.Create(OpCodes.Nop);
+            il.Emit(OpCodes.Ldloc, otherContainer);
+            il.Emit(OpCodes.Brfalse, skipOtherContainerCall);
 
             // Prevent the container from calling itself
-            worker.Emit(OpCodes.Ldloc, otherContainer);
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Ceq);
-            worker.Emit(OpCodes.Brtrue, skipOtherContainerCall);
+            il.Emit(OpCodes.Ldloc, otherContainer);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ceq);
+            il.Emit(OpCodes.Brtrue, skipOtherContainerCall);
 
             var otherGetInstanceMethod = module.ImportMethod<IMicroContainer>("GetInstance");
 
             // return otherContainer.GetInstance(type, key);
-            worker.Emit(OpCodes.Ldloc, otherContainer);
-            worker.Emit(OpCodes.Ldarg_1);
-            worker.Emit(OpCodes.Ldarg_2);
-            worker.Emit(OpCodes.Callvirt, otherGetInstanceMethod);
-            worker.Emit(OpCodes.Br, endLabel);
+            il.Emit(OpCodes.Ldloc, otherContainer);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Ldarg_2);
+            il.Emit(OpCodes.Callvirt, otherGetInstanceMethod);
+            il.Emit(OpCodes.Br, endLabel);
             // }
 
-            worker.Append(skipOtherContainerCall);
-            worker.Emit(OpCodes.Ldnull);
-            worker.Append(endLabel);
+            il.Append(skipOtherContainerCall);
+            il.Emit(OpCodes.Ldnull);
+            il.Append(endLabel);
         }
     }
 }

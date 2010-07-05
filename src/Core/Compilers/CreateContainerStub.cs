@@ -22,7 +22,7 @@ namespace Hiro.Compilers
         public TypeDefinition CreateContainerType(string typeName, string namespaceName, string assemblyName)
         {
             var assemblyBuilder = new AssemblyBuilder();
-            var assembly = assemblyBuilder.CreateAssembly(assemblyName, AssemblyKind.Dll);
+            var assembly = assemblyBuilder.CreateAssembly(assemblyName, ModuleKind.Dll);
             var module = assembly.MainModule;
 
             var objectType = module.Import(typeof(object));

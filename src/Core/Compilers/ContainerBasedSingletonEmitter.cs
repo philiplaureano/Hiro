@@ -33,20 +33,20 @@ namespace Hiro.Compilers
         {
             var containerType = targetMethod.DeclaringType;
             var containerLocal = AddContainerVariable(module, cctor);
-            var containerConstructor = containerType.Constructors[0];
-            var worker = cctor.GetILGenerator();
-            SaveContainerInstance(worker, containerConstructor, containerLocal);
+            var containerConstructor = containerType.GetDefaultConstructor();
+            var il = cctor.GetILGenerator();
+            SaveContainerInstance(il, containerConstructor, containerLocal);
 
             base.EmitSingletonInstantiation(dependency, implementation, serviceMap, instanceField, cctor, module, targetMethod);
 
-            ReplaceContainerCalls(cctor, containerLocal, worker);
+            ReplaceContainerCalls(cctor, containerLocal, il);
         }
 
-        private static void SaveContainerInstance(CilWorker worker, MethodDefinition containerConstructor,
+        private static void SaveContainerInstance(ILProcessor il, MethodDefinition containerConstructor,
                                                  VariableDefinition containerLocal)
         {
-            worker.Emit(OpCodes.Newobj, containerConstructor);
-            worker.Emit(OpCodes.Stloc, containerLocal);
+            il.Emit(OpCodes.Newobj, containerConstructor);
+            il.Emit(OpCodes.Stloc, containerLocal);
         }
 
         private VariableDefinition AddContainerVariable(ModuleDefinition module, MethodDefinition cctor)
@@ -64,8 +64,8 @@ namespace Hiro.Compilers
         /// </summary>
         /// <param name="cctor">The static constructor.</param>
         /// <param name="containerLocal">The variable that will store the <see cref="IMicroContainer"/> instance.</param>
-        /// <param name="worker">The worker that points to the target method body.</param>
-        private static void ReplaceContainerCalls(MethodDefinition cctor, VariableDefinition containerLocal, CilWorker worker)
+        /// <param name="il">The <see cref="ILProcessor" /> that points to the target method body.</param>
+        private static void ReplaceContainerCalls(MethodDefinition cctor, VariableDefinition containerLocal, ILProcessor il)
         {
             // Replace the calls to the 'this' pointer (ldarg0) with
             // the local MicroContainer instance
@@ -80,7 +80,7 @@ namespace Hiro.Compilers
 
             while (taggedInstructions.Count > 0)
             {
-                worker.Replace(taggedInstructions.Dequeue(), worker.Create(OpCodes.Ldloc, containerLocal));
+                il.Replace(taggedInstructions.Dequeue(), il.Create(OpCodes.Ldloc, containerLocal));
             }
         }
     }

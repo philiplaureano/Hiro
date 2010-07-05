@@ -61,16 +61,16 @@ namespace Hiro.Implementations
             var microContainerType = module.ImportType<IMicroContainer>();
 
 
-            var worker = targetMethod.GetILGenerator();
+            var il = targetMethod.GetILGenerator();
 
             // if (this is IMicroContainer && this.NextContainer != null) {
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Isinst, microContainerType);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Isinst, microContainerType);
 
-            var skipCreate = worker.Create(OpCodes.Nop);
-            worker.Emit(OpCodes.Brfalse, skipCreate);
+            var skipCreate = il.Create(OpCodes.Nop);
+            il.Emit(OpCodes.Brfalse, skipCreate);
 
-            EmitGetContainerInstance(module, microContainerType, worker, skipCreate);
+            EmitGetContainerInstance(module, microContainerType, il, skipCreate);
 
             var getInstance = module.ImportMethod<IMicroContainer>("GetInstance");
             var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
@@ -78,32 +78,32 @@ namespace Hiro.Implementations
 
             // Push the service type onto the stack
             var serviceType = module.Import(_serviceType);
-            worker.Emit(OpCodes.Ldtoken, serviceType);
-            worker.Emit(OpCodes.Call, getTypeFromHandle);
+            il.Emit(OpCodes.Ldtoken, serviceType);
+            il.Emit(OpCodes.Call, getTypeFromHandle);
 
             var loadString = string.IsNullOrEmpty(_serviceName)
-                                 ? worker.Create(OpCodes.Ldnull)
-                                 : worker.Create(OpCodes.Ldstr, _serviceName);
+                                 ? il.Create(OpCodes.Ldnull)
+                                 : il.Create(OpCodes.Ldstr, _serviceName);
 
-            worker.Append(loadString);
-            worker.Emit(OpCodes.Callvirt, getInstance);
+            il.Append(loadString);
+            il.Emit(OpCodes.Callvirt, getInstance);
 
-            var endLabel = worker.Create(OpCodes.Nop);
-            worker.Emit(OpCodes.Br, endLabel);
+            var endLabel = il.Create(OpCodes.Nop);
+            il.Emit(OpCodes.Br, endLabel);
 
-            worker.Append(skipCreate);
+            il.Append(skipCreate);
 
             var serviceNotFoundExceptionCtor = module.ImportConstructor<ServiceNotFoundException>(typeof(string),
                                                                                                   typeof(Type));
             var serviceName = dependency.ServiceName ?? string.Empty;
-            worker.Emit(OpCodes.Ldstr, serviceName);
-            worker.Emit(OpCodes.Ldtoken, serviceType);
-            worker.Emit(OpCodes.Call, getTypeFromHandle);
+            il.Emit(OpCodes.Ldstr, serviceName);
+            il.Emit(OpCodes.Ldtoken, serviceType);
+            il.Emit(OpCodes.Call, getTypeFromHandle);
 
-            worker.Emit(OpCodes.Newobj, serviceNotFoundExceptionCtor);
-            worker.Emit(OpCodes.Throw);
+            il.Emit(OpCodes.Newobj, serviceNotFoundExceptionCtor);
+            il.Emit(OpCodes.Throw);
 
-            worker.Append(endLabel);
+            il.Append(endLabel);
 
             // }
         }
@@ -113,8 +113,8 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="module">The target module.</param>
         /// <param name="microContainerType">The type reference that points to the <see cref="IMicroContainer"/> type.</param>
-        /// <param name="worker">The <see cref="CilWorker"/> that points to the <see cref="IMicroContainer.GetInstance"/> method body.</param>
+        /// <param name="il">The <see cref="ILProcessor"/> that points to the <see cref="IMicroContainer.GetInstance"/> method body.</param>
         /// <param name="skipCreate">The skip label that will be used if the service cannot be instantiated.</param>
-        protected abstract void EmitGetContainerInstance(ModuleDefinition module, TypeReference microContainerType, CilWorker worker, Instruction skipCreate);        
+        protected abstract void EmitGetContainerInstance(ModuleDefinition module, TypeReference microContainerType, ILProcessor il, Instruction skipCreate);        
     }
 }

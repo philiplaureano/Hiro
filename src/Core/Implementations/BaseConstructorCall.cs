@@ -86,7 +86,7 @@ namespace Hiro.Implementations
             var declaringType = targetMethod.DeclaringType;
             var module = declaringType.Module;
             var body = targetMethod.Body;
-            var worker = body.CilWorker;
+            var il = body.GetILProcessor();
 
             var dependencies = serviceMap.Keys;
 
@@ -99,7 +99,7 @@ namespace Hiro.Implementations
             }
 
             var targetConstructor = module.Import(Target);
-            worker.Emit(OpCodes.Newobj, targetConstructor);
+            il.Emit(OpCodes.Newobj, targetConstructor);
         }
 
         /// <summary>

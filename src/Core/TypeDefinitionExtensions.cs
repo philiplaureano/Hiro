@@ -14,6 +14,20 @@ namespace Hiro
     /// </summary>
     public static class TypeDefinitionExtensions
     {
+		/// <summary>
+		/// Returns the first constructor defined on the target type.
+		/// </summary>
+		/// <param name="targetType">The type to search for a default constructor</param>
+		/// <returns>The default constructor.</returns>
+		public static MethodDefinition GetDefaultConstructor(this TypeDefinition targetType)
+		{
+			foreach (var method in targetType.Methods)
+				if (method.IsConstructor)
+					return method;
+
+			return null;	
+		}
+
         /// <summary>
         /// Adds a default constructor to the target type.
         /// </summary>
@@ -57,14 +71,14 @@ namespace Hiro
                 ImplAttributes = (Mono.Cecil.MethodImplAttributes.IL | Mono.Cecil.MethodImplAttributes.Managed)
             };
 
-            var IL = ctor.Body.CilWorker;
+            var il = ctor.Body.GetILProcessor();
 
             // Call the constructor for System.Object, and exit
-            IL.Emit(OpCodes.Ldarg_0);
-            IL.Emit(OpCodes.Call, baseConstructor);
-            IL.Emit(OpCodes.Ret);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Call, baseConstructor);
+            il.Emit(OpCodes.Ret);
 
-            targetType.Constructors.Add(ctor);
+            targetType.Methods.Add(ctor);
 
             return ctor;
         }
@@ -82,7 +96,7 @@ namespace Hiro
         public static MethodDefinition DefineMethod(this TypeDefinition typeDef, string methodName,
             Mono.Cecil.MethodAttributes attributes, Type returnType, Type[] parameterTypes, Type[] genericParameterTypes)
         {
-            var method = new MethodDefinition(methodName, attributes, null);
+            var method = new MethodDefinition(methodName, attributes, typeDef.Module.Import(typeof(object)));
 
             typeDef.Methods.Add(method);
 
@@ -126,7 +140,7 @@ namespace Hiro
             #region Add the backing field
             string fieldName = string.Format("__{0}_backingField", propertyName);
             FieldDefinition actualField = new FieldDefinition(fieldName,
-                propertyType, Mono.Cecil.FieldAttributes.Private);
+                Mono.Cecil.FieldAttributes.Private, propertyType);
 
 
             typeDef.Fields.Add(actualField);
@@ -167,7 +181,7 @@ namespace Hiro
         public static void AddProperty(this TypeDefinition typeDef, string propertyName, TypeReference propertyType, MethodDefinition getter, MethodDefinition setter)
         {
             var newProperty = new PropertyDefinition(propertyName,
-                propertyType, Mono.Cecil.PropertyAttributes.Unused)
+                Mono.Cecil.PropertyAttributes.None, propertyType)
             {
                 GetMethod = getter,
                 SetMethod = setter
@@ -251,7 +265,7 @@ namespace Hiro
                 declaringType.GenericArguments.Add(parameter);
             }
 
-            return new FieldReference(fieldName, declaringType, propertyType); ;
+            return new FieldReference(fieldName, propertyType) { DeclaringType = declaringType };
         }
     }
 }

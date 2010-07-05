@@ -43,30 +43,29 @@
   <ItemGroup>
     <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Iesi.Collections.dll</HintPath>
+      <HintPath>..\..\lib\common\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Iesi.Collections.Generic, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Iesi.Collections.Generic.dll</HintPath>
+      <HintPath>..\..\lib\common\Iesi.Collections.Generic.dll</HintPath>
     </Reference>
     <Reference Include="LinFu.Finders, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3addbe3eede3dde9, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\LinFu.Finders.dll</HintPath>
+      <HintPath>..\..\lib\common\LinFu.Finders.dll</HintPath>
     </Reference>
     <Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\LinqBridge.dll</HintPath>
+      <HintPath>..\..\lib\net-2.0\LinqBridge.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.6.9.0, Culture=neutral, PublicKeyToken=f8308f98b9861962, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=f8308f98b9861962, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Mono.Cecil.dll</HintPath>
+      <HintPath>..\..\lib\net-2.0\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="NGenerics, Version=1.4.1.0, Culture=neutral, PublicKeyToken=e4b41be133ea7faf, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\NGenerics.dll</HintPath>
+      <HintPath>..\..\lib\common\NGenerics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -74,7 +73,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseDependencyMap.cs" />
     <Compile Include="CachedContainerCompiler.cs" />
-    <Compile Include="CilWorkerExtensions.cs" />
+    <Compile Include="ILProcessorExtensions.cs" />
     <Compile Include="Compilers\AssemblyBuilder.cs" />
     <Compile Include="Compilers\SingletonEmitter.cs" />
     <Compile Include="Compilers\ContainsMethodImplementor.cs" />

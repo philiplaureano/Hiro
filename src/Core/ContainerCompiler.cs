@@ -98,15 +98,15 @@ namespace Hiro
             // Map the switch labels in the default constructor
             AddJumpEntries(module, jumpTargetField, containerType, getServiceHash, serviceMap, jumpTargets);
 
-            var defaultConstructor = containerType.Constructors[0];
+            var defaultConstructor = containerType.GetDefaultConstructor();
             var body = defaultConstructor.Body;
-            var worker = body.CilWorker;
+            var il = body.GetILProcessor();
             
             AddInitializationMap(containerType, module, fieldEmitter);
 
-            InitializeContainerPlugins(module, dependencyContainer, worker);
+            InitializeContainerPlugins(module, dependencyContainer, il);
 
-            worker.Emit(OpCodes.Ret);
+            il.Emit(OpCodes.Ret);
 
             _containsMethodImplementor.DefineContainsMethod(containerType, module, getServiceHash, jumpTargetField);
             _getInstanceMethodImplementor.DefineGetInstanceMethod(containerType, module, getServiceHash, jumpTargetField, serviceMap);
@@ -135,8 +135,8 @@ namespace Hiro
         /// </summary>
         /// <param name="module">The target module.</param>
         /// <param name="dependencyContainer">The <see cref="IDependencyContainer"/> instance that contains the services that will be instantiated by compiled container.</param>
-        /// <param name="worker">The current <see cref="CilWorker"/> instance that points to the current method body.</param>
-        private void InitializeContainerPlugins(ModuleDefinition module, IDependencyContainer dependencyContainer, CilWorker worker)
+        /// <param name="il">The current <see cref="ILProcessor"/> instance that points to the current method body.</param>
+        private void InitializeContainerPlugins(ModuleDefinition module, IDependencyContainer dependencyContainer, ILProcessor il)
         {
             var pluginDependencies = new List<IDependency>(dependencyContainer.Dependencies);
 
@@ -161,17 +161,17 @@ namespace Hiro
                 var currentType = module.Import(currentDependency.ServiceType);
                 var serviceName = currentDependency.ServiceName;
 
-                worker.Emit(OpCodes.Ldarg_0);
-                worker.Emit(OpCodes.Ldtoken, currentType);
-                worker.Emit(OpCodes.Call, getTypeFromHandle);
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldtoken, currentType);
+                il.Emit(OpCodes.Call, getTypeFromHandle);
 
                 var loadString = serviceName == null
-                                     ? worker.Create(OpCodes.Ldnull)
-                                     : worker.Create(OpCodes.Ldstr, serviceName);
-                worker.Append(loadString);
+                                     ? il.Create(OpCodes.Ldnull)
+                                     : il.Create(OpCodes.Ldstr, serviceName);
+                il.Append(loadString);
 
-                worker.Emit(OpCodes.Callvirt, getInstanceMethod);
-                worker.Emit(OpCodes.Pop);
+                il.Emit(OpCodes.Callvirt, getInstanceMethod);
+                il.Emit(OpCodes.Pop);
             }
         }
 
@@ -185,19 +185,20 @@ namespace Hiro
         private void AddInitializationMap(TypeDefinition containerType, ModuleDefinition module, FieldBuilder fieldEmitter)
         {
             var initializationMapType = module.Import(typeof(Dictionary<int, int>));
-            var initializationMapField = new FieldDefinition("__initializedServices", initializationMapType,
-                                                             FieldAttributes.Private | FieldAttributes.InitOnly);
+            var initializationMapField = new FieldDefinition("__initializedServices",
+                                                             FieldAttributes.Private | FieldAttributes.InitOnly,
+															 initializationMapType);
             containerType.Fields.Add(initializationMapField);
 
-            var defaultConstructor = containerType.Constructors[0];
+            var defaultConstructor = containerType.GetDefaultConstructor();
             var body = defaultConstructor.Body;
 
             // __initializedServices = new Dictionary<int, int>();
-            var worker = body.CilWorker;
+            var il = body.GetILProcessor();
             var dictionaryCtor = module.ImportConstructor<Dictionary<int, int>>();
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Newobj, dictionaryCtor);
-            worker.Emit(OpCodes.Stfld, initializationMapField);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Newobj, dictionaryCtor);
+            il.Emit(OpCodes.Stfld, initializationMapField);
         }
 
         /// <summary>
@@ -212,10 +213,10 @@ namespace Hiro
         /// <param name="jumpTargets">A dictionary that maps dependencies to their respective label indexes.</param>
         private static void AddJumpEntries(ModuleDefinition module, FieldDefinition jumpTargetField, TypeDefinition targetType, MethodReference getServiceHash, IDictionary<IDependency, IImplementation> serviceMap, IDictionary<IDependency, int> jumpTargets)
         {
-            var defaultContainerConstructor = targetType.Constructors[0];
+            var defaultContainerConstructor = targetType.GetDefaultConstructor();
 
             var body = defaultContainerConstructor.Body;
-            var worker = body.CilWorker;
+            var il = body.GetILProcessor();
 
             // Remove the last instruction and replace it with the jump entry 
             // initialization instructions
@@ -227,37 +228,37 @@ namespace Hiro
 
             // __jumpTargets = new Dictionary<int, int>();
             var dictionaryCtor = module.ImportConstructor<Dictionary<int, int>>();
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Newobj, dictionaryCtor);
-            worker.Emit(OpCodes.Stfld, jumpTargetField);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Newobj, dictionaryCtor);
+            il.Emit(OpCodes.Stfld, jumpTargetField);
 
             var addMethod = module.ImportMethod<Dictionary<int, int>>("Add");
             var index = 0;
             foreach (var dependency in serviceMap.Keys)
             {
-                worker.Emit(OpCodes.Ldarg_0);
-                worker.Emit(OpCodes.Ldfld, jumpTargetField);
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldfld, jumpTargetField);
 
                 var serviceType = dependency.ServiceType;
                 var serviceTypeRef = module.Import(serviceType);
 
                 // Push the service type
-                worker.Emit(OpCodes.Ldtoken, serviceTypeRef);
-                worker.Emit(OpCodes.Call, getTypeFromHandle);
+                il.Emit(OpCodes.Ldtoken, serviceTypeRef);
+                il.Emit(OpCodes.Call, getTypeFromHandle);
 
                 // Push the service name
-                var pushName = dependency.ServiceName == null ? worker.Create(OpCodes.Ldnull) : worker.Create(OpCodes.Ldstr, dependency.ServiceName);
-                worker.Append(pushName);
+                var pushName = dependency.ServiceName == null ? il.Create(OpCodes.Ldnull) : il.Create(OpCodes.Ldstr, dependency.ServiceName);
+                il.Append(pushName);
 
                 // Calculate the hash code using the service type and service name
-                worker.Emit(OpCodes.Call, getServiceHash);
+                il.Emit(OpCodes.Call, getServiceHash);
 
                 // Map the current dependency to the index
                 // that will be used in the GetInstance switch statement
                 jumpTargets[dependency] = index;
 
-                worker.Emit(OpCodes.Ldc_I4, index++);
-                worker.Emit(OpCodes.Callvirt, addMethod);
+                il.Emit(OpCodes.Ldc_I4, index++);
+                il.Emit(OpCodes.Callvirt, addMethod);
             }
         }
 

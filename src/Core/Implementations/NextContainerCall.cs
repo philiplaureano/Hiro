@@ -35,21 +35,21 @@ namespace Hiro.Implementations
         /// <param name="microContainerType">The type reference that points to the <see cref="IMicroContainer"/> type.</param>
         /// <param name="worker">The <see cref="CilWorker"/> that points to the <see cref="IMicroContainer.GetInstance"/> method body.</param>
         /// <param name="skipCreate">The skip label that will be used if the service cannot be instantiated.</param>
-        protected override void EmitGetContainerInstance(ModuleDefinition module, TypeReference microContainerType, CilWorker worker, Instruction skipCreate)
+        protected override void EmitGetContainerInstance(ModuleDefinition module, TypeReference microContainerType, ILProcessor il, Instruction skipCreate)
         {
             var getNextContainer = module.ImportMethod<IMicroContainer>("get_NextContainer");
-            EmitGetNextContainerCall(worker, microContainerType, getNextContainer);
-            worker.Emit(OpCodes.Brfalse, skipCreate);
+            EmitGetNextContainerCall(il, microContainerType, getNextContainer);
+            il.Emit(OpCodes.Brfalse, skipCreate);
 
             // var result = NextContainer.GeService(serviceType, serviceName);
-            EmitGetNextContainerCall(worker, microContainerType, getNextContainer);
+            EmitGetNextContainerCall(il, microContainerType, getNextContainer);
         }
 
-        private void EmitGetNextContainerCall(CilWorker worker, TypeReference microContainerType, MethodReference getNextContainer)
+        private void EmitGetNextContainerCall(ILProcessor il, TypeReference microContainerType, MethodReference getNextContainer)
         {
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Isinst, microContainerType);
-            worker.Emit(OpCodes.Callvirt, getNextContainer);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Isinst, microContainerType);
+            il.Emit(OpCodes.Callvirt, getNextContainer);
         }
     }
 }

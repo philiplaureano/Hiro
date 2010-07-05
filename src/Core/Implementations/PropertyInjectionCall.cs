@@ -117,7 +117,7 @@ namespace Hiro.Implementations
             var declaringType = targetMethod.DeclaringType;
             var module = declaringType.Module;
             var body = targetMethod.Body;
-            var worker = body.CilWorker;
+            var il = body.GetILProcessor();
 
             // Emit the target implementation
             _implementation.Emit(dependency, serviceMap, targetMethod);
@@ -135,7 +135,7 @@ namespace Hiro.Implementations
                 if (!serviceMap.ContainsKey(curentDependency))
                     continue;
 
-                EmitPropertySetter(serviceMap, targetMethod, module, worker, property, curentDependency);
+                EmitPropertySetter(serviceMap, targetMethod, module, il, property, curentDependency);
             }
         }
 
@@ -145,13 +145,13 @@ namespace Hiro.Implementations
         /// <param name="serviceMap">The service map that contains the application dependencies.</param>
         /// <param name="targetMethod">The target method.</param>
         /// <param name="module">The module that hosts the container type.</param>
-        /// <param name="worker">The <see cref="CilWorker"/> that points to the target method body.</param>
+        /// <param name="il">The <see cref="ILProcessor"/> that points to the target method body.</param>
         /// <param name="property">The target property.</param>
         /// <param name="curentDependency">The <see cref="IDependency"/> that describes the service instance that will be assigned to the target property.</param>
-        private static void EmitPropertySetter(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod, ModuleDefinition module, CilWorker worker, PropertyInfo property, IDependency curentDependency)
+        private static void EmitPropertySetter(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod, ModuleDefinition module, ILProcessor il, PropertyInfo property, IDependency curentDependency)
         {
             // Push the target onto the stack
-            worker.Emit(OpCodes.Dup);
+            il.Emit(OpCodes.Dup);
 
             // Get the code that will instantiate the property value
             var propertyValueImplementation = serviceMap[curentDependency];
@@ -161,8 +161,8 @@ namespace Hiro.Implementations
             var setterMethod = property.GetSetMethod();
             var setter = module.Import(setterMethod);
 
-            var callInstruction = setterMethod.IsVirtual ? worker.Create(OpCodes.Callvirt, setter) : worker.Create(OpCodes.Call, setter);
-            worker.Append(callInstruction);
+            var callInstruction = setterMethod.IsVirtual ? il.Create(OpCodes.Callvirt, setter) : il.Create(OpCodes.Call, setter);
+            il.Append(callInstruction);
         }
     }
 }

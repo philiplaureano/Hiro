@@ -29,28 +29,28 @@ namespace Hiro.Compilers
             var method = methodBuilder.CreateMethod(options);
 
             var body = method.Body;
-            var worker = body.CilWorker;            
+            var il = body.GetILProcessor ();            
 
             var getHashCodeMethod = module.ImportMethod<object>("GetHashCode");
 
-            var hashVariable = EmitGetServiceTypeHashCode(module, body, worker, getHashCodeMethod);
+            var hashVariable = EmitGetServiceTypeHashCode(module, body, il, getHashCodeMethod);
 
             var getIsNullOrEmptyMethod = module.ImportMethod<string>("IsNullOrEmpty", BindingFlags.Public | BindingFlags.Static);
 
             // Calculate the hash code for the service name
             // if it isn't null
-            worker.Emit(OpCodes.Ldarg_1);
-            worker.Emit(OpCodes.Ldnull);
-            worker.Emit(OpCodes.Ceq);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Ceq);
 
-            var skipNameHash = worker.Create(OpCodes.Nop);
-            worker.Emit(OpCodes.Brtrue, skipNameHash);
+            var skipNameHash = il.Create(OpCodes.Nop);
+            il.Emit(OpCodes.Brtrue, skipNameHash);
 
-            EmitGetServiceNameHashCode(worker, getHashCodeMethod, hashVariable);
+            EmitGetServiceNameHashCode(il, getHashCodeMethod, hashVariable);
 
-            worker.Append(skipNameHash);
-            worker.Emit(OpCodes.Ldloc, hashVariable);
-            worker.Emit(OpCodes.Ret);
+            il.Append(skipNameHash);
+            il.Emit(OpCodes.Ldloc, hashVariable);
+            il.Emit(OpCodes.Ret);
 
             return method;
         }
@@ -58,16 +58,16 @@ namespace Hiro.Compilers
         /// <summary>
         /// Emits the IL that calculates a hash code from a given service name.
         /// </summary>
-        /// <param name="worker">The <see cref="CilWorker"/> that will be used to emit the instructions.</param>
+        /// <param name="il">The <see cref="ILProcessor"/> that will be used to emit the instructions.</param>
         /// <param name="getHashCodeMethod">The <see cref="Object.GetHashCode"/> method.</param>
         /// <param name="hashVariable">The local variable that will store the hash code.</param>
-        private static void EmitGetServiceNameHashCode(CilWorker worker, MethodReference getHashCodeMethod, VariableDefinition hashVariable)
+        private static void EmitGetServiceNameHashCode(ILProcessor il, MethodReference getHashCodeMethod, VariableDefinition hashVariable)
         {
-            worker.Emit(OpCodes.Ldloc, hashVariable);
-            worker.Emit(OpCodes.Ldarg_1);
-            worker.Emit(OpCodes.Callvirt, getHashCodeMethod);
-            worker.Emit(OpCodes.Xor);
-            worker.Emit(OpCodes.Stloc, hashVariable);
+            il.Emit(OpCodes.Ldloc, hashVariable);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Callvirt, getHashCodeMethod);
+            il.Emit(OpCodes.Xor);
+            il.Emit(OpCodes.Stloc, hashVariable);
         }
 
         /// <summary>
@@ -75,16 +75,16 @@ namespace Hiro.Compilers
         /// </summary>
         /// <param name="module">The module that holds the target type.</param>
         /// <param name="body">The body of the GetServiceHashCode method.</param>
-        /// <param name="worker">The <see cref="CilWorker"/> that will be used to emit the instructions.</param>
+        /// <param name="il">The <see cref="ILProcessor"/> that will be used to emit the instructions.</param>
         /// <param name="getHashCodeMethod">The <see cref="Object.GetHashCode"/> method.</param>
         /// <returns>The variable that holds the hash code.</returns>
-        private static VariableDefinition EmitGetServiceTypeHashCode(ModuleDefinition module, Mono.Cecil.Cil.MethodBody body, CilWorker worker, MethodReference getHashCodeMethod)
+        private static VariableDefinition EmitGetServiceTypeHashCode(ModuleDefinition module, Mono.Cecil.Cil.MethodBody body, ILProcessor il, MethodReference getHashCodeMethod)
         {
             // Get the hash code for the service type
             var hashVariable = AddLocals(module, body);
-            worker.Emit(OpCodes.Ldarg_0);
-            worker.Emit(OpCodes.Callvirt, getHashCodeMethod);
-            worker.Emit(OpCodes.Stloc, hashVariable);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Callvirt, getHashCodeMethod);
+            il.Emit(OpCodes.Stloc, hashVariable);
 
             return hashVariable;
         }
@@ -101,7 +101,7 @@ namespace Hiro.Compilers
             var hashVariable = new VariableDefinition(integerType);
             body.Variables.Add(hashVariable);
             body.InitLocals = true;
-            body.MaxStack = 3;
+            body.MaxStackSize = 3;
             return hashVariable;
         }
 
