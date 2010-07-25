@@ -14,19 +14,19 @@ namespace Hiro
     /// </summary>
     public static class TypeDefinitionExtensions
     {
-		/// <summary>
-		/// Returns the first constructor defined on the target type.
-		/// </summary>
-		/// <param name="targetType">The type to search for a default constructor</param>
-		/// <returns>The default constructor.</returns>
-		public static MethodDefinition GetDefaultConstructor(this TypeDefinition targetType)
-		{
-			foreach (var method in targetType.Methods)
-				if (method.IsConstructor)
-					return method;
+        /// <summary>
+        /// Returns the first constructor defined on the target type.
+        /// </summary>
+        /// <param name="targetType">The type to search for a default constructor</param>
+        /// <returns>The default constructor.</returns>
+        public static MethodDefinition GetDefaultConstructor(this TypeDefinition targetType)
+        {
+            foreach (var method in targetType.Methods)
+                if (method.IsConstructor)
+                    return method;
 
-			return null;	
-		}
+            return null;    
+        }
 
         /// <summary>
         /// Adds a default constructor to the target type.

@@ -34,7 +34,7 @@ namespace Hiro.UnitTests.BugFixes
 
             var compiler = map.ContainerCompiler;
             var outputAssembly = compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", map);
-			outputAssembly.Write("singletonOutputAssembly.dll");
+            outputAssembly.Write("singletonOutputAssembly.dll");
 
             var container = map.CreateContainer();
             var vehicle = container.GetInstance<IVehicle>();

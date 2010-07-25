@@ -84,7 +84,7 @@ namespace Hiro.Compilers
         /// <param name="il">The <see cref="ILProcessor"/> that points to the body of the factory method.</param>
         private void DefineServices(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition getInstanceMethod, ILProcessor il)
         {
-        	var endLabel = Instruction.Create(OpCodes.Nop);
+            var endLabel = Instruction.Create(OpCodes.Nop);
             il.Append(endLabel);
 
             var body = il.Body;

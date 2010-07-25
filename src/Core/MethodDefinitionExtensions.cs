@@ -14,11 +14,11 @@ namespace Hiro
     internal static class MethodDefinitionExtensions
     {
         /// <summary>
-		/// Returns the <see cref="ILProcessor"/> instance
+        /// Returns the <see cref="ILProcessor"/> instance
         /// associated with the body of the <paramref name="method">target method</paramref>.
         /// </summary>
         /// <param name="method">The target method to be modified.</param>
-		/// <returns>The <see cref="ILProcessor"/> instance that points to the instructions of the method body.</returns>
+        /// <returns>The <see cref="ILProcessor"/> instance that points to the instructions of the method body.</returns>
         public static ILProcessor GetILGenerator(this MethodDefinition method)
         {
             return method.Body.GetILProcessor ();
@@ -96,7 +96,7 @@ namespace Hiro
             {
                 var body = method.Body;
 
-				newLocal = new VariableDefinition (variableName, localType);
+                newLocal = new VariableDefinition (variableName, localType);
 
                 body.Variables.Add(newLocal);
             }

@@ -28,27 +28,27 @@ namespace Hiro
             var resultType = new TypeDefinition(namespaceName, typeName,
                                                attributes, baseType);
 
-			if (!IsNested (attributes))
-				mainModule.Types.Add(resultType);
+            if (!IsNested (attributes))
+                mainModule.Types.Add(resultType);
 
             return resultType;
         }
 
-		static bool IsNested(Mono.Cecil.TypeAttributes attributes)
-		{
-			switch (attributes & Mono.Cecil.TypeAttributes.VisibilityMask)
-			{
-				case Mono.Cecil.TypeAttributes.NestedPublic:
-				case Mono.Cecil.TypeAttributes.NestedPrivate:
-				case Mono.Cecil.TypeAttributes.NestedFamORAssem:
-				case Mono.Cecil.TypeAttributes.NestedFamily:
-				case Mono.Cecil.TypeAttributes.NestedFamANDAssem:
-				case Mono.Cecil.TypeAttributes.NestedAssembly:
-					return true;
-				default:
-					return false;
-			}
-		}
+        static bool IsNested(Mono.Cecil.TypeAttributes attributes)
+        {
+            switch (attributes & Mono.Cecil.TypeAttributes.VisibilityMask)
+            {
+                case Mono.Cecil.TypeAttributes.NestedPublic:
+                case Mono.Cecil.TypeAttributes.NestedPrivate:
+                case Mono.Cecil.TypeAttributes.NestedFamORAssem:
+                case Mono.Cecil.TypeAttributes.NestedFamily:
+                case Mono.Cecil.TypeAttributes.NestedFamANDAssem:
+                case Mono.Cecil.TypeAttributes.NestedAssembly:
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         /// <summary>
         /// Imports a constructor with the given <paramref name="constructorParameters"/>

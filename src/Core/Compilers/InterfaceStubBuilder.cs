@@ -28,14 +28,14 @@ namespace Hiro.Compilers
             return CreateInterfaceStub(interfaceType, type);
         }
 
-		static bool TypeImplements(TypeDefinition type, Type interfaceType)
-		{
-			foreach (var iface in type.Interfaces)
-				if (iface.FullName == interfaceType.FullName)
-					return true;
+        static bool TypeImplements(TypeDefinition type, Type interfaceType)
+        {
+            foreach (var iface in type.Interfaces)
+                if (iface.FullName == interfaceType.FullName)
+                    return true;
 
-			return false;
-		}
+            return false;
+        }
 
         /// <summary>
         /// Overrides all methods in the given interface type with methods that throw a <see cref="NotImplementedException"/>.

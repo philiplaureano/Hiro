@@ -22,7 +22,7 @@ namespace Hiro
             using (var stream = new MemoryStream())
             {
                 // Persist the assembly to the stream
-				definition.Write(stream);
+                definition.Write(stream);
                 var buffer = stream.GetBuffer();
                 result = Assembly.Load(buffer);
             }

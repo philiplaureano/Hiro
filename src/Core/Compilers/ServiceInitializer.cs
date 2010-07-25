@@ -13,13 +13,13 @@ namespace Hiro.Compilers
     /// </summary>
     public class ServiceInitializer : IServiceInitializer
     {
-    	/// <summary>
-    	/// Emits the instructions that call <see cref="IInitialize.Initialize"/> on a given service instance.
-    	/// </summary>
-    	/// <param name="il"></param>
-    	/// <param name="module">The host module.</param>
-    	/// <param name="serviceInstance">The local variable that points to the current service instance.</param>
-    	public void Initialize(ILProcessor il, ModuleDefinition module, VariableDefinition serviceInstance)
+        /// <summary>
+        /// Emits the instructions that call <see cref="IInitialize.Initialize"/> on a given service instance.
+        /// </summary>
+        /// <param name="il"></param>
+        /// <param name="module">The host module.</param>
+        /// <param name="serviceInstance">The local variable that points to the current service instance.</param>
+        public void Initialize(ILProcessor il, ModuleDefinition module, VariableDefinition serviceInstance)
         {
             var body = il.Body;
             var method = body.Method;
