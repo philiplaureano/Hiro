@@ -267,5 +267,25 @@ namespace Hiro
 
             return new FieldReference(fieldName, propertyType) { DeclaringType = declaringType };
         }
+
+        /// <summary>
+        /// Tests if a <see cref="TypeDefinition"/> implements directly a certain <see cref="TypeReference"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="TypeDefinition"/> to test.</param>
+        /// <param name="interfaceType">The <see cref="TypeReference"/> which reprents the interface.</param>
+        /// <returns>True if type directly implements interfaceType, False otherwise.</returns>
+        public static bool Implements(this TypeDefinition type, TypeReference interfaceType)
+        {
+            if (type == null)
+                throw new ArgumentNullException("type");
+            if (interfaceType == null)
+                throw new ArgumentNullException("interfaceType");
+
+            foreach (var reference in type.Interfaces)
+                if (interfaceType.IsEquivalentTo(reference))
+                    return true;
+
+            return false;
+        }
     }
 }

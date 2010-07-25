@@ -335,7 +335,7 @@ namespace Hiro.UnitTests
             Assert.IsTrue(result.IsBeforeFieldInit);
             Assert.IsTrue(result.IsPublic);
 
-            Assert.IsTrue(TypeImplements(microContainerTypeRef, result));
+            Assert.IsTrue(result.Implements(microContainerTypeRef));
 
             // Verify that the default constructor exists
             var constructor = result.GetDefaultConstructor();
@@ -640,7 +640,7 @@ namespace Hiro.UnitTests
                 var parameterTypeRef = module.Import(param.ParameterType);
                 var currentParameter = newMethod.Parameters[index];
 
-                Assert.IsTrue(TypesAreEqual(currentParameter.ParameterType, parameterTypeRef));
+                Assert.IsTrue(currentParameter.ParameterType.IsEquivalentTo(parameterTypeRef));
                 index++;
             }
 
@@ -649,14 +649,14 @@ namespace Hiro.UnitTests
 
             if (!(returnTypeRef is GenericInstanceType))
             {
-                Assert.IsTrue(TypesAreEqual(returnTypeRef, newMethod.ReturnType));
+                Assert.IsTrue(newMethod.ReturnType.IsEquivalentTo(returnTypeRef));
             }
             else
             {
                 var first = (GenericInstanceType)returnTypeRef;
                 var second = (GenericInstanceType)newMethod.ReturnType;
 
-                Assert.IsTrue(TypesAreEqual(first.ElementType, second.ElementType));
+                Assert.IsTrue(first.ElementType.IsEquivalentTo(second.ElementType));
             }
 
             // Verify the method attributes
@@ -664,30 +664,6 @@ namespace Hiro.UnitTests
             Assert.AreEqual(newMethod.IsPublic, targetMethod.IsPublic);
             Assert.AreEqual(newMethod.IsStatic, targetMethod.IsStatic);
             Assert.AreEqual(newMethod.IsHideBySig, targetMethod.IsHideBySig);
-        }
-
-        private static bool TypesAreEqual(TypeReference expectedType, TypeReference type)
-        {
-            if (expectedType.FullName != type.FullName)
-                return false;
-
-            var expectedAssembly = GetAssemblyFromScope(expectedType.Scope);
-            var assembly = GetAssemblyFromScope(type.Scope);
-
-            return expectedAssembly.FullName == assembly.FullName;
-        }
-
-        private static AssemblyNameReference GetAssemblyFromScope(IMetadataScope scope)
-        {
-            switch (scope.MetadataScopeType)
-            {
-                case MetadataScopeType.AssemblyNameReference:
-                    return (AssemblyNameReference)scope;
-                case MetadataScopeType.ModuleDefinition:
-                    return ((ModuleDefinition) scope).Assembly.Name;
-                default:
-                    throw new NotSupportedException();
-            }
         }
 
         private void TestCreatePublicMethod(bool isStatic)
@@ -734,7 +710,7 @@ namespace Hiro.UnitTests
 
             foreach (ParameterDefinition param in result.Parameters)
             {
-                Assert.IsTrue(TypesAreEqual(integerType, param.ParameterType));
+                Assert.IsTrue(param.ParameterType.IsEquivalentTo(integerType));
             }
         }
 
@@ -771,16 +747,7 @@ namespace Hiro.UnitTests
 
             var interfaceTypeRef = module.Import(interfaceType);
 
-            Assert.IsTrue(TypeImplements(interfaceTypeRef, type));
-        }
-
-        private static bool TypeImplements(TypeReference interfaceType, TypeDefinition type)
-        {
-            foreach (var iface in type.Interfaces)
-                if (TypesAreEqual(interfaceType, iface))
-                    return true;
-
-            return false;
+            Assert.IsTrue(type.Implements(interfaceTypeRef));
         }
 
         private static void TestStubbedInterfaceImplementation(ModuleDefinition module, TypeDefinition type)
@@ -809,7 +776,7 @@ namespace Hiro.UnitTests
             if (expectedMethod.FullName != method.FullName)
                 return false;
 
-            return TypesAreEqual(expectedMethod.DeclaringType, method.DeclaringType);
+            return expectedMethod.DeclaringType.IsEquivalentTo(method.DeclaringType);
         }
     }
 }

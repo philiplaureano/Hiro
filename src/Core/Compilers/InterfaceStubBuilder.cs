@@ -21,20 +21,12 @@ namespace Hiro.Compilers
         /// <returns>The list of stubbed methods.</returns>
         public IEnumerable<MethodDefinition> AddStubImplementationFor(Type interfaceType, TypeDefinition type)
         {
-            var module = type.Module;            
-            if (!TypeImplements(type, interfaceType)) 
-                type.Interfaces.Add(module.Import(interfaceType));
+            var module = type.Module;
+            var interfaceTypeRef = module.Import(interfaceType);
+            if (!type.Implements(interfaceTypeRef)) 
+                type.Interfaces.Add(interfaceTypeRef);
 
             return CreateInterfaceStub(interfaceType, type);
-        }
-
-        static bool TypeImplements(TypeDefinition type, Type interfaceType)
-        {
-            foreach (var iface in type.Interfaces)
-                if (iface.FullName == interfaceType.FullName)
-                    return true;
-
-            return false;
         }
 
         /// <summary>
@@ -45,7 +37,7 @@ namespace Hiro.Compilers
         /// <returns>The list of stubbed methods.</returns>
         private static IEnumerable<MethodDefinition> CreateInterfaceStub(Type interfaceType, TypeDefinition type)
         {
-            var module = type.Module;            
+            var module = type.Module;
             var overrider = new MethodOverrider();
             var methods = interfaceType.GetMethods();
             var stubbedMethods = new List<MethodDefinition>();
