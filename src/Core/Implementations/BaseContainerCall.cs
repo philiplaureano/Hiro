@@ -11,7 +11,7 @@ namespace Hiro.Implementations
     /// <summary>
     /// Represents a class that provides the basic fuctionality for a compiled <see cref="IMicroContainer"/> instance to compile itself.
     /// </summary>
-    public abstract class BaseContainerCall : IImplementation
+    public abstract class BaseContainerCall : IImplementation<MethodDefinition>
     {
         private readonly Type _serviceType;
         private readonly string _serviceName;
@@ -32,7 +32,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>A list of missing dependencies.</returns>
-        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer<MethodDefinition> map)
         {
             yield break;
         }
@@ -42,7 +42,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer<MethodDefinition> map)
         {
             yield break;
         }
@@ -53,7 +53,7 @@ namespace Hiro.Implementations
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
+        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, MethodDefinition targetMethod)
         {
             var declaringType = targetMethod.DeclaringType;
             var module = declaringType.Module;

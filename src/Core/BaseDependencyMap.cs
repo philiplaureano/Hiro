@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Hiro.Containers;
 using Hiro.Interfaces;
+using Mono.Cecil;
 using NGenerics.DataStructures.General;
 
 namespace Hiro
@@ -10,18 +11,19 @@ namespace Hiro
     /// <summary>
     /// Represents a class that can map dependencies to implementations.
     /// </summary>
-    public abstract class BaseDependencyMap : IDependencyMap
+    /// <typeparam name="TMethodBuilder">The method builder type.</typeparam>
+    public abstract class BaseDependencyMap<TMethodBuilder> : IDependencyMap<TMethodBuilder>
     {
         /// <summary>
         /// The list of dependencies in the current map.
         /// </summary>
-        protected HashList<IDependency, IImplementation> _entries = new HashList<IDependency, IImplementation>();        
+        protected HashList<IDependency, IImplementation<TMethodBuilder>> _entries = new HashList<IDependency, IImplementation<TMethodBuilder>>();        
 
         /// <summary>
-        /// Gets or sets the value indicating the <see cref="IImplementationInjector"/> instance that will be used to intercept <see cref="IImplementation"/> instances.
+        /// Gets or sets the value indicating the injector instance that will be used to intercept <see cref="IImplementation"/> instances.
         /// </summary>
         /// <value>The implementation injector.</value>
-        public IImplementationInjector Injector { get; set; }
+        public IImplementationInjector<TMethodBuilder> Injector { get; set; }
 
         /// <summary>
         /// Gets the value indicating the list of dependencies that currently exist within the current container.
@@ -50,7 +52,7 @@ namespace Hiro
         /// </summary>
         /// <param name="dependency">The dependency that will be associated with the implementation.</param>
         /// <param name="implementation">The implementation itself.</param>
-        public void AddService(IDependency dependency, IImplementation implementation)
+        public void AddService(IDependency dependency, IImplementation<TMethodBuilder> implementation)
         {
             var currentImplementation = implementation;
 
@@ -66,7 +68,7 @@ namespace Hiro
         /// <param name="targetDependency">The target dependency.</param>
         /// <param name="addIncompleteImplementations">A boolean flag that determines whether or not the resulting list should include implementations with incomplete dependencies.</param>
         /// <returns>A list of implementations.</returns>
-        public IEnumerable<IImplementation> GetImplementations(IDependency targetDependency, bool addIncompleteImplementations)
+        public IEnumerable<IImplementation<TMethodBuilder>> GetImplementations(IDependency targetDependency, bool addIncompleteImplementations)
         {
             if (!_entries.ContainsKey(targetDependency))
                 yield break;

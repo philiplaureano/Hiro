@@ -40,7 +40,7 @@ namespace Hiro
         /// <summary>
         /// The class that will define the service map.
         /// </summary>
-        private readonly IServiceMapBuilder _serviceMapBuilder;
+        private readonly IServiceMapBuilder<MethodDefinition> _serviceMapBuilder;
 
         /// <summary>
         /// Initializes a new instance of the ContainerCompiler class.
@@ -61,7 +61,7 @@ namespace Hiro
         public ContainerCompiler(IGetInstanceMethodImplementor getInstanceMethodImplementor,
             IContainsMethodImplementor containsMethodImplementor,
             ICreateContainerType createContainerType,
-            IServiceMapBuilder serviceMapBuilder,
+            IServiceMapBuilder<MethodDefinition> serviceMapBuilder,
             IGetAllInstancesMethodImplementor getAllInstancesMethodImplementor)
         {
             _getInstanceMethodImplementor = getInstanceMethodImplementor;
@@ -80,7 +80,7 @@ namespace Hiro
         /// <param name="namespaceName">The namespace name that will be associated with the container type.</param>
         /// <param name="assemblyName">The name of the assembly that will contain the container type.</param>
         /// <returns>An assembly containing the compiled IOC container.</returns>
-        public AssemblyDefinition Compile(string typeName, string namespaceName, string assemblyName, IDependencyContainer dependencyContainer)
+        public AssemblyDefinition Compile(string typeName, string namespaceName, string assemblyName, IDependencyContainer<MethodDefinition> dependencyContainer)
         {
             var containerType = _createContainerType.CreateContainerType(typeName, namespaceName, assemblyName);
             var module = containerType.Module;
@@ -136,7 +136,7 @@ namespace Hiro
         /// <param name="module">The target module.</param>
         /// <param name="dependencyContainer">The <see cref="IDependencyContainer"/> instance that contains the services that will be instantiated by compiled container.</param>
         /// <param name="il">The current <see cref="ILProcessor"/> instance that points to the current method body.</param>
-        private void InitializeContainerPlugins(ModuleDefinition module, IDependencyContainer dependencyContainer, ILProcessor il)
+        private void InitializeContainerPlugins(ModuleDefinition module, IDependencyContainer<MethodDefinition> dependencyContainer, ILProcessor il)
         {
             var pluginDependencies = new List<IDependency>(dependencyContainer.Dependencies);
 
@@ -146,7 +146,7 @@ namespace Hiro
                                                            return false;
 
                                                        var matches = dependencyContainer.GetImplementations(dependency, false);
-                                                       var matchList = new List<IImplementation>(matches);
+                                                       var matchList = new List<IImplementation<MethodDefinition>>(matches);
 
                                                        return matchList.Count > 0;
                                                    };
@@ -211,7 +211,7 @@ namespace Hiro
         /// <param name="getServiceHash">The hash calculation method.</param>
         /// <param name="serviceMap">The collection that contains the current list of dependencies and their respective implementations.</param>
         /// <param name="jumpTargets">A dictionary that maps dependencies to their respective label indexes.</param>
-        private static void AddJumpEntries(ModuleDefinition module, FieldDefinition jumpTargetField, TypeDefinition targetType, MethodReference getServiceHash, IDictionary<IDependency, IImplementation> serviceMap, IDictionary<IDependency, int> jumpTargets)
+        private static void AddJumpEntries(ModuleDefinition module, FieldDefinition jumpTargetField, TypeDefinition targetType, MethodReference getServiceHash, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, IDictionary<IDependency, int> jumpTargets)
         {
             var defaultContainerConstructor = targetType.GetDefaultConstructor();
 

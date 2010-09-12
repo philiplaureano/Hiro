@@ -7,46 +7,76 @@ using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
 using Hiro.Resolvers;
+using Mono.Cecil;
 using NGenerics.DataStructures.General;
 
 namespace Hiro.Loaders
 {
+    public class DependencyMapLoader : DependencyMapLoader<MethodDefinition>
+    {
+        public DependencyMapLoader()
+            : this(new ConstructorResolver())
+        {
+        }
+        public DependencyMapLoader(IConstructorResolver<MethodDefinition> constructorResolver)
+            : base(constructorResolver)
+        {
+        }
+
+        public DependencyMapLoader(ITypeLoader typeLoader, IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver) :
+            base(new ConstructorResolver(), typeLoader, serviceLoader, defaultServiceResolver)
+        {
+        }
+        public DependencyMapLoader(IConstructorResolver<MethodDefinition> constructorResolver, ITypeLoader typeLoader, IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver)
+            : base(constructorResolver, typeLoader, serviceLoader, defaultServiceResolver)
+        {
+        }
+        protected override DependencyMap<MethodDefinition> CreateMap(IConstructorResolver<MethodDefinition> constructorResolver)
+        {
+            return new DependencyMap(constructorResolver) { Injector = new PropertyInjector() };
+        }
+
+        protected override IImplementation<MethodDefinition> CreateFactoryCall(string serviceName, Type actualServiceType)
+        {
+            return new FactoryCall(actualServiceType, serviceName);
+        }
+    }
     /// <summary>
     /// Represents a class that can load a dependency map from a given set o fassemblies
     /// </summary>
-    public class DependencyMapLoader
+    public abstract class DependencyMapLoader<TMethodBuilder>
     {
-        private readonly IConstructorResolver _constructorResolver;
+        private readonly IConstructorResolver<TMethodBuilder> _constructorResolver;
         private readonly ITypeLoader _typeLoader;
         private readonly IServiceLoader _serviceLoader;
         private readonly IDefaultServiceResolver _defaultServiceResolver;
 
-        /// <summary>
-        /// Initializes a new instance of the DependencyMapLoader class.
-        /// </summary>
-        public DependencyMapLoader()
-            : this(new TypeLoader(), new ServiceLoader(), new DefaultServiceResolver())
-        {
-        }
+        ///// <summary>
+        ///// Initializes a new instance of the DependencyMapLoader class.
+        ///// </summary>
+        //public DependencyMapLoader()
+        //    : this(new TypeLoader(), new ServiceLoader(), new DefaultServiceResolver())
+        //{
+        //}
 
         /// <summary>
         /// Initializes a new instance of the DependencyMapLoader class.
         /// </summary>
-        public DependencyMapLoader(IConstructorResolver constructorResolver)
+        protected DependencyMapLoader(IConstructorResolver<TMethodBuilder> constructorResolver)
             : this(constructorResolver, new TypeLoader(), new ServiceLoader(), new DefaultServiceResolver())
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the DependencyMapLoader class.
-        /// </summary>
-        /// <param name="typeLoader">The type loader that will load the service types from each assembly.</param>
-        /// <param name="serviceLoader">The service loader that will load services from a given assembly.</param>
-        /// <param name="defaultServiceResolver">The resolver that will determine the default anonymous implementation for a particular service type.</param>
-        public DependencyMapLoader(ITypeLoader typeLoader, IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver)
-            : this(new ConstructorResolver(), typeLoader, serviceLoader, defaultServiceResolver)
-        {
-        }
+        ///// <summary>
+        ///// Initializes a new instance of the DependencyMapLoader class.
+        ///// </summary>
+        ///// <param name="typeLoader">The type loader that will load the service types from each assembly.</param>
+        ///// <param name="serviceLoader">The service loader that will load services from a given assembly.</param>
+        ///// <param name="defaultServiceResolver">The resolver that will determine the default anonymous implementation for a particular service type.</param>
+        //public DependencyMapLoader(ITypeLoader typeLoader, IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver)
+        //    : this(new ConstructorResolver(), typeLoader, serviceLoader, defaultServiceResolver)
+        //{
+        //}
 
         /// <summary>
         /// Initializes a new instance of the DependencyMapLoader class.
@@ -55,7 +85,7 @@ namespace Hiro.Loaders
         /// <param name="typeLoader">The type loader that will load the service types from each assembly.</param>
         /// <param name="serviceLoader">The service loader that will load services from a given assembly.</param>
         /// <param name="defaultServiceResolver">The resolver that will determine the default anonymous implementation for a particular service type.</param>
-        public DependencyMapLoader(IConstructorResolver constructorResolver, ITypeLoader typeLoader, IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver)
+        public DependencyMapLoader(IConstructorResolver<TMethodBuilder> constructorResolver, ITypeLoader typeLoader, IServiceLoader serviceLoader, IDefaultServiceResolver defaultServiceResolver)
         {
             _constructorResolver = constructorResolver;
             _typeLoader = typeLoader;
@@ -78,7 +108,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="assembly">The assembly that will be used to construct the dependency map.</param>
         /// <returns>A dependency map.</returns>
-        public DependencyMap LoadFrom(Assembly assembly)
+        public DependencyMap<TMethodBuilder> LoadFrom(Assembly assembly)
         {
             if (assembly == null)
                 throw new ArgumentNullException("assembly");
@@ -91,11 +121,11 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="assemblies">The list of assemblies that will be used to construct the dependency map.</param>
         /// <returns>A dependency map.</returns>
-        public DependencyMap LoadFrom(IEnumerable<Assembly> assemblies)
+        public DependencyMap<TMethodBuilder> LoadFrom(IEnumerable<Assembly> assemblies)
         {
-            var map = new DependencyMap(_constructorResolver) { Injector = new PropertyInjector() };
+            var map = CreateMap(_constructorResolver);
 
-            var defaultImplementations = new Dictionary<Type, IImplementation>();
+            var defaultImplementations = new Dictionary<Type, IImplementation<TMethodBuilder>>();
             foreach (var assembly in assemblies)
             {
                 var embeddedTypes = _typeLoader.LoadTypes(assembly);
@@ -120,13 +150,15 @@ namespace Hiro.Loaders
             return map;
         }
 
+
         /// <summary>
         /// Registers a type as a factory type if it implements the <see cref="IFactory{T}"/> interface.
         /// </summary>
         /// <param name="type">The target type</param>
         /// <param name="defaultImplementations">The list of default implementations per service type.</param>
         /// <param name="map">The dependency map.</param>
-        private void RegisterNamedFactoryType(Type type, IDictionary<Type, IImplementation> defaultImplementations, IDependencyMap map)
+        private void RegisterNamedFactoryType(Type type, IDictionary<Type,
+            IImplementation<TMethodBuilder>> defaultImplementations, IDependencyMap<TMethodBuilder> map)
         {
             var factoryTypeDefinition = typeof(IFactory<>);
             var interfaces = type.GetInterfaces();
@@ -146,7 +178,7 @@ namespace Hiro.Loaders
                 var nameLength = serviceName.Length;
                 var hasSpecialName = serviceName.EndsWith("Factory") && nameLength > 7;
                 serviceName = hasSpecialName ? serviceName.Substring(0, nameLength - 7) : serviceName;
-                var implementation = new FactoryCall(actualServiceType, type.Name);
+                var implementation = CreateFactoryCall(serviceName, actualServiceType);
 
                 // Register the default implementation if necessary
                 if (!defaultImplementations.ContainsKey(actualServiceType))
@@ -154,15 +186,23 @@ namespace Hiro.Loaders
 
                 var dependency = new Dependency(actualServiceType, serviceName);
                 map.AddService(dependency, implementation);
+
+                var factoryDependency = new Dependency(interfaceType, serviceName);
+                var factoryInstance = new TransientType<TMethodBuilder>(type, map, _constructorResolver);
+                map.AddService(factoryDependency, factoryInstance);
             }
         }
+
+        protected abstract IImplementation<TMethodBuilder> CreateFactoryCall(string serviceName, Type actualServiceType);
+        protected abstract DependencyMap<TMethodBuilder> CreateMap(
+           IConstructorResolver<TMethodBuilder> constructorResolver);
 
         /// <summary>
         /// Registers services from the given list of <paramref name="assemblies"/>.
         /// </summary>
         /// <param name="assemblies">The list of assemblies that contain the service types.</param>
         /// <param name="map">The dependency map.</param>
-        private void RegisterServicesFrom(IEnumerable<Assembly> assemblies, DependencyMap map)
+        private void RegisterServicesFrom(IEnumerable<Assembly> assemblies, DependencyMap<TMethodBuilder> map)
         {
             var serviceList = GetServiceList(assemblies);
 
@@ -201,7 +241,7 @@ namespace Hiro.Loaders
         /// <param name="directory">The directory that contains the assemblies that will be loaded into the dependency map.</param>
         /// <param name="filePattern">The search pattern that describes which assemblies will be loaded.</param>
         /// <returns>A dependency map.</returns>
-        public DependencyMap LoadFrom(string directory, string filePattern)
+        public DependencyMap<TMethodBuilder> LoadFrom(string directory, string filePattern)
         {
             return LoadFrom(directory, filePattern, new AssemblyLoader());
         }
@@ -213,7 +253,7 @@ namespace Hiro.Loaders
         /// <param name="filePattern">The search pattern that describes which assemblies will be loaded.</param>
         /// <param name="assemblyLoader">The assembly loader that will load assemblies into memory.</param>
         /// <returns>A dependency map.</returns>
-        public DependencyMap LoadFrom(string directory, string filePattern, IAssemblyLoader assemblyLoader)
+        public DependencyMap<TMethodBuilder> LoadFrom(string directory, string filePattern, IAssemblyLoader assemblyLoader)
         {
             if (assemblyLoader == null)
                 throw new ArgumentNullException("assemblyLoader");
@@ -239,7 +279,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="filePattern">The search pattern that describes which assemblies will be loaded.</param>
         /// <returns>A dependency map.</returns>
-        public DependencyMap LoadFromBaseDirectory(string filePattern)
+        public DependencyMap<TMethodBuilder> LoadFromBaseDirectory(string filePattern)
         {
             return LoadFromBaseDirectory(filePattern, new AssemblyLoader());
         }
@@ -250,7 +290,7 @@ namespace Hiro.Loaders
         /// <param name="filePattern">The search pattern that describes which assemblies will be loaded.</param>
         /// <param name="assemblyLoader">The assembly loader that will load assemblies into memory.</param>
         /// <returns>A dependency map.</returns>
-        public DependencyMap LoadFromBaseDirectory(string filePattern, IAssemblyLoader assemblyLoader)
+        public DependencyMap<TMethodBuilder> LoadFromBaseDirectory(string filePattern, IAssemblyLoader assemblyLoader)
         {
             if (assemblyLoader == null)
                 throw new ArgumentNullException("assemblyLoader");
@@ -263,7 +303,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="serviceList">The list of service implementations that will be used to determine the default service for each service type.</param>
         /// <returns></returns>
-        private List<IServiceInfo> GetDefaultServices(IDictionary<Type, IList<IServiceInfo>> serviceList)
+        private IEnumerable<IServiceInfo> GetDefaultServices(IDictionary<Type, IList<IServiceInfo>> serviceList)
         {
             if (serviceList == null)
                 throw new ArgumentNullException("serviceList");

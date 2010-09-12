@@ -28,8 +28,8 @@ namespace Hiro.Compilers
             _initializer = initializer;
         }
 
-        public void DefineGetAllInstancesMethod(TypeDefinition containerType, ModuleDefinition module, 
-            IDictionary<IDependency, IImplementation> serviceMap)
+        public void DefineGetAllInstancesMethod(TypeDefinition containerType, ModuleDefinition module,
+            IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap)
         {
             var targetMethods = new List<MethodDefinition>();
             foreach (MethodDefinition method in containerType.Methods)

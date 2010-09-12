@@ -115,7 +115,7 @@ namespace Hiro.UnitTests
             serviceLoader.Expect(s => s.Load(assembly)).Returns(services);
 
             var loader = new DependencyMapLoader(typeLoader.Object, serviceLoader.Object, resolver.Object);
-            DependencyMap map = loader.LoadFrom(assemblies);
+            var map = loader.LoadFrom(assemblies);
 
             typeLoader.VerifyAll();
             resolver.VerifyAll();

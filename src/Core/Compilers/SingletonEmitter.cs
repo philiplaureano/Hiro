@@ -10,7 +10,7 @@ namespace Hiro.Compilers
     /// <summary>
     /// Represents the basic implementation of a <see cref="ISingletonEmitter"/> instance.
     /// </summary>
-    public class SingletonEmitter : ISingletonEmitter
+    public class SingletonEmitter : ISingletonEmitter<MethodDefinition>
     {
         /// <summary>
         /// The dictionary that maps dependencies to the corresponding singleton factory methods.
@@ -24,8 +24,8 @@ namespace Hiro.Compilers
         /// <param name="dependency">The dependency that will be instantiated by the container.</param>
         /// <param name="implementation">The implementation that will be used to instantiate the dependency.</param>
         /// <param name="serviceMap">The service map the contains the current application dependencies.</param>
-        public void EmitService(MethodDefinition targetMethod, IDependency dependency, 
-                                IImplementation implementation, IDictionary<IDependency, IImplementation> serviceMap)
+        public void EmitService(MethodDefinition targetMethod, IDependency dependency,
+                                IImplementation<MethodDefinition> implementation, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap)
         {
             MethodDefinition getInstanceMethod = null;
 
@@ -100,7 +100,10 @@ namespace Hiro.Compilers
         /// <param name="implementation">The implementation that will instantiate the dependency.</param>
         /// <param name="dependency">The dependency that will be instantiated by the singleton.</param>
         /// <param name="targetMethod">The method that will be used to instantiate the actual service instance.</param>
-        private void DefineNestedType(ModuleDefinition module, TypeDefinition singletonType, FieldDefinition instanceField, IDictionary<IDependency, IImplementation> serviceMap, IImplementation implementation, IDependency dependency, MethodDefinition targetMethod)
+        private void DefineNestedType(ModuleDefinition module, TypeDefinition singletonType, FieldDefinition instanceField, 
+            IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, 
+            IImplementation<MethodDefinition> implementation, 
+            IDependency dependency, MethodDefinition targetMethod)
         {
             var objectType = module.ImportType(typeof (object));
             var nestedName = string.Format("Nested-{0}", dependency.GetHashCode());
@@ -128,8 +131,8 @@ namespace Hiro.Compilers
         /// <param name="module">The target module.</param>
         /// <param name="targetMethod">The target method that will instantiate the service instance.</param>
         protected virtual void EmitSingletonInstantiation(IDependency dependency, 
-            IImplementation implementation, 
-            IDictionary<IDependency, IImplementation> serviceMap, 
+            IImplementation<MethodDefinition> implementation, 
+            IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, 
             FieldDefinition instanceField, 
             MethodDefinition cctor, 
             ModuleDefinition module,

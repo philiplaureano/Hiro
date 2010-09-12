@@ -12,7 +12,7 @@ namespace Hiro.Implementations
     /// <summary>
     /// Represents an implementation that can instantiate a type that has more than one constructor.
     /// </summary>
-    public class TransientType : IImplementation<ConstructorInfo>
+    public class TransientType<TMethodBuilder> : IStaticImplementation<ConstructorInfo, TMethodBuilder>
     {
         /// <summary>
         /// The type that will be instantiated by the compiled container.
@@ -22,26 +22,17 @@ namespace Hiro.Implementations
         /// <summary>
         /// The dependency container that contains the dependencies in the given application.
         /// </summary>
-        private IDependencyContainer _container;
+        private IDependencyContainer<TMethodBuilder> _container;
 
         /// <summary>
         /// The constructor resolver that will select the constructor with the most resolvable parameters.
         /// </summary>
-        private readonly IConstructorResolver _resolver;
+        private readonly IConstructorResolver<TMethodBuilder> _resolver;
 
         /// <summary>
         /// The functor that determines which constructor implementation will be used to instantiate the target type.
         /// </summary>
-        private Func<IImplementation<ConstructorInfo>> _getConstructorImplementation;
-
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="T:System.Object"/> class.
-        ///// </summary>
-        ///// <param name="targetType">The target type.</param>
-        ///// <param name="container">The dependency container.</param>
-        //public TransientType(Type targetType, IDependencyContainer container) : this(targetType, container, new ConstructorResolver())
-        //{
-        //}
+        private Func<IStaticImplementation<ConstructorInfo, TMethodBuilder>> _getConstructorImplementation;        
 
         /// <summary>
         /// Initializes a new instance of the TransientType class.
@@ -49,7 +40,7 @@ namespace Hiro.Implementations
         /// <param name="targetType">The target type.</param>
         /// <param name="container">The dependency container.</param>
         /// <param name="resolver">The constructor resolver.</param>
-        public TransientType(Type targetType, IDependencyContainer container, IConstructorResolver resolver)
+        public TransientType(Type targetType, IDependencyContainer<TMethodBuilder> container, IConstructorResolver<TMethodBuilder> resolver)
         {
             _targetType = targetType;
             _container = container;
@@ -89,7 +80,7 @@ namespace Hiro.Implementations
         {
             get
             {
-                return TargetImplementation.Target;
+                return TargetStaticImplementation.Target;
             }
         }
 
@@ -98,7 +89,7 @@ namespace Hiro.Implementations
         /// instantiate the target type.
         /// </summary>
         /// <value>The target implementation that will instantiate the target type.</value>
-        private IImplementation<ConstructorInfo> TargetImplementation
+        private IStaticImplementation<ConstructorInfo, TMethodBuilder> TargetStaticImplementation
         {
             get
             {
@@ -111,9 +102,9 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The dependency container.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer<TMethodBuilder> map)
         {
-            return TargetImplementation.GetMissingDependencies(map);
+            return TargetStaticImplementation.GetMissingDependencies(map);
         }
 
         /// <summary>
@@ -121,9 +112,9 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer<TMethodBuilder> map)
         {
-            return TargetImplementation.GetRequiredDependencies(map);
+            return TargetStaticImplementation.GetRequiredDependencies(map);
         }
 
         /// <summary>
@@ -132,9 +123,9 @@ namespace Hiro.Implementations
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
+        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation<TMethodBuilder>> serviceMap, TMethodBuilder targetMethod)
         {
-            TargetImplementation.Emit(dependency, serviceMap, targetMethod);
+            TargetStaticImplementation.Emit(dependency, serviceMap, targetMethod);
         }        
     }
 }

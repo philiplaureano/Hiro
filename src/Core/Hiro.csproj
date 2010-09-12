@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4A778B50-F400-4301-BD6F-772761DFAE16}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -66,6 +66,7 @@
       <HintPath>..\..\lib\common\NGenerics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +84,7 @@
     <Compile Include="Compilers\GetInstanceMethodImplementor.cs" />
     <Compile Include="Compilers\ISingletonEmitter.cs" />
     <Compile Include="Implementations\BaseConstructorCall.cs" />
+    <Compile Include="Interfaces\IImplementationOfT.cs" />
     <Compile Include="Interfaces\IServiceInitializer.cs" />
     <Compile Include="Compilers\MethodBuilder.cs" />
     <Compile Include="Compilers\MethodBuilderOptions.cs" />
@@ -119,7 +121,7 @@
     <Compile Include="Interfaces\IGetAllInstancesMethodImplementor.cs" />
     <Compile Include="Interfaces\IGetInstanceMethodImplementor.cs" />
     <Compile Include="Interfaces\IImplementationInjector.cs" />
-    <Compile Include="Interfaces\IImplementationOfT.cs" />
+    <Compile Include="Interfaces\IStaticImplementationOfT.cs" />
     <Compile Include="Interfaces\IDependencyContainer.cs" />
     <Compile Include="Interfaces\IImplementation.cs" />
     <Compile Include="Interfaces\IServiceInfo.cs" />

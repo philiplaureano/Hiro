@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using Hiro.Containers;
+using Mono.Cecil;
 
 namespace Hiro.Interfaces
 {
     /// <summary>
     /// Represents a type that maps a service dependency to its corresponding type implementation.
     /// </summary>
-    public interface IDependencyContainer
+    /// <typeparam name="TMethodBuilder">The method builder type.</typeparam>
+    public interface IDependencyContainer<TMethodBuilder>
     {
         /// <summary>
         /// Gets the value indicating the list of dependencies that currently exist within the current container.
@@ -29,6 +31,6 @@ namespace Hiro.Interfaces
         /// <param name="targetDependency">The target dependency.</param>
         /// <param name="addIncompleteImplementations">A boolean flag that determines whether or not the resulting list should include implementations with incomplete dependencies.</param>
         /// <returns>A list of implementations.</returns>
-        IEnumerable<IImplementation> GetImplementations(IDependency targetDependency, bool addIncompleteImplementations);
+        IEnumerable<IImplementation<TMethodBuilder>> GetImplementations(IDependency targetDependency, bool addIncompleteImplementations);
     }
 }

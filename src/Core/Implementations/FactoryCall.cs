@@ -5,13 +5,14 @@ using Hiro.Containers;
 using Hiro.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Hiro;
 
 namespace Hiro.Implementations
 {
     /// <summary>
     /// Represents a class that emits a call to an <see cref="IFactory{T}"/> instance to instantiate a particular service instance.
     /// </summary>
-    public class FactoryCall : IImplementation
+    public class FactoryCall : IImplementation<MethodDefinition>
     {
         private readonly Type _serviceType;
         private readonly string _serviceName;
@@ -32,7 +33,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>A list of missing dependencies.</returns>
-        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer<MethodDefinition> map)
         {
             yield break;
         }
@@ -42,7 +43,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer<MethodDefinition> map)
         {
             yield break;
         }
@@ -53,7 +54,7 @@ namespace Hiro.Implementations
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
+        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, MethodDefinition targetMethod)
         {
             var factoryType = typeof (IFactory<>).MakeGenericType(_serviceType);
             var getFactoryInstanceCall = new ContainerCall(factoryType, _serviceName);
@@ -66,10 +67,18 @@ namespace Hiro.Implementations
             var factoryTypeReference = module.Import(factoryType);
 
             var createMethod = module.Import(factoryType.GetMethod("Create"));
-
+            
             var IL = targetMethod.GetILGenerator();
+
+            var factoryInstance = targetMethod.AddLocal(typeof(object));
+            IL.Emit(OpCodes.Stloc, factoryInstance);
+            IL.EmitWriteLineIfNull("Factory is null", factoryInstance);
+
+            IL.Emit(OpCodes.Ldloc, factoryInstance);
+
             IL.Emit(OpCodes.Isinst, factoryTypeReference);
             IL.Emit(OpCodes.Callvirt, createMethod);
         }
     }
 }
+

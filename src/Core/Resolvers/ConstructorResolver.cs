@@ -5,13 +5,26 @@ using System.Text;
 using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
+using Mono.Cecil;
 
 namespace Hiro.Resolvers
 {
+    public class ConstructorResolver : ConstructorResolver<MethodDefinition>
+    {
+        /// <summary>
+        /// Creates the <see cref="IImplementation"/> instance that will generate the given constructor call.
+        /// </summary>
+        /// <param name="constructor">The target constructor.</param>
+        /// <returns>The target implementation.</returns>
+        protected override IStaticImplementation<ConstructorInfo, MethodDefinition> CreateConstructorCall(ConstructorInfo constructor)
+        {
+            return new ConstructorCall(constructor);
+        }
+    }
     /// <summary>
     /// Represents a class that selects the constructor with the most resolvable parameters.
     /// </summary>
-    public class ConstructorResolver : IConstructorResolver
+    public abstract class ConstructorResolver<TMethodBuilder> : IConstructorResolver<TMethodBuilder>
     {
         /// <summary>
         /// Determines which constructor implementation should be used from a given <see cref="IDependencyContainer"/> instance.
@@ -19,11 +32,11 @@ namespace Hiro.Resolvers
         /// <param name="targetType">The target type that contains list of constructors to be resolved.</param>
         /// <param name="container">The dependency container that holds the current set of dependencies.</param>
         /// <returns>An implementation that can instantiate the object associated with the constructor.</returns>
-        public virtual IImplementation<ConstructorInfo> ResolveFrom(Type targetType, IDependencyContainer container)
+        public virtual IStaticImplementation<ConstructorInfo, TMethodBuilder> ResolveFrom(Type targetType, IDependencyContainer<TMethodBuilder> container)
         {
-            IImplementation<ConstructorInfo> result = null;
+            IStaticImplementation<ConstructorInfo, TMethodBuilder> result = null;
 
-            var constructors = new List<IImplementation<ConstructorInfo>>();
+            var constructors = new List<IStaticImplementation<ConstructorInfo, TMethodBuilder>>();
             foreach(var constructor in targetType.GetConstructors())
             {
                 var constructorCall = CreateConstructorCall(constructor);
@@ -58,9 +71,7 @@ namespace Hiro.Resolvers
         /// </summary>
         /// <param name="constructor">The target constructor.</param>
         /// <returns>The target implementation.</returns>
-        protected virtual IImplementation<ConstructorInfo> CreateConstructorCall(ConstructorInfo constructor)
-        {
-            return new ConstructorCall(constructor);
-        }
+        protected abstract IStaticImplementation<ConstructorInfo, TMethodBuilder> CreateConstructorCall(
+            ConstructorInfo constructor);
     }
 }

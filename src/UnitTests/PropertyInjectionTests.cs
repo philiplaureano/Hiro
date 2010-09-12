@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Hiro.Containers;
 using Hiro.Resolvers;
+using Mono.Cecil;
 using NUnit.Framework;
 using Hiro.UnitTests.SampleDomain;
 using Hiro.Implementations;
@@ -18,7 +19,7 @@ namespace Hiro.UnitTests
             var map = new DependencyMap();
 
             var dependency = new Dependency(typeof(IVehicle));
-            var injector = new PropertyInjectionCall(new TransientType(typeof(Vehicle), map, new ConstructorResolver()));
+            var injector = new PropertyInjectionCall(new TransientType<MethodDefinition>(typeof(Vehicle), map, new ConstructorResolver()));
             map.AddService(dependency, injector);
 
             map.AddService(typeof(IPerson), typeof(Person));

@@ -16,7 +16,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="map">The dependency map.</param>
         /// <param name="defaultServices">The list of default services that will be added to the container as anonymous services.</param>
-        internal static void RegisterDefaultServices(this DependencyMap map, List<IServiceInfo> defaultServices)
+        internal static void RegisterDefaultServices<TMethodBuilder>(this DependencyMap<TMethodBuilder> map, List<IServiceInfo> defaultServices)
         {
             // Register the default services
             Register(map, defaultServices);
@@ -27,7 +27,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="map">The dependency map.</param>
         /// <param name="serviceList">The list of named services that will be added to the container.</param>
-        internal static void RegisterNamedServices(this DependencyMap map, HashList<Type, IServiceInfo> serviceList)
+        internal static void RegisterNamedServices<TMethodBuilder>(this DependencyMap<TMethodBuilder> map, HashList<Type, IServiceInfo> serviceList)
         {
             // Register the named services
             foreach (var serviceType in serviceList.Keys)
@@ -42,7 +42,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="map">The dependency map.</param>
         /// <param name="services">The list of services that will be registered with the dependency map.</param>
-        internal static void Register(this DependencyMap map, IEnumerable<IServiceInfo> services)
+        internal static void Register<TMethodBuilder>(this DependencyMap<TMethodBuilder> map, IEnumerable<IServiceInfo> services)
         {
             foreach (var service in services)
             {
@@ -55,7 +55,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="map">The dependency map.</param>
         /// <param name="service">The service that will be registered with the dependency map.</param>
-        internal static void Register(this DependencyMap map, IServiceInfo service)
+        internal static void Register<TMethodBuilder>(this DependencyMap<TMethodBuilder> map, IServiceInfo service)
         {
             var serviceName = service.ServiceName;
             var serviceType = service.ServiceType;

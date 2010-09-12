@@ -31,6 +31,9 @@ namespace Hiro
         /// <returns>An object instance that matches the given service description.</returns>
         public static T GetInstance<T>(this IMicroContainer container, string key)
         {
+            if (container == null)
+                throw new ArgumentNullException("container");
+
             return (T)container.GetInstance(typeof(T), key);
         }
 

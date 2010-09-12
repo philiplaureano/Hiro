@@ -24,8 +24,8 @@ namespace Hiro.Compilers
         /// <param name="module">The target module.</param>
         /// <param name="targetMethod">The target method that will instantiate the service instance.</param>
         protected override void EmitSingletonInstantiation(IDependency dependency,
-            IImplementation implementation, 
-            IDictionary<IDependency, IImplementation> serviceMap, 
+            IImplementation<MethodDefinition> implementation,
+            IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, 
             FieldDefinition instanceField, 
             MethodDefinition cctor, 
             ModuleDefinition module,

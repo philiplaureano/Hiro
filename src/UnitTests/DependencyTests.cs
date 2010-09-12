@@ -8,6 +8,7 @@ using Hiro.Implementations;
 using Hiro.Interfaces;
 using Hiro.Resolvers;
 using Hiro.UnitTests.SampleDomain;
+using Mono.Cecil;
 using Moq;
 using NUnit.Framework;
 
@@ -19,11 +20,11 @@ namespace Hiro.UnitTests
         [Test]
         public void ShouldCallImplementationInjectorIfItExists()
         {
-            var injector = new Mock<IImplementationInjector>();
+            var injector = new Mock<IImplementationInjector<MethodDefinition>>();
             var map = new DependencyMap();
             map.Injector = injector.Object;
 
-            injector.Expect(i => i.Inject(It.IsAny<IDependency>(), It.IsAny<IImplementation>())).Returns(new TransientType(typeof(Vehicle), map, new ConstructorResolver()));
+            injector.Expect(i => i.Inject(It.IsAny<IDependency>(), It.IsAny<IImplementation<MethodDefinition>>())).Returns(new TransientType<MethodDefinition>(typeof(Vehicle), map, new ConstructorResolver()));
 
             map.AddService<IVehicle, Vehicle>();
             injector.VerifyAll();
@@ -113,7 +114,7 @@ namespace Hiro.UnitTests
         {
             var map = new DependencyMap();
             var dependency = new Dependency(typeof(IVehicle), string.Empty);
-            var implementation = new Mock<IImplementation>();
+            var implementation = new Mock<IImplementation<MethodDefinition>>();
             implementation.Expect(impl => impl.GetMissingDependencies(map)).Returns(new IDependency[0]);
 
             bool addIncompleteImplementations = false;
@@ -133,7 +134,7 @@ namespace Hiro.UnitTests
             for (int i = 0; i < 10; i++)
             {
                 var dependency = new Mock<IDependency>();
-                var implementation = new Mock<IImplementation>();
+                var implementation = new Mock<IImplementation<MethodDefinition>>();
 
                 map.AddService(dependency.Object, implementation.Object);
                 Assert.IsTrue(map.Dependencies.Contains(dependency.Object));

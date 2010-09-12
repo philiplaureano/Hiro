@@ -11,14 +11,14 @@ namespace Hiro.Implementations
     /// <summary>
     /// Represents an implementation that returns the container instance itself.
     /// </summary>
-    public class ContainerInstanceCall : IImplementation
+    public class ContainerInstanceCall : IImplementation<MethodDefinition>
     {
         /// <summary>
         /// Gets the list of missing dependencies from the current implementation.
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>A list of missing dependencies.</returns>
-        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer<MethodDefinition> map)
         {
             yield break;
         }
@@ -27,7 +27,7 @@ namespace Hiro.Implementations
         /// Returns the dependencies required by the current implementation.
         /// </summary>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer<MethodDefinition> map)
         {
             yield break;
         }
@@ -38,7 +38,7 @@ namespace Hiro.Implementations
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
+        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, MethodDefinition targetMethod)
         {
             var IL = targetMethod.GetILGenerator();
             IL.Emit(OpCodes.Ldarg_0);

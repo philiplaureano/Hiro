@@ -31,7 +31,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="currentDependency">The unresolved dependency.</param>
         /// <returns>The target implementation that will be executed in place of the original dependency.</returns>
-        protected override IImplementation GetUnresolvedDependency(IDependency currentDependency)
+        protected override IImplementation<MethodDefinition> GetUnresolvedDependency(IDependency currentDependency)
         {
             return new ContainerCall(currentDependency.ServiceType, currentDependency.ServiceName);
         }

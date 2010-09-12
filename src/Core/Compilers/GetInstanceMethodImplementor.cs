@@ -41,7 +41,8 @@ namespace Hiro.Compilers
         /// <param name="getServiceHash">The GetServiceHash method.</param>
         /// <param name="jumpTargetField">The field that will store the jump target indexes.</param>
         /// <param name="serviceMap">The service map that contains the list of existing services.</param>
-        public void DefineGetInstanceMethod(TypeDefinition containerType, ModuleDefinition module, MethodDefinition getServiceHash, FieldDefinition jumpTargetField, IDictionary<IDependency, IImplementation> serviceMap)
+        public void DefineGetInstanceMethod(TypeDefinition containerType, ModuleDefinition module, MethodDefinition getServiceHash, FieldDefinition jumpTargetField, 
+            IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap)
         {
             var targetMethods = new List<MethodDefinition>();
             foreach (MethodDefinition method in containerType.Methods)
@@ -71,7 +72,7 @@ namespace Hiro.Compilers
         /// <param name="dependency">The target dependency</param>       
         /// <param name="implementation">The implementation that will instantiate the dependency.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
-        protected virtual void EmitService(MethodDefinition getInstanceMethod, IDependency dependency, IImplementation implementation, IDictionary<IDependency, IImplementation> serviceMap)
+        protected virtual void EmitService(MethodDefinition getInstanceMethod, IDependency dependency, IImplementation<MethodDefinition> implementation, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap)
         {
             implementation.Emit(dependency, serviceMap, getInstanceMethod);
         }
@@ -82,7 +83,7 @@ namespace Hiro.Compilers
         /// <param name="serviceMap">The service map that contains the list of application dependencies.</param>
         /// <param name="getInstanceMethod">The method that will be used to instantiate the service types.</param>
         /// <param name="il">The <see cref="ILProcessor"/> that points to the body of the factory method.</param>
-        private void DefineServices(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition getInstanceMethod, ILProcessor il)
+        private void DefineServices(IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, MethodDefinition getInstanceMethod, ILProcessor il)
         {
             var endLabel = Instruction.Create(OpCodes.Nop);
             il.Append(endLabel);

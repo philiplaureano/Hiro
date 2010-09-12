@@ -17,6 +17,6 @@ namespace Hiro.Interfaces
         /// <param name="namespaceName">The namespace name that will be associated with the container type.</param>
         /// <param name="assemblyName">The name of the assembly that will contain the container type.</param>
         /// <returns>An assembly containing the compiled IOC container.</returns>
-        AssemblyDefinition Compile(string typeName, string namespaceName, string assemblyName, IDependencyContainer dependencyContainer);
+        AssemblyDefinition Compile(string typeName, string namespaceName, string assemblyName, IDependencyContainer<MethodDefinition> dependencyContainer);
     }
 }

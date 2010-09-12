@@ -8,7 +8,7 @@ namespace Hiro.Compilers
     /// <summary>
     /// Represens a type that can instantiate singletons at runtime.
     /// </summary>
-    public interface ISingletonEmitter
+    public interface ISingletonEmitter<TMethodBuilder>
     {       
         /// <summary>
         /// Emits a service as a singleton type.
@@ -17,7 +17,7 @@ namespace Hiro.Compilers
         /// <param name="dependency">The dependency that will be instantiated by the container.</param>
         /// <param name="implementation">The implementation that will be used to instantiate the dependency.</param>
         /// <param name="serviceMap">The service map the contains the current application dependencies.</param>
-        void EmitService(MethodDefinition targetMethod,  IDependency dependency,  IImplementation implementation, 
-            IDictionary<IDependency, IImplementation> serviceMap);
+        void EmitService(TMethodBuilder targetMethod, IDependency dependency, IImplementation<TMethodBuilder> implementation, 
+            IDictionary<IDependency, IImplementation<TMethodBuilder>> serviceMap);
     }
 }

@@ -19,6 +19,6 @@ namespace Hiro.Interfaces
         /// <param name="getServiceHash">The GetServiceHash method.</param>
         /// <param name="jumpTargetField">The field that will store the jump target indexes.</param>
         /// <param name="serviceMap">The service map that contains the list of existing services.</param>
-        void DefineGetInstanceMethod(TypeDefinition containerType, ModuleDefinition module, MethodDefinition getServiceHash, FieldDefinition jumpTargetField, IDictionary<IDependency, IImplementation> serviceMap);
+        void DefineGetInstanceMethod(TypeDefinition containerType, ModuleDefinition module, MethodDefinition getServiceHash, FieldDefinition jumpTargetField, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap);
     }
 }

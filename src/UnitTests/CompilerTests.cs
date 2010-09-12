@@ -220,12 +220,12 @@ namespace Hiro.UnitTests
         {
             var dependency = new Dependency(typeof(IVehicle), string.Empty);
             var dependencyList = new IDependency[] { dependency };
-            var implementation = new Mock<IImplementation>();
-            implementation.Expect(i => i.Emit(It.IsAny<IDependency>(), It.IsAny<IDictionary<IDependency, IImplementation>>(), It.IsAny<MethodDefinition>()));
+            var implementation = new Mock<IImplementation<MethodDefinition>>();
+            implementation.Expect(i => i.Emit(It.IsAny<IDependency>(), It.IsAny<IDictionary<IDependency, IImplementation<MethodDefinition>>>(), It.IsAny<MethodDefinition>()));
 
-            var map = new Mock<IDependencyContainer>();
+            var map = new Mock<IDependencyContainer<MethodDefinition>>();
             map.Expect(m => m.Dependencies).Returns(dependencyList);
-            map.Expect(m => m.GetImplementations(It.IsAny<IDependency>(), It.IsAny<bool>())).Returns(new IImplementation[] { implementation.Object });
+            map.Expect(m => m.GetImplementations(It.IsAny<IDependency>(), It.IsAny<bool>())).Returns(new IImplementation<MethodDefinition>[] { implementation.Object });
 
             var compiler = new ContainerCompiler();
             compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", map.Object);
@@ -467,6 +467,9 @@ namespace Hiro.UnitTests
             map.AddService(typeof(SampleContainerAwareType), typeof(SampleContainerAwareType));
 
             var container = map.CreateContainer();
+            var microContainer = container.GetInstance<IMicroContainer>();
+            Assert.IsNotNull(microContainer);
+
             var instance = container.GetInstance<SampleContainerAwareType>();
             Assert.IsNotNull(instance);
 

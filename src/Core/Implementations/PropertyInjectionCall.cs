@@ -13,12 +13,12 @@ namespace Hiro.Implementations
     /// <summary>
     /// Represents an <see cref="IImplementation"/> type that adds property injection capabilities to other <see cref="IImplementation"/> instances.
     /// </summary>
-    public class PropertyInjectionCall : IImplementation
+    public class PropertyInjectionCall : IImplementation<MethodDefinition>
     {
         /// <summary>
         /// The implementation that will instantiate the target type.
         /// </summary>
-        private readonly IStaticImplementation _implementation;
+        private readonly IStaticImplementation<ConstructorInfo, MethodDefinition> _implementation;
 
         /// <summary>
         /// The functor that determines which properties will be injected.
@@ -34,7 +34,7 @@ namespace Hiro.Implementations
         /// Initializes a new instance of the PropertyInjector class.
         /// </summary>
         /// <param name="implementation">The target implementation that will instantiate the service type.</param>
-        public PropertyInjectionCall(IStaticImplementation implementation)
+        public PropertyInjectionCall(IStaticImplementation<ConstructorInfo, MethodDefinition> implementation)
             : this(implementation, p => p.CanWrite, p => new Dependency(p.PropertyType))
         {
         }
@@ -45,7 +45,7 @@ namespace Hiro.Implementations
         /// <param name="implementation">The target implementation that will instantiate the service type.</param>
         /// <param name="propertyFilter">The functor that determines which properties will be injected.</param>
         /// <param name="propertyDependencyResolver">The functor that determines the dependencies that will be injected into each property.</param>
-        public PropertyInjectionCall(IStaticImplementation implementation, Func<PropertyInfo, bool> propertyFilter, Func<PropertyInfo, IDependency> propertyDependencyResolver)
+        public PropertyInjectionCall(IStaticImplementation<ConstructorInfo, MethodDefinition> implementation, Func<PropertyInfo, bool> propertyFilter, Func<PropertyInfo, IDependency> propertyDependencyResolver)
         {
             _implementation = implementation;
             _propertyFilter = propertyFilter;
@@ -69,7 +69,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>A list of missing dependencies.</returns>
-        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer<MethodDefinition> map)
         {
             foreach (var dependency in GetRequiredDependencies(map))
             {
@@ -83,7 +83,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer<MethodDefinition> map)
         {
             var requiredDependencies = _implementation.GetRequiredDependencies(map);
             var dependencyList = new List<IDependency>(requiredDependencies);
@@ -112,7 +112,7 @@ namespace Hiro.Implementations
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
+        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, MethodDefinition targetMethod)
         {
             var declaringType = targetMethod.DeclaringType;
             var module = declaringType.Module;
@@ -148,7 +148,7 @@ namespace Hiro.Implementations
         /// <param name="il">The <see cref="ILProcessor"/> that points to the target method body.</param>
         /// <param name="property">The target property.</param>
         /// <param name="curentDependency">The <see cref="IDependency"/> that describes the service instance that will be assigned to the target property.</param>
-        private static void EmitPropertySetter(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod, ModuleDefinition module, ILProcessor il, PropertyInfo property, IDependency curentDependency)
+        private static void EmitPropertySetter(IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, MethodDefinition targetMethod, ModuleDefinition module, ILProcessor il, PropertyInfo property, IDependency curentDependency)
         {
             // Push the target onto the stack
             il.Emit(OpCodes.Dup);

@@ -13,7 +13,7 @@ namespace Hiro.Implementations
     /// <summary>
     /// Represents the basic implementation of a constructor call.
     /// </summary>
-    public abstract class BaseConstructorCall : IImplementation<ConstructorInfo>
+    public abstract class BaseConstructorCall : IStaticImplementation<ConstructorInfo, MethodDefinition>
     {
         /// <summary>
         /// Initializes a new instance of the ConstructorCall class.
@@ -51,7 +51,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>A list of missing dependencies.</returns>
-        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
+        public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer<MethodDefinition> map)
         {
             foreach (var dependency in GetRequiredDependencies(map))
             {
@@ -65,7 +65,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="map">The implementation map.</param>
         /// <returns>The list of required dependencies required by the current implementation.</returns>
-        public virtual IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
+        public virtual IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer<MethodDefinition> map)
         {
             var dependencies = new List<IDependency>(map.Dependencies);
             foreach(var parameter in Target.GetParameters())
@@ -81,7 +81,7 @@ namespace Hiro.Implementations
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
+        public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, MethodDefinition targetMethod)
         {
             var declaringType = targetMethod.DeclaringType;
             var module = declaringType.Module;
@@ -109,7 +109,7 @@ namespace Hiro.Implementations
         /// <param name="dependencies">The list of dependencies in the current container.</param>
         /// <param name="parameter">The target parameter.</param>
         /// <returns>The required dependency.</returns>
-        private IDependency GetNamedParameterDependencyIfPossible(ICollection<IDependency> dependencies, ParameterInfo parameter)
+        private IDependency GetNamedParameterDependencyIfPossible(IEnumerable<IDependency> dependencies, ParameterInfo parameter)
         {
             var parameterType = parameter.ParameterType;
             IDependency currentDependency = new Dependency(parameterType, string.Empty);
@@ -133,9 +133,9 @@ namespace Hiro.Implementations
         /// <param name="currentDependency">The dependency that will be instantiated.</param>
         /// <param name="targetMethod">The target method that will instantiate the service instance.</param>
         /// <param name="serviceMap">The service map that contains the target dependency to be instantiated.</param>
-        private void EmitDependency(IDependency currentDependency, MethodDefinition targetMethod, IDictionary<IDependency, IImplementation> serviceMap)
+        private void EmitDependency(IDependency currentDependency, MethodDefinition targetMethod, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap)
         {
-            IImplementation implementation = Resolve(serviceMap, currentDependency);
+            IImplementation<MethodDefinition> implementation = Resolve(serviceMap, currentDependency);
             implementation.Emit(currentDependency, serviceMap, targetMethod);
         }
 
@@ -145,7 +145,7 @@ namespace Hiro.Implementations
         /// <param name="serviceMap">The service map that contains the target dependency to be instantiated.</param>
         /// <param name="currentDependency">The dependency that will be instantiated.</param>
         /// <returns>The <see cref="IImplementation"/> instance that will be used to instantiate the dependency.</returns>
-        protected virtual IImplementation Resolve(IDictionary<IDependency, IImplementation> serviceMap, IDependency currentDependency)
+        protected virtual IImplementation<MethodDefinition> Resolve(IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap, IDependency currentDependency)
         {
             if (serviceMap.ContainsKey(currentDependency))
                 return serviceMap[currentDependency];
@@ -164,6 +164,6 @@ namespace Hiro.Implementations
             return new Dependency(parameter.ParameterType, string.Empty);
         }
 
-        protected abstract IImplementation GetUnresolvedDependency(IDependency currentDependency);
+        protected abstract IImplementation<MethodDefinition> GetUnresolvedDependency(IDependency currentDependency);       
     }
 }

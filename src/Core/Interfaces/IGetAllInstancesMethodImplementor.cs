@@ -17,6 +17,6 @@ namespace Hiro.Interfaces
         /// <param name="containerType">The container type.</param>
         /// <param name="module">The target module.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies that will be emitted into the method.</param>
-        void DefineGetAllInstancesMethod(TypeDefinition containerType, ModuleDefinition module, IDictionary<IDependency, IImplementation> serviceMap);
+        void DefineGetAllInstancesMethod(TypeDefinition containerType, ModuleDefinition module, IDictionary<IDependency, IImplementation<MethodDefinition>> serviceMap);
     }
 }
