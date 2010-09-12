@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FFBB1B9F-6F50-4796-833D-1A31935B8E10}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -66,7 +66,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\common\nunit.framework.dll</HintPath>
     </Reference>
-
     <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=f8308f98b9861962, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net-3.5\Mono.Cecil.dll</HintPath>
@@ -97,9 +96,17 @@
       <Project>{4A778B50-F400-4301-BD6F-772761DFAE16}</Project>
       <Name>Hiro</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Hiro.Compilers.Cecil\Hiro.Compilers.Cecil.csproj">
+      <Project>{59934641-0417-4521-A3D9-B66EE721E9EB}</Project>
+      <Name>Hiro.Compilers.Cecil</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
       <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
       <Name>Hiro.Containers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hiro.Interfaces\Hiro.Interfaces.csproj">
+      <Project>{79A53011-4013-4E62-A433-000038420CFF}</Project>
+      <Name>Hiro.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\SampleAssembly\SampleAssembly.csproj">
       <Project>{C4F4397A-C810-437F-8449-9910C7215946}</Project>

@@ -8,6 +8,8 @@ using NUnit.Framework;
 using Hiro.UnitTests.SampleDomain;
 using Hiro.Implementations;
 
+using Hiro.Compilers.Cecil;
+
 namespace Hiro.UnitTests
 {
     [TestFixture]

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Hiro.Containers;
-using Mono.Cecil;
 
 namespace Hiro.Interfaces
 {

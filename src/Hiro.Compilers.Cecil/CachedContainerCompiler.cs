@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Hiro.Compilers.Cecil.Interfaces;
 using Hiro.Interfaces;
 using Mono.Cecil;
 

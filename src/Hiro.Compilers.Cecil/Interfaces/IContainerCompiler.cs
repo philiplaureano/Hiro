@@ -1,8 +1,10 @@
-using Hiro.Containers;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Hiro.Interfaces;
 using Mono.Cecil;
 
-namespace Hiro.Interfaces
+namespace Hiro.Compilers.Cecil.Interfaces
 {
     /// <summary>
     /// Represents a type that can convert <see cref="IDependencyContainer"/> objects into a compiled assembly that contains an IOC container.

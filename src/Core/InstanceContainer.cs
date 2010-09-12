@@ -8,7 +8,7 @@ namespace Hiro
     /// <summary>
     /// Represents a <see cref="IMicroContainer"/> type that can store object references.
     /// </summary>
-    internal class InstanceContainer : IMicroContainer
+    public class InstanceContainer : IMicroContainer
     {
         private string _serviceName;
         private Type _serviceType;

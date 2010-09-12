@@ -5,7 +5,6 @@ using System.Text;
 using Hiro.Containers;
 using Hiro.Interfaces;
 using Hiro.Resolvers;
-using Mono.Cecil;
 
 namespace Hiro.Implementations
 {

@@ -15,6 +15,7 @@ using Mono.Cecil.Cil;
 using Moq;
 using NUnit.Framework;
 using Hiro.Loaders;
+using Hiro.Compilers.Cecil;
 
 namespace Hiro.UnitTests
 {
@@ -414,8 +415,14 @@ namespace Hiro.UnitTests
 
             var compiler = new ContainerCompiler();
             var assembly = compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", map);
-
+            
             var container = Compile(map);
+            var vehicle = container.GetInstance<IVehicle>();
+            Assert.IsNotNull(vehicle);
+
+            var truck = container.GetInstance<IVehicle>("Truck");
+            Assert.IsNotNull(truck);
+
             var instances = container.GetAllInstances(typeof(IVehicle));
 
             Assert.IsNotNull(instances);

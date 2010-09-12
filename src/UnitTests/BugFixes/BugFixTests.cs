@@ -6,7 +6,7 @@ using Hiro.UnitTests.SampleDomain;
 using Mono.Cecil;
 using NUnit.Framework;
 using Hiro.Loaders;
-
+using Hiro.Compilers.Cecil;
 namespace Hiro.UnitTests.BugFixes
 {
     [TestFixture]

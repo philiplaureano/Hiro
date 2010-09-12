@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using Hiro.Compilers.Cecil;
 using Hiro.Containers;
 using Hiro.Interfaces;
 using Hiro.Loaders;

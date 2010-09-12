@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Hiro.Interfaces;
-using NGenerics.DataStructures.General;
 
 namespace Hiro.Loaders
 {

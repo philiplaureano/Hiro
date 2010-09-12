@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Hiro.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using NGenerics.DataStructures.General;
 using Hiro.Containers;
 
 namespace Hiro.Compilers
@@ -59,7 +58,10 @@ namespace Hiro.Compilers
             foreach (var dependency in serviceMap.Keys)
             {
                 var serviceType = dependency.ServiceType;
-                dependenciesByType.Add(serviceType, dependency);
+                if (!dependenciesByType.ContainsKey(serviceType))
+                    dependenciesByType[serviceType] = new List<IDependency>();
+
+                dependenciesByType[serviceType].Add(dependency);
             }
 
             var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);

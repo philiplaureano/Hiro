@@ -41,14 +41,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Iesi.Collections, Version=1.0.0.1, Culture=neutral, PublicKeyToken=154fdcb44c4484fc">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\common\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections.Generic, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\common\Iesi.Collections.Generic.dll</HintPath>
-    </Reference>
     <Reference Include="LinFu.Finders, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3addbe3eede3dde9, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\common\LinFu.Finders.dll</HintPath>
@@ -57,79 +49,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net-2.0\LinqBridge.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=f8308f98b9861962, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net-2.0\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="NGenerics, Version=1.4.1.0, Culture=neutral, PublicKeyToken=e4b41be133ea7faf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\common\NGenerics.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyDefinitionExtensions.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseDependencyMap.cs" />
-    <Compile Include="CachedContainerCompiler.cs" />
-    <Compile Include="ILProcessorExtensions.cs" />
-    <Compile Include="Compilers\AssemblyBuilder.cs" />
-    <Compile Include="Compilers\SingletonEmitter.cs" />
-    <Compile Include="Compilers\ContainsMethodImplementor.cs" />
-    <Compile Include="Compilers\CreateContainerStub.cs" />
-    <Compile Include="Compilers\FieldBuilder.cs" />
-    <Compile Include="Compilers\GetAllInstancesMethodImplementor.cs" />
-    <Compile Include="Compilers\GetInstanceMethodImplementor.cs" />
     <Compile Include="Compilers\ISingletonEmitter.cs" />
-    <Compile Include="Implementations\BaseConstructorCall.cs" />
-    <Compile Include="Interfaces\IImplementationOfT.cs" />
-    <Compile Include="Interfaces\IServiceInitializer.cs" />
-    <Compile Include="Compilers\MethodBuilder.cs" />
-    <Compile Include="Compilers\MethodBuilderOptions.cs" />
-    <Compile Include="Compilers\MethodOverrider.cs" />
-    <Compile Include="Compilers\ContainerTypeBuilder.cs" />
-    <Compile Include="Compilers\InterfaceStubBuilder.cs" />
-    <Compile Include="Compilers\ServiceHashEmitter.cs" />
-    <Compile Include="Compilers\ServiceInitializer.cs" />
-    <Compile Include="Compilers\ServiceMapBuilder.cs" />
-    <Compile Include="Compilers\ContainerBasedSingletonEmitter.cs" />
-    <Compile Include="Compilers\TypeBuilder.cs" />
     <Compile Include="ConstructorNotFoundException.cs" />
-    <Compile Include="ContainerCompiler.cs" />
     <Compile Include="DependencyMap.cs" />
-    <Compile Include="Implementations\BaseContainerCall.cs" />
-    <Compile Include="Implementations\ContainerCall.cs" />
-    <Compile Include="Implementations\ContainerInstanceCall.cs" />
-    <Compile Include="Implementations\FactoryCall.cs" />
-    <Compile Include="Interfaces\IContainerCompiler.cs" />
-    <Compile Include="Implementations\NextContainerCall.cs" />
-    <Compile Include="Interfaces\IStaticImplementation.cs" />
-    <Compile Include="Loaders\DependencyMapExtensions.cs" />
-    <Compile Include="Implementations\ConstructorCall.cs" />
-    <Compile Include="Implementations\PropertyInjectionCall.cs" />
-    <Compile Include="Implementations\PropertyInjector.cs" />
-    <Compile Include="Implementations\SingletonType.cs" />
+    <Compile Include="HashedSet.cs" />
+    <Compile Include="HashList.cs" />
     <Compile Include="Implementations\TransientType.cs" />
+    <Compile Include="Loaders\DependencyMapExtensions.cs" />
     <Compile Include="InstanceContainer.cs" />
-    <Compile Include="Interfaces\IAssemblyLoader.cs" />
-    <Compile Include="Interfaces\IContainsMethodImplementor.cs" />
-    <Compile Include="Interfaces\ICreateContainerType.cs" />
-    <Compile Include="Interfaces\IDefaultServiceResolver.cs" />
-    <Compile Include="Interfaces\IDependencyMap.cs" />
-    <Compile Include="Interfaces\IGetAllInstancesMethodImplementor.cs" />
-    <Compile Include="Interfaces\IGetInstanceMethodImplementor.cs" />
-    <Compile Include="Interfaces\IImplementationInjector.cs" />
-    <Compile Include="Interfaces\IStaticImplementationOfT.cs" />
-    <Compile Include="Interfaces\IDependencyContainer.cs" />
-    <Compile Include="Interfaces\IImplementation.cs" />
-    <Compile Include="Interfaces\IServiceInfo.cs" />
-    <Compile Include="Interfaces\IServiceLoader.cs" />
-    <Compile Include="Interfaces\IServiceMapBuilder.cs" />
-    <Compile Include="Interfaces\IServicePicker.cs" />
-    <Compile Include="Interfaces\ITypeFilter.cs" />
-    <Compile Include="Interfaces\ITypeLoader.cs" />
     <Compile Include="Loaders\AssemblyLoader.cs" />
     <Compile Include="Loaders\DefaultServiceResolver.cs" />
     <Compile Include="Loaders\DependencyMapLoader.cs" />
@@ -137,22 +71,21 @@
     <Compile Include="Loaders\ServicePicker.cs" />
     <Compile Include="Loaders\TypeFilter.cs" />
     <Compile Include="Loaders\TypeLoader.cs" />
-    <Compile Include="MethodDefinitionExtensions.cs" />
-    <Compile Include="MicroContainerExtensions.cs" />
-    <Compile Include="ModuleDefinitionExtensions.cs" />
     <Compile Include="Resolvers\ConstructorResolver.cs" />
-    <Compile Include="Interfaces\IConstructorResolver.cs" />
     <Compile Include="ServiceInfo.cs" />
-    <Compile Include="TypeDefinitionExtensions.cs" />
-    <Compile Include="TypeReferenceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
       <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
       <Name>Hiro.Containers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Hiro.Interfaces\Hiro.Interfaces.csproj">
+      <Project>{79A53011-4013-4E62-A433-000038420CFF}</Project>
+      <Name>Hiro.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Interfaces\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

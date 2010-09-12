@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Hiro.Interfaces;
-using NGenerics.DataStructures.General;
 
 namespace Hiro.Loaders
 {

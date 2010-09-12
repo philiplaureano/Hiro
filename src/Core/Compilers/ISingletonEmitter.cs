@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Hiro.Containers;
 using Hiro.Interfaces;
-using Mono.Cecil;
 
 namespace Hiro.Compilers
 {

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Hiro.Compilers;
+using Hiro.Compilers.Cecil.Interfaces;
 using Hiro.Containers;
 using Hiro.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using NGenerics.DataStructures.General;
 using FieldAttributes = Mono.Cecil.FieldAttributes;
 
 namespace Hiro

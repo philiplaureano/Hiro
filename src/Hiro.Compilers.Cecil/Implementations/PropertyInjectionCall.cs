@@ -6,7 +6,6 @@ using Hiro.Containers;
 using Hiro.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Iesi.Collections.Generic;
 
 namespace Hiro.Implementations
 {

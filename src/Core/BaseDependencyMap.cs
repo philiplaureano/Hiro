@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Hiro.Containers;
 using Hiro.Interfaces;
-using Mono.Cecil;
-using NGenerics.DataStructures.General;
 
 namespace Hiro
 {

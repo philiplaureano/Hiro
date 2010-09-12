@@ -7,7 +7,7 @@ using Hiro.Implementations;
 using Moq;
 using NUnit.Framework;
 using Hiro.UnitTests.SampleDomain;
-
+using Hiro.Compilers.Cecil;
 namespace Hiro.UnitTests
 {
     [TestFixture]

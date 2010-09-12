@@ -3,24 +3,10 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Hiro.Containers;
-using Hiro.Implementations;
 using Hiro.Interfaces;
-using Mono.Cecil;
 
 namespace Hiro.Resolvers
-{
-    public class ConstructorResolver : ConstructorResolver<MethodDefinition>
-    {
-        /// <summary>
-        /// Creates the <see cref="IImplementation"/> instance that will generate the given constructor call.
-        /// </summary>
-        /// <param name="constructor">The target constructor.</param>
-        /// <returns>The target implementation.</returns>
-        protected override IStaticImplementation<ConstructorInfo, MethodDefinition> CreateConstructorCall(ConstructorInfo constructor)
-        {
-            return new ConstructorCall(constructor);
-        }
-    }
+{   
     /// <summary>
     /// Represents a class that selects the constructor with the most resolvable parameters.
     /// </summary>
