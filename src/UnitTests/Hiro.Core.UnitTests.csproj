@@ -79,6 +79,10 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseFixture.cs" />
     <Compile Include="BugFixes\BugFixTests.cs" />
+    <Compile Include="BugFixes\LightSpeed\LightSpeedContext.cs" />
+    <Compile Include="BugFixes\LightSpeed\UnitOfWorkScopeBase.cs" />
+    <Compile Include="BugFixes\LightSpeed\UserUnitOfWork.cs" />
+    <Compile Include="BugFixes\LightSpeed\SimpleUnitOfWorkScope.cs" />
     <Compile Include="CompilerTests.cs" />
     <Compile Include="DependencyTests.cs" />
     <Compile Include="ImplementationTests.cs" />
@@ -109,6 +113,7 @@
       <Name>SampleAssembly</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

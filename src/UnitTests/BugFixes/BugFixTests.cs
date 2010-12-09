@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Hiro.UnitTests.BugFixes.LightSpeed;
 using Hiro.UnitTests.SampleDomain;
 using Mono.Cecil;
 using NUnit.Framework;
@@ -23,6 +24,22 @@ namespace Hiro.UnitTests.BugFixes
 
             var testRepo = container.GetInstance<ITestRepo>();
             Assert.IsNotNull(testRepo);
+        }
+
+        [Test]
+        public void ShouldBeAbleToInjectGenericConstructor()
+        {
+            var map = new DependencyMap();
+            map.AddService<UnitOfWorkScopeBase<UserUnitOfWork>,
+            SimpleUnitOfWorkScope<UserUnitOfWork>>();
+
+            map.AddSingletonService<LightSpeedContext<UserUnitOfWork>,
+            LightSpeedContext<UserUnitOfWork>>();
+
+            var container = map.CreateContainer();
+            var service = container.GetInstance<UnitOfWorkScopeBase<UserUnitOfWork>>();
+
+            Assert.IsNotNull(service);
         }
 
         [Test]
