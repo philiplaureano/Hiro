@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Hiro.Containers;
@@ -58,10 +59,10 @@ namespace Hiro.UnitTests
             map.AddService<IFoo<int>, SampleGenericImplementation>();
 
             var dependencies = map.Dependencies;
-            
+
             var container = map.CreateContainer();
             Assert.IsTrue(container.Contains(typeof(IBaz<int>), "SampleGenericImplementation"));
-            Assert.IsTrue(container.Contains(typeof(IFoo<int>), "SampleGenericImplementation"));            
+            Assert.IsTrue(container.Contains(typeof(IFoo<int>), "SampleGenericImplementation"));
         }
 
         [Test]
@@ -202,6 +203,28 @@ namespace Hiro.UnitTests
             // out of the container
             var vehicle = container.GetInstance<IVehicle>();
             Assert.IsNull(vehicle);
+        }
+
+        [Test]
+        public void ShouldBeAbleToLoadEnumerableServicesByDefault()
+        {
+            var loader = new DependencyMapLoader();
+            loader.ServiceFilter = info => !string.IsNullOrEmpty(info.ServiceName) && info.ServiceName.StartsWith("Baz") 
+                && info.ServiceType == typeof(IBaz<int>) || info.ServiceType == typeof(IFizz);
+            var map = loader.LoadFrom(typeof(IFoo<>).Assembly);
+            var container = map.CreateContainer();
+
+            Assert.IsNotNull(container);
+
+            var fizz = container.GetInstance<IFizz>();
+            Assert.IsNotNull(fizz);
+
+            Assert.AreEqual(3, fizz.Services.Count());
+
+            var services = fizz.Services.ToArray();
+            Assert.IsInstanceOfType(typeof(Baz1), services[0]);
+            Assert.IsInstanceOfType(typeof(Baz2), services[1]);
+            Assert.IsInstanceOfType(typeof(Baz3), services[2]);
         }
     }
 }

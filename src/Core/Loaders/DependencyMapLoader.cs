@@ -192,6 +192,12 @@ namespace Hiro.Loaders
                 }
             }
 
+            // Register the enumerable types for each service type
+            foreach(var serviceType in serviceList.Keys)
+            {
+                map.AddAsEnumerableService(serviceType);
+            }
+
             map.Register(registeredServices);
         }
 
