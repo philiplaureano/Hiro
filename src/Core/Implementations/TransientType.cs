@@ -17,12 +17,12 @@ namespace Hiro.Implementations
         /// <summary>
         /// The type that will be instantiated by the compiled container.
         /// </summary>
-        private Type _targetType;
+        private readonly Type _targetType;
 
         /// <summary>
         /// The dependency container that contains the dependencies in the given application.
         /// </summary>
-        private IDependencyContainer _container;
+        private readonly IDependencyContainer _container;
 
         /// <summary>
         /// The constructor resolver that will select the constructor with the most resolvable parameters.
@@ -32,16 +32,7 @@ namespace Hiro.Implementations
         /// <summary>
         /// The functor that determines which constructor implementation will be used to instantiate the target type.
         /// </summary>
-        private Func<IImplementation<ConstructorInfo>> _getConstructorImplementation;
-
-        ///// <summary>
-        ///// Initializes a new instance of the <see cref="T:System.Object"/> class.
-        ///// </summary>
-        ///// <param name="targetType">The target type.</param>
-        ///// <param name="container">The dependency container.</param>
-        //public TransientType(Type targetType, IDependencyContainer container) : this(targetType, container, new ConstructorResolver())
-        //{
-        //}
+        private readonly Func<IImplementation<ConstructorInfo>> _getConstructorImplementation;
 
         /// <summary>
         /// Initializes a new instance of the TransientType class.

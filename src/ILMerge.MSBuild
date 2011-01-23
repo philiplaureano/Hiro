@@ -26,7 +26,7 @@
 
   <Target Name="MergeInternal">
     <Message Text="-- Begin ILMerge --" />
-    <Exec Command="&quot;$(ProgramFiles)\Microsoft\Ilmerge\Ilmerge.exe&quot; /xmldocs /v2 /log /out:&quot;$(MainAssembly)&quot; @(ILMergeAssemblies->'&quot;%(FullPath)&quot;', ' ') /keyfile:&quot;$(MSBuildProjectDirectory)\..\Hiro.snk&quot;" />
+    <Exec Command="&quot;$(ProgramFiles)\Microsoft\Ilmerge\Ilmerge.exe&quot; /xmldocs /v2 /internalize /log /out:&quot;$(MainAssembly)&quot; @(ILMergeAssemblies->'&quot;%(FullPath)&quot;', ' ') /keyfile:&quot;$(MSBuildProjectDirectory)\..\Hiro.snk&quot;" />
     <Message Text="-- End ILMerge   --" />
 
     <Delete Files="$(TargetDirectory)\Hiro.Core.dll" />

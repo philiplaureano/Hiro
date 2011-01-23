@@ -148,7 +148,7 @@ namespace Hiro.Compilers
 
                 // Fall through to the next if-then-else case
                 il.Append(skipCreate);
-            }
+            }            
 
             var getNextContainer = module.ImportMethod<IMicroContainer>("get_NextContainer");
             var otherContainer = method.AddLocal<IMicroContainer>();

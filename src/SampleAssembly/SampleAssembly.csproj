@@ -49,12 +49,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BazImplementations.cs" />
     <Compile Include="DbConTest.cs" />
     <Compile Include="IBaz.cs" />
     <Compile Include="IDbConnection.cs" />
+    <Compile Include="IFizz.cs" />
     <Compile Include="IFoo.cs" />
     <Compile Include="ITestRepo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleClassWithEnumerableBazDependency.cs" />
     <Compile Include="SampleFactory.cs" />
     <Compile Include="SampleGenericImplementation.cs" />
     <Compile Include="TestRepository.cs" />

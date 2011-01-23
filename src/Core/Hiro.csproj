@@ -99,6 +99,7 @@
     <Compile Include="Compilers\GetInstanceMethodImplementor.cs" />
     <Compile Include="Compilers\ISingletonEmitter.cs" />
     <Compile Include="Implementations\BaseConstructorCall.cs" />
+    <Compile Include="Implementations\EnumerableType.cs" />
     <Compile Include="Interfaces\IServiceInitializer.cs" />
     <Compile Include="Compilers\MethodBuilder.cs" />
     <Compile Include="Compilers\MethodBuilderOptions.cs" />

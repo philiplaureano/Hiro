@@ -318,5 +318,17 @@ namespace Hiro
 
             return result;
         }
+
+        /// <summary>
+        /// A method that tells the dependency map to make a specific <paramref name="serviceType">service type</paramref>
+        /// available as a resolvable enumerable service.
+        /// </summary>
+        /// <param name="serviceType">The service type that should be resolvable as an enumerable service.</param>
+        public void AddAsEnumerableService(Type serviceType)
+        {
+            var enumerableType = typeof(IEnumerable<>).MakeGenericType(serviceType);
+            var dependency = new Dependency(enumerableType);
+            AddService(dependency, new EnumerableType(serviceType));
+        }
     }
 }

@@ -10,12 +10,13 @@ using Hiro.Resolvers;
 using Hiro.UnitTests.SampleDomain;
 using Moq;
 using NUnit.Framework;
+using SampleAssembly;
 
 namespace Hiro.UnitTests
 {
     [TestFixture]
     public class DependencyTests : BaseFixture
-    {       
+    {
         [Test]
         public void ShouldCallImplementationInjectorIfItExists()
         {
@@ -153,6 +154,29 @@ namespace Hiro.UnitTests
             var container = combinedMap.CreateContainer();
             Assert.IsNotNull(container.GetInstance<IVehicle>());
             Assert.IsNotNull(container.GetInstance<IPerson>());
+        }
+
+        [Test]
+        public void ShouldBeAbleToGetAllEnumerableInstancesOfAGivenService()
+        {
+            var map = new DependencyMap();
+            map.AddService("Baz1", typeof(IBaz<int>), typeof(Baz1));
+            map.AddService("Baz2", typeof(IBaz<int>), typeof(Baz2));
+            map.AddService("Baz3", typeof(IBaz<int>), typeof(Baz3));
+            map.AddService(typeof(IFizz), typeof(SampleClassWithEnumerableBazDependency));
+            
+            // Make the IEnumerable<IBazz<int>> service explictly resolvable
+            map.AddAsEnumerableService(typeof(IBaz<int>));
+
+            var container = map.CreateContainer();
+            var fizz = container.GetInstance<IFizz>();
+            Assert.IsNotNull(fizz);
+            Assert.AreEqual(3, fizz.Services.Count());
+
+            var services = fizz.Services.ToArray();
+            Assert.IsInstanceOfType(typeof(Baz1), services[0]);
+            Assert.IsInstanceOfType(typeof(Baz2), services[1]);
+            Assert.IsInstanceOfType(typeof(Baz3), services[2]);
         }
 
         [Test]

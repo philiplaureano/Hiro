@@ -44,15 +44,15 @@ namespace Hiro.Compilers
 
             // Remove the stub implementation
             var body = getAllInstancesMethod.Body;
-            var il = body.GetILProcessor();
+            var IL = body.GetILProcessor();
 
             body.InitLocals = true;
             body.Instructions.Clear();
 
             var listVariable = getAllInstancesMethod.AddLocal<List<object>>();
             var listCtor = module.ImportConstructor<List<object>>();
-            il.Emit(OpCodes.Newobj, listCtor);
-            il.Emit(OpCodes.Stloc, listVariable);
+            IL.Emit(OpCodes.Newobj, listCtor);
+            IL.Emit(OpCodes.Stloc, listVariable);
 
             // Group the dependencies by type
             var dependenciesByType = new HashList<Type, IDependency>();
@@ -76,69 +76,71 @@ namespace Hiro.Compilers
                 if (currentList.Count == 0)
                     continue;
 
-                var skipAdd = il.Create(OpCodes.Nop);
-                il.Emit(OpCodes.Ldarg_1);
-                il.Emit(OpCodes.Ldtoken, currentTypeRef);
-                il.Emit(OpCodes.Call, getTypeFromHandle);
-                il.Emit(OpCodes.Ceq);
-                il.Emit(OpCodes.Brfalse, skipAdd);
+                var skipAdd = IL.Create(OpCodes.Nop);
+                IL.Emit(OpCodes.Ldarg_1);
+                IL.Emit(OpCodes.Ldtoken, currentTypeRef);
+                IL.Emit(OpCodes.Call, getTypeFromHandle);
+                IL.Emit(OpCodes.Ceq);
+                IL.Emit(OpCodes.Brfalse, skipAdd);
 
                 foreach (var dependency in currentList)
                 {
-                    il.Emit(OpCodes.Ldloc, listVariable);
+                    IL.Emit(OpCodes.Ldloc, listVariable);
+
                     var implementation = serviceMap[dependency];
                     implementation.Emit(dependency, serviceMap, getAllInstancesMethod);
-                    il.Emit(OpCodes.Stloc, currentService);
+
+                    IL.Emit(OpCodes.Stloc, currentService);
 
                     // Call IInitialize.Initialize(container) on the current service type
-                    _initializer.Initialize(il, module, currentService);
+                    _initializer.Initialize(IL, module, currentService);
 
-                    il.Emit(OpCodes.Ldloc, currentService);
-                    il.Emit(OpCodes.Callvirt, addItem);
+                    IL.Emit(OpCodes.Ldloc, currentService);
+                    IL.Emit(OpCodes.Callvirt, addItem);
                 }
 
-                il.Append(skipAdd);
+                IL.Append(skipAdd);
             }
 
-            var skipOtherContainerCall = il.Create(OpCodes.Nop);
+            var skipOtherContainerCall = IL.Create(OpCodes.Nop);
 
             var getNextContainer = module.ImportMethod<IMicroContainer>("get_NextContainer");
             var otherContainer = getAllInstancesMethod.AddLocal<IMicroContainer>();
 
             // var otherContainer = this.NextContainer;
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Callvirt, getNextContainer);
-            il.Emit(OpCodes.Stloc, otherContainer);
+            IL.Emit(OpCodes.Ldarg_0);
+            IL.Emit(OpCodes.Callvirt, getNextContainer);
+            IL.Emit(OpCodes.Stloc, otherContainer);
 
             // if (otherContainer != null && this != otherContainer) {
-            il.Emit(OpCodes.Ldloc, otherContainer);
-            il.Emit(OpCodes.Brfalse, skipOtherContainerCall);
+            IL.Emit(OpCodes.Ldloc, otherContainer);
+            IL.Emit(OpCodes.Brfalse, skipOtherContainerCall);
 
-            il.Emit(OpCodes.Ldloc, otherContainer);
-            il.Emit(OpCodes.Ldarg_0);
-            il.Emit(OpCodes.Ceq);
-            il.Emit(OpCodes.Brtrue, skipOtherContainerCall);
+            IL.Emit(OpCodes.Ldloc, otherContainer);
+            IL.Emit(OpCodes.Ldarg_0);
+            IL.Emit(OpCodes.Ceq);
+            IL.Emit(OpCodes.Brtrue, skipOtherContainerCall);
 
             // var otherInstances = NextContainer.GetAllInstances(type);
             var otherGetAllInstancesMethod = module.ImportMethod<IMicroContainer>("GetAllInstances");
 
-            il.Emit(OpCodes.Ldloc, listVariable);
-            il.Emit(OpCodes.Ldloc, otherContainer);            
-            il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Callvirt, otherGetAllInstancesMethod);
+            IL.Emit(OpCodes.Ldloc, listVariable);
+            IL.Emit(OpCodes.Ldloc, otherContainer);            
+            IL.Emit(OpCodes.Ldarg_1);
+            IL.Emit(OpCodes.Callvirt, otherGetAllInstancesMethod);
 
             // resultList.AddRange(otherInstances);
             var addRangeMethod = module.ImportMethod<List<object>>("AddRange");
-            il.Emit(OpCodes.Callvirt, addRangeMethod);
+            IL.Emit(OpCodes.Callvirt, addRangeMethod);
 
             // }
 
             // Cast the results down to an IEnumerable<object>
             var enumerableType = module.ImportType<IEnumerable<object>>();
-            il.Append(skipOtherContainerCall);
-            il.Emit(OpCodes.Ldloc, listVariable);
-            il.Emit(OpCodes.Isinst, enumerableType);                        
-            il.Emit(OpCodes.Ret);
+            IL.Append(skipOtherContainerCall);
+            IL.Emit(OpCodes.Ldloc, listVariable);
+            IL.Emit(OpCodes.Isinst, enumerableType);                        
+            IL.Emit(OpCodes.Ret);
         }
     }
 }

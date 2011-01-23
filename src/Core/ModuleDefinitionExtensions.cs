@@ -33,23 +33,7 @@ namespace Hiro
 
             return resultType;
         }
-
-        static bool IsNested(Mono.Cecil.TypeAttributes attributes)
-        {
-            switch (attributes & Mono.Cecil.TypeAttributes.VisibilityMask)
-            {
-                case Mono.Cecil.TypeAttributes.NestedPublic:
-                case Mono.Cecil.TypeAttributes.NestedPrivate:
-                case Mono.Cecil.TypeAttributes.NestedFamORAssem:
-                case Mono.Cecil.TypeAttributes.NestedFamily:
-                case Mono.Cecil.TypeAttributes.NestedFamANDAssem:
-                case Mono.Cecil.TypeAttributes.NestedAssembly:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
+        
         /// <summary>
         /// Imports a constructor with the given <paramref name="constructorParameters"/>
         /// into the target <paramref name="module"/>.
@@ -60,7 +44,21 @@ namespace Hiro
         /// <returns>A <see cref="MethodReference"/> that represents the constructor itself.</returns>
         public static MethodReference ImportConstructor<T>(this ModuleDefinition module, params Type[] constructorParameters)
         {
-            return module.Import(typeof(T).GetConstructor(constructorParameters));
+            var targetType = typeof(T);
+            return ImportConstructor(module, targetType, constructorParameters);
+        }
+
+        /// <summary>
+        /// Imports a constructor with the given <paramref name="constructorParameters"/>
+        /// into the target <paramref name="module"/>.
+        /// </summary>
+        /// <param name="module">The <see cref="ModuleDefinition"/> that will import the target constructor.</param>
+        /// <param name="targetType">The type that holds the target constructor</param>
+        /// <param name="constructorParameters">The list of <see cref="System.Type"/> objects that describe the signature of the constructor.</param>
+        /// <returns>A <see cref="MethodReference"/> that represents the constructor itself.</returns>
+        public static MethodReference ImportConstructor(this ModuleDefinition module, Type targetType, params Type[] constructorParameters)
+        {
+            return module.Import(targetType.GetConstructor(constructorParameters));
         }
 
         /// <summary>
@@ -118,6 +116,7 @@ namespace Hiro
             return module.Import(typeof(T).GetMethod(methodName, flags));
 
         }
+
         /// <summary>
         /// Imports a method with a particular <paramref name="methodName"/> and <see cref="BindingFlags"/> from the <paramref name="declaringType"/>
         /// into the <paramref name="module">target module</paramref>.
@@ -155,5 +154,27 @@ namespace Hiro
         {
             return module.Import(targetType);
         }
+
+        /// <summary>
+        /// Determines whether or not a given method is nested.
+        /// </summary>
+        /// <param name="attributes">The type attributes for the given type.</param>
+        /// <returns>Returns <c>true</c> if the type is nested; otherwise, it will return <c>false</c>.</returns>
+        private static bool IsNested(Mono.Cecil.TypeAttributes attributes)
+        {
+            switch (attributes & Mono.Cecil.TypeAttributes.VisibilityMask)
+            {
+                case Mono.Cecil.TypeAttributes.NestedPublic:
+                case Mono.Cecil.TypeAttributes.NestedPrivate:
+                case Mono.Cecil.TypeAttributes.NestedFamORAssem:
+                case Mono.Cecil.TypeAttributes.NestedFamily:
+                case Mono.Cecil.TypeAttributes.NestedFamANDAssem:
+                case Mono.Cecil.TypeAttributes.NestedAssembly:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
     }
 }
