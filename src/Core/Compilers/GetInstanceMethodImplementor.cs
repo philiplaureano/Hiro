@@ -60,7 +60,7 @@ namespace Hiro.Compilers
 
             body.Instructions.Clear();
 
-            DefineServices(serviceMap, getInstanceMethod, il);
+            DefineServices(serviceMap, getInstanceMethod, jumpTargetField, getServiceHash, il);
             il.Emit(OpCodes.Ret);
         }
 
@@ -81,8 +81,10 @@ namespace Hiro.Compilers
         /// </summary>
         /// <param name="serviceMap">The service map that contains the list of application dependencies.</param>
         /// <param name="getInstanceMethod">The method that will be used to instantiate the service types.</param>
+        /// <param name="jumpTargetField">The field that holds the dictionary with the switch table target instructions.</param>
+        /// <param name="getServiceHash">The method that calculates the service hash code.</param>
         /// <param name="il">The <see cref="ILProcessor"/> that points to the body of the factory method.</param>
-        private void DefineServices(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition getInstanceMethod, ILProcessor il)
+        private void DefineServices(IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition getInstanceMethod, FieldDefinition jumpTargetField, MethodDefinition getServiceHash, ILProcessor il)
         {
             var endLabel = Instruction.Create(OpCodes.Nop);
             il.Append(endLabel);
@@ -99,33 +101,46 @@ namespace Hiro.Compilers
             var equalsMethod = typeof(string).GetMethod("CompareOrdinal", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string), typeof(string) }, null);
             var stringEquals = module.Import(equalsMethod);
 
+            var jumpTargets = new Dictionary<IDependency, Instruction>();
             foreach (var dependency in serviceMap.Keys)
             {
+                jumpTargets[dependency] = il.Create(OpCodes.Nop);
+            }
+            var getItemMethod = module.ImportMethod<Dictionary<int, int>>("get_Item");
+            var serviceHash = method.AddLocal<int>();
+            var skipCreate = il.Create(OpCodes.Nop);
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, jumpTargetField);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Ldarg_2);
+            il.Emit(OpCodes.Call, getServiceHash);
+            il.Emit(OpCodes.Stloc, serviceHash);
+
+            var contains = module.ImportMethod<Dictionary<int, int>>("ContainsKey");
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, jumpTargetField);
+            il.Emit(OpCodes.Ldloc, serviceHash);
+            il.Emit(OpCodes.Callvirt, contains);
+            il.Emit(OpCodes.Brfalse, skipCreate);
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, jumpTargetField);
+            il.Emit(OpCodes.Ldloc, serviceHash);
+            il.Emit(OpCodes.Callvirt, getItemMethod);
+
+            var switchLabels = new List<Instruction>(jumpTargets.Values);
+            var labels = switchLabels.ToArray();
+            il.Emit(OpCodes.Switch, labels);
+            il.Emit(OpCodes.Br, skipCreate);
+
+            foreach (var dependency in serviceMap.Keys)
+            {
+                // Set the jump target
+                var currentLabel = jumpTargets[dependency];
+                il.Append(currentLabel);
+
                 var serviceType = module.ImportType(dependency.ServiceType);
-
-                // Match the service type
-                il.Emit(OpCodes.Ldtoken, serviceType);
-                il.Emit(OpCodes.Call, getTypeFromHandle);
-                il.Emit(OpCodes.Ldarg_1);
-                il.Emit(OpCodes.Ceq);
-
-                var skipCreate = il.Create(OpCodes.Nop);
-                il.Emit(OpCodes.Brfalse, skipCreate);
-
-                // Match the service name
-                var serviceName = dependency.ServiceName;
-
-                il.Emit(OpCodes.Ldarg_2);
-
-                // Push the service name onto the stack
-                var pushName = serviceName == null
-                                   ? il.Create(OpCodes.Ldnull)
-                                   : il.Create(OpCodes.Ldstr, serviceName);
-
-                il.Append(pushName);
-                il.Emit(OpCodes.Call, stringEquals);
-
-                il.Emit(OpCodes.Brtrue, skipCreate);
 
                 // Emit the implementation
                 var implementation = serviceMap[dependency];
@@ -145,10 +160,9 @@ namespace Hiro.Compilers
                 il.Emit(OpCodes.Ldloc, returnValue);
 
                 il.Emit(OpCodes.Br, endLabel);
+            }
 
-                // Fall through to the next if-then-else case
-                il.Append(skipCreate);
-            }            
+            il.Append(skipCreate);
 
             var getNextContainer = module.ImportMethod<IMicroContainer>("get_NextContainer");
             var otherContainer = method.AddLocal<IMicroContainer>();

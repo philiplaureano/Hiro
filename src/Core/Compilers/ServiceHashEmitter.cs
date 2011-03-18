@@ -34,9 +34,7 @@ namespace Hiro.Compilers
             var getHashCodeMethod = module.ImportMethod<object>("GetHashCode");
 
             var hashVariable = EmitGetServiceTypeHashCode(module, body, il, getHashCodeMethod);
-
-            var getIsNullOrEmptyMethod = module.ImportMethod<string>("IsNullOrEmpty", BindingFlags.Public | BindingFlags.Static);
-
+            
             // Calculate the hash code for the service name
             // if it isn't null
             il.Emit(OpCodes.Ldarg_1);
