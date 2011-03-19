@@ -1,0 +1,28 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="Merge"> 
+  <Target Name="Clean">
+	<PropertyGroup>
+		<TargetDirectory>$(MSBuildProjectDirectory)\..\build\</TargetDirectory>
+		<UnitTestDirectory>$(MSBuildProjectDirectory)\..\build\Debug\UnitTests</UnitTestDirectory>
+	</PropertyGroup>
+	<ItemGroup>
+	  <BinFiles Include="bin\*.*" />	 
+	  <UnitTestAssemblies Include="Hiro.UnitTests.dll"/>	  
+	</ItemGroup>
+	<RemoveDir Directories="$(TargetDirectory)" ContinueOnError="true" />
+	<Delete Files="@(BinFiles)" />
+  </Target> 
+  <Target Name="Compile" DependsOnTargets="Clean">
+   <MSBuild Projects="Hiro.sln" />
+  </Target>
+  <Target Name="Publish" DependsOnTargets="Compile">    
+	<Copy SourceFiles ="@(BinFiles)" DestinationFolder="$(TargetDirectory)" />
+  </Target>
+  <Target Name="RunTests" DependsOnTargets="Publish">
+	<Exec Command="..\..\..\tools\nunit\nunit-console.exe @(UnitTestAssemblies) /nologo" WorkingDirectory="$(UnitTestDirectory)"/>
+	<Message Text="Finished Running Unit Tests for @(UnitTestAssemblies)"/>
+  </Target>
+  <Target Name="Merge" DependsOnTargets="RunTests">
+	<MSBuild Projects="ILMerge.MSBuild" />
+	<Message Importance="High" Text="Build completed. The compiled assembly has been placed at: $(TargetDirectory)\Hiro.dll"/>
+  </Target>
+</Project>

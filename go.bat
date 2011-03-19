@@ -1,1 +1,2 @@
-@tools\nant\NAnt.exe -buildfile:Hiro.build %*
+@echo off
+MSBuild src\BuildAll.MSBuild /p:WarningLevel=0

@@ -1,213 +1,213 @@
 <?xml version="1.0" ?>
 <project name="Hiro" default="test" xmlns="http://nant.sf.net/schemas/nant.xsd">
 	<property name="build.dir" value="build" />
-  <property name="library.dir" value="lib"/>
-  <property name="target.framework" value="net-3.5" readonly="false" />
-  <property name="ilmerge.dir" value="C:\Program Files\Microsoft\ILMerge"/>
-  <property name="ilmerge.executable.file" value="${path::combine(ilmerge.dir, 'ilmerge.exe')}"/>
-  <property name="ilmerge.exists" value="${file::exists(ilmerge.executable.file)}"/>
+	<property name="library.dir" value="lib"/>
+	<property name="target.framework" value="net-3.5" readonly="false" />
+	<property name="ilmerge.dir" value="C:\Program Files\Microsoft\ILMerge"/>
+	<property name="ilmerge.executable.file" value="${path::combine(ilmerge.dir, 'ilmerge.exe')}"/>
+	<property name="ilmerge.exists" value="${file::exists(ilmerge.executable.file)}"/>
 	<property name="nant.settings.currentframework" value="net-3.5" />
-  <property name="debug" value="false"/>
-  <property name="include.pdb.files" value="false"/>
+	<property name="debug" value="false"/>
+	<property name="include.pdb.files" value="false"/>
 
 	<!-- User targets -->
 	<target name="clean" description="Delete Automated Build artifacts">
 		<delete dir="${build.dir}" if="${directory::exists(build.dir)}"/>
 	</target>
 
-  <target name="net-2.0" description="Compiles the core project assembly and targets the .NET Framework v2.0">    
-    <property name="target.framework" value="net-2.0" />
-    <call target="compile-core"/>
-  </target>
+	<target name="net-2.0" description="Compiles the core project assembly and targets the .NET Framework v2.0">    
+		<property name="target.framework" value="net-2.0" />
+		<call target="compile-core"/>
+	</target>
 
-  <target name="net-3.5" description="Compiles the core project assembly and targets the .NET Framework v3.5">
-    <property name="target.framework" value="net-3.5" />
-    <call target="compile-core"/>
-  </target>
-  
-  <target name="merge" depends="clean, compile, run-unit-tests">
-    <msbuild project="src\ILMerge.MSBuild">
-      <property name="TargetFramework" value="net-2.0"/>
-    </msbuild>
-    <msbuild project="src\ILMerge.MSBuild">
-      <property name="TargetFramework" value="net-3.5"/>
-    </msbuild>
-  </target>
+	<target name="net-3.5" description="Compiles the core project assembly and targets the .NET Framework v3.5">
+		<property name="target.framework" value="net-3.5" />
+		<call target="compile-core"/>
+	</target>
+	
+	<target name="merge" depends="clean, compile, run-unit-tests">
+		<msbuild project="src\ILMerge.MSBuild">
+			<property name="TargetFramework" value="net-2.0"/>
+		</msbuild>
+		<msbuild project="src\ILMerge.MSBuild">
+			<property name="TargetFramework" value="net-3.5"/>
+		</msbuild>
+	</target>
 
-  <target name="compile-container-interfaces" description="Compiles the container interface assembly">
-    <mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}"/>
-    <property name="output.dir" value="..\..\${build.dir}\${target.framework}"/>
+	<target name="compile-container-interfaces" description="Compiles the container interface assembly">
+		<mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}"/>
+		<property name="output.dir" value="..\..\${build.dir}\${target.framework}"/>
 
-    <mkdir dir="${output.dir}" unless="${directory::exists(output.dir)}"/>    
-    <msbuild project="src\Hiro.Containers\Hiro.Containers.csproj">
-      <property name="Configuration" value="AutomatedDebug"/>
-      <property name="OutputPath" value="${output.dir}"/>
-      <property name="DocumentationFile" value="${output.dir}\Hiro.Containers.XML"/>
-    </msbuild>
-  </target>
-  
-  <target name="compile-core" depends="compile-container-interfaces" description="Compiles the core project assembly">
-    <mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}"/>
-    <property name="output.dir" value="${build.dir}\${target.framework}"/>
+		<mkdir dir="${output.dir}" unless="${directory::exists(output.dir)}"/>    
+		<msbuild project="src\Hiro.Containers\Hiro.Containers.csproj">
+			<property name="Configuration" value="AutomatedDebug"/>
+			<property name="OutputPath" value="${output.dir}"/>
+			<property name="DocumentationFile" value="${output.dir}\Hiro.Containers.XML"/>
+		</msbuild>
+	</target>
+	
+	<target name="compile-core" depends="compile-container-interfaces" description="Compiles the core project assembly">
+		<mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}"/>
+		<property name="output.dir" value="${build.dir}\${target.framework}"/>
 
-    <mkdir dir="${output.dir}" unless="${directory::exists(output.dir)}"/>
-    <csc target="library" doc="${output.dir}\Hiro.Core.xml" noconfig="true" output="${output.dir}\Hiro.Core.dll" debug="${debug}">
-      <sources>
-        <include name="src/Core/**/*.cs" />
-      </sources>
-      <references>
-        <include name="System.dll" />
-        <include name="System.Core.dll" if="${target.framework == 'net-3.5'}"/>
-        <include name="System.Data.dll"/>        
-        <include name="System.Xml.dll" />
-        <include name="${output.dir}\Hiro.Containers.dll"/>
-        <include name="${library.dir}\common\LinFu.Finders.dll"/>
-        <include name="${library.dir}\common\Iesi.Collections.dll"/>
-        <include name="${library.dir}\common\Iesi.Collections.Generic.dll"/>
-        <include name="${library.dir}\common\NGenerics.dll"/>
-        <include name="${library.dir}\${target.framework}\Mono.Cecil.dll"/>
-        <include name="${library.dir}\${target.framework}\LinqBridge.dll" if="${target.framework == 'net-2.0'}"/>
-      </references>
-    </csc>
-    <copy todir="${output.dir}" flatten="true">
-      <fileset basedir="${library.dir}">
-        <include name="common\Iesi.Collections.dll"/>
-        <include name="common\Iesi.Collections.Generic.dll"/>
-        <include name="common\LinFu.Finders.dll"/>
-        <include name="common\NGenerics.dll"/>
-        <include name="${target.framework}\Mono.Cecil.dll"/>
-        <include name="${target.framework}\LinqBridge.dll" if="${target.framework == 'net-2.0'}"/>
-      </fileset>
-    </copy>
-  </target>
+		<mkdir dir="${output.dir}" unless="${directory::exists(output.dir)}"/>
+		<csc target="library" doc="${output.dir}\Hiro.Core.xml" noconfig="true" output="${output.dir}\Hiro.Core.dll" debug="${debug}">
+			<sources>
+				<include name="src/Core/**/*.cs" />
+			</sources>
+			<references>
+				<include name="System.dll" />
+				<include name="System.Core.dll" if="${target.framework == 'net-3.5'}"/>
+				<include name="System.Data.dll"/>        
+				<include name="System.Xml.dll" />
+				<include name="${output.dir}\Hiro.Containers.dll"/>
+				<include name="${library.dir}\common\LinFu.Finders.dll"/>
+				<include name="${library.dir}\common\Iesi.Collections.dll"/>
+				<include name="${library.dir}\common\Iesi.Collections.Generic.dll"/>
+				<include name="${library.dir}\common\NGenerics.dll"/>
+				<include name="${library.dir}\${target.framework}\Mono.Cecil.dll"/>
+				<include name="${library.dir}\${target.framework}\LinqBridge.dll" if="${target.framework == 'net-2.0'}"/>
+			</references>
+		</csc>
+		<copy todir="${output.dir}" flatten="true">
+			<fileset basedir="${library.dir}">
+				<include name="common\Iesi.Collections.dll"/>
+				<include name="common\Iesi.Collections.Generic.dll"/>
+				<include name="common\LinFu.Finders.dll"/>
+				<include name="common\NGenerics.dll"/>
+				<include name="${target.framework}\Mono.Cecil.dll"/>
+				<include name="${target.framework}\LinqBridge.dll" if="${target.framework == 'net-2.0'}"/>
+			</fileset>
+		</copy>
+	</target>
 
-  <target name="compile-sample-assembly" depends="create-output-directories">
-    <property name="debug.dir" value="${build.dir}\Debug"/>
-    <property name="unittest.dir" value="${debug.dir}\UnitTests"/>
-    <csc target="library" noconfig="true" output="${unittest.dir}\SampleAssembly.dll" debug="${debug}">
-      <sources>
-        <include name="src/SampleAssembly/**/*.cs" />
-      </sources>
-      <references>
-        <include name="System.dll" />
-        <include name="System.Core.dll"/>
-        <include name="System.Data.dll"/>
-        <include name="System.Xml.dll" />
-        <include name="${output.dir}\Hiro.Containers.dll"/>
-      </references>
-    </csc>    
-  </target>
-  <target name="create-output-directories">
-    <property name="debug.dir" value="${build.dir}\Debug"/>
-    <property name="unittest.dir" value="${debug.dir}\UnitTests"/>
-    <property name="output.dir" value="${build.dir}\${target.framework}"/>
-    
-    <mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}"/>
-    <mkdir dir="${debug.dir}" unless="${directory::exists(debug.dir)}"/>
-    <mkdir dir="${unittest.dir}" unless="${directory::exists(unittest.dir)}"/>
-  </target>
-  <target name="compile-unit-tests" depends="create-output-directories, compile-sample-assembly, compile-core" description="Compiles the unit tests for the core assembly">                      
-    <csc target="library" noconfig="true" output="${unittest.dir}\Hiro.UnitTests.dll" debug="${debug}">
-      <sources>
-        <include name="src/UnitTests/**/*.cs" />
-      </sources>
-      <references>
-        <include name="System.dll" />
-        <include name="System.Core.dll"/>
-        <include name="System.Data.dll"/>
-        <include name="System.Xml.dll" />
-        <include name="${unittest.dir}\SampleAssembly.dll"/>
-        <include name="${output.dir}\Hiro.Containers.dll"/>
-        <include name="${output.dir}\Hiro.Core.dll"/>
-        <include name="${library.dir}\common\LinFu.Finders.dll"/>
-        <include name="${library.dir}\common\Iesi.Collections.dll"/>
-        <include name="${library.dir}\common\Iesi.Collections.Generic.dll"/>
-        <include name="${library.dir}\common\NGenerics.dll"/>                
-        <include name="${library.dir}\common\nunit.framework.dll"/>
-        <include name="${library.dir}\common\Moq.dll"/>
-        <include name="${library.dir}\${target.framework}\Mono.Cecil.dll"/>
-      </references>      
-    </csc>
-    <copy todir="${unittest.dir}" flatten="true">
-      <fileset basedir="${library.dir}">        
-        <include name="common\Iesi.Collections.dll"/>
-        <include name="common\LinFu.Finders.dll"/>
-        <include name="common\Iesi.Collections.Generic.dll"/>
-        <include name="common\NGenerics.dll"/>
-        <include name="common\nunit.framework.dll"/>
-        <include name="common\Moq.dll"/>
-        <include name="${target.framework}\Mono.Cecil.dll"/>
-      </fileset>
-    </copy>
-    <copy todir="${unittest.dir}" flatten="true">
-      <fileset basedir="${output.dir}">
-        <include name="Hiro.Containers.dll"/>
-        <include name="Hiro.Core.dll"/>        
-      </fileset>
-    </copy>
-  </target>
-  
+	<target name="compile-sample-assembly" depends="create-output-directories">
+		<property name="debug.dir" value="${build.dir}\Debug"/>
+		<property name="unittest.dir" value="${debug.dir}\UnitTests"/>
+		<csc target="library" noconfig="true" output="${unittest.dir}\SampleAssembly.dll" debug="${debug}">
+			<sources>
+				<include name="src/SampleAssembly/**/*.cs" />
+			</sources>
+			<references>
+				<include name="System.dll" />
+				<include name="System.Core.dll"/>
+				<include name="System.Data.dll"/>
+				<include name="System.Xml.dll" />
+				<include name="${output.dir}\Hiro.Containers.dll"/>
+			</references>
+		</csc>    
+	</target>
+	<target name="create-output-directories">
+		<property name="debug.dir" value="${build.dir}\Debug"/>
+		<property name="unittest.dir" value="${debug.dir}\UnitTests"/>
+		<property name="output.dir" value="${build.dir}\${target.framework}"/>
+		
+		<mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}"/>
+		<mkdir dir="${debug.dir}" unless="${directory::exists(debug.dir)}"/>
+		<mkdir dir="${unittest.dir}" unless="${directory::exists(unittest.dir)}"/>
+	</target>
+	<target name="compile-unit-tests" depends="create-output-directories, compile-sample-assembly, compile-core" description="Compiles the unit tests for the core assembly">                      
+		<csc target="library" noconfig="true" output="${unittest.dir}\Hiro.UnitTests.dll" debug="${debug}">
+			<sources>
+				<include name="src/UnitTests/**/*.cs" />
+			</sources>
+			<references>
+				<include name="System.dll" />
+				<include name="System.Core.dll"/>
+				<include name="System.Data.dll"/>
+				<include name="System.Xml.dll" />
+				<include name="${unittest.dir}\SampleAssembly.dll"/>
+				<include name="${output.dir}\Hiro.Containers.dll"/>
+				<include name="${output.dir}\Hiro.Core.dll"/>
+				<include name="${library.dir}\common\LinFu.Finders.dll"/>
+				<include name="${library.dir}\common\Iesi.Collections.dll"/>
+				<include name="${library.dir}\common\Iesi.Collections.Generic.dll"/>
+				<include name="${library.dir}\common\NGenerics.dll"/>                
+				<include name="${library.dir}\common\nunit.framework.dll"/>
+				<include name="${library.dir}\common\Moq.dll"/>
+				<include name="${library.dir}\${target.framework}\Mono.Cecil.dll"/>
+			</references>      
+		</csc>
+		<copy todir="${unittest.dir}" flatten="true">
+			<fileset basedir="${library.dir}">        
+				<include name="common\Iesi.Collections.dll"/>
+				<include name="common\LinFu.Finders.dll"/>
+				<include name="common\Iesi.Collections.Generic.dll"/>
+				<include name="common\NGenerics.dll"/>
+				<include name="common\nunit.framework.dll"/>
+				<include name="common\Moq.dll"/>
+				<include name="${target.framework}\Mono.Cecil.dll"/>
+			</fileset>
+		</copy>
+		<copy todir="${unittest.dir}" flatten="true">
+			<fileset basedir="${output.dir}">
+				<include name="Hiro.Containers.dll"/>
+				<include name="Hiro.Core.dll"/>        
+			</fileset>
+		</copy>
+	</target>
+	
 	<target name="compile" description="Compiles using the AutomatedDebug Configuration">
-    <call target="net-2.0"/>
-    <call target="net-3.5"/>    
-  </target>
+		<call target="net-2.0"/>
+		<call target="net-3.5"/>    
+	</target>
 
-  <target name="test" depends="compile, run-unit-tests"
+	<target name="test" depends="compile, run-unit-tests"
 		description="Compile and Run Tests">
-    <call target="merge" if="${ilmerge.exists}"/>
-    <property name="build.dir.path" value="${path::get-full-path(build.dir)}"/>
-    <echo message="Please Note: The compiled Hiro binaries have been copied to the following directories:"/>
-    <echo message="${path::combine(build.dir.path, 'net-2.0')}"/>
-    <echo message="${path::combine(build.dir.path, 'net-3.5')}"/>
-  </target>
+		<call target="merge" if="${ilmerge.exists}"/>
+		<property name="build.dir.path" value="${path::get-full-path(build.dir)}"/>
+		<echo message="Please Note: The compiled Hiro binaries have been copied to the following directories:"/>
+		<echo message="${path::combine(build.dir.path, 'net-2.0')}"/>
+		<echo message="${path::combine(build.dir.path, 'net-3.5')}"/>
+	</target>
 		
 	<target name="full" depends="clean, test, dist"	description="Compiles, tests, and produces distributions" />
 
 	<!-- Internal targets -->
 	<target name="run-unit-tests" depends="compile-unit-tests">
 
-    <property name="debug.dir" value="${build.dir}\Debug"/>
-    <property name="unittest.dir" value="${debug.dir}\UnitTests"/>
+		<property name="debug.dir" value="${build.dir}\Debug"/>
+		<property name="unittest.dir" value="${debug.dir}\UnitTests"/>
 		<mkdir dir="${build.dir}\test-reports" />
 		
-    <exec program="tools\nunit\nunit-console.exe" workingdir="${build.dir}\Debug\UnitTests">
-      <arg value="&quot;Hiro.UnitTests.dll&quot; &quot;/xml:..\..\test-reports\UnitTests.xml&quot; &quot;/nologo&quot;"/>
-    </exec>
-   </target>
+		<exec program="tools\nunit\nunit-console.exe" workingdir="${build.dir}\Debug\UnitTests">
+			<arg value="&quot;Hiro.UnitTests.dll&quot; &quot;/xml:..\..\test-reports\UnitTests.xml&quot; &quot;/nologo&quot;"/>
+		</exec>
+	 </target>
 	
 	<target name="dist" depends="clean, compile">        
-    <mkdir dir="${build.dir}\dist" />
-    <mkdir dir="${build.dir}\dist\net-2.0" />
-    <mkdir dir="${build.dir}\dist\net-3.5" />
-    
-    <!--Copy the .NET 2.0 build files-->
+		<mkdir dir="${build.dir}\dist" />
+		<mkdir dir="${build.dir}\dist\net-2.0" />
+		<mkdir dir="${build.dir}\dist\net-3.5" />
+		
+		<!--Copy the .NET 2.0 build files-->
 		<copy todir="${build.dir}\dist\net-2.0">
 			<fileset basedir="${build.dir}\net-2.0">
 				<include name="**\*"/>
 			</fileset>
 		</copy>
 
-    <!--Copy the .NET 3.5 build files-->
-    <copy todir="${build.dir}\dist\net-3.5">
-      <fileset basedir="${build.dir}\net-3.5">
-        <include name="**\*"/>
-      </fileset>
-    </copy>
-    
-    <!--Copy the license file-->
-    <copy todir="${build.dir}\dist">
-      <fileset basedir="${build.dir}\..">
-        <include name="Hiro.License.txt"/>>
-      </fileset>
-    </copy>
-    
+		<!--Copy the .NET 3.5 build files-->
+		<copy todir="${build.dir}\dist\net-3.5">
+			<fileset basedir="${build.dir}\net-3.5">
+				<include name="**\*"/>
+			</fileset>
+		</copy>
+		
+		<!--Copy the license file-->
+		<copy todir="${build.dir}\dist">
+			<fileset basedir="${build.dir}\..">
+				<include name="Hiro.License.txt"/>>
+			</fileset>
+		</copy>
+		
 		<zip zipfile="${build.dir}\Hiro.zip">
 			<fileset basedir="${build.dir}\dist">
 				<include name="**\*" />
 			</fileset>
 		</zip>
 
-    <delete dir="${build.dir}\dist"/>
+		<delete dir="${build.dir}\dist"/>
 	</target>
 	
 </project>
