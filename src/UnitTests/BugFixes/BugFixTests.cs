@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Hiro.Containers;
 using Hiro.UnitTests.BugFixes.LightSpeed;
 using Hiro.UnitTests.SampleDomain;
 using Mono.Cecil;
 using NUnit.Framework;
 using Hiro.Loaders;
+using PaulBenchmark;
 
 namespace Hiro.UnitTests.BugFixes
 {
@@ -67,6 +69,28 @@ namespace Hiro.UnitTests.BugFixes
                 var driver = currentInstance.Driver;
                 Assert.AreSame(driver, person);
             }
+        }
+
+        [Test]
+        public void ShouldBeAbleToResolvePlayerInstanceWithoutEncounteringACLRLimitationError()
+        {
+            var map = new DependencyMap();
+            map.AddSingletonService<Game, Game>();
+            map.AddService<Player, Player>();
+            map.AddService<Gun, Gun>();
+            map.AddService<Bullet, Bullet>();
+
+            Func<IMicroContainer, Bullet> createBullet = c => c.GetInstance<Bullet>();
+            Func<IMicroContainer, Func<Bullet>> createBulletFunctor = c => () => createBullet(c);
+            map.AddService(createBulletFunctor);
+
+            var container = map.CreateContainer();
+            Assert.IsNotNull(container);
+
+            var player = container.GetInstance<Player>();
+            Assert.IsNotNull(player);
+
+            player.Shoot();
         }
     }
 }

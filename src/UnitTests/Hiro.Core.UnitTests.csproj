@@ -25,7 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RegisterForComInterop>true</RegisterForComInterop>
+    <RegisterForComInterop>false</RegisterForComInterop>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -83,6 +83,10 @@
     <Compile Include="BugFixes\LightSpeed\UnitOfWorkScopeBase.cs" />
     <Compile Include="BugFixes\LightSpeed\UserUnitOfWork.cs" />
     <Compile Include="BugFixes\LightSpeed\SimpleUnitOfWorkScope.cs" />
+    <Compile Include="BugFixes\PaulBenchmark\Bullet.cs" />
+    <Compile Include="BugFixes\PaulBenchmark\Game.cs" />
+    <Compile Include="BugFixes\PaulBenchmark\Gun.cs" />
+    <Compile Include="BugFixes\PaulBenchmark\Player.cs" />
     <Compile Include="CompilerTests.cs" />
     <Compile Include="DependencyTests.cs" />
     <Compile Include="FunctorTests.cs" />
