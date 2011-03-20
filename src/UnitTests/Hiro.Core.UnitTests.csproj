@@ -45,6 +45,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\net-3.5\Mono.Cecil.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -71,10 +74,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\common\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=f8308f98b9861962, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net-3.5\Mono.Cecil.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="BugFixes\LightSpeed\SimpleUnitOfWorkScope.cs" />
     <Compile Include="CompilerTests.cs" />
     <Compile Include="DependencyTests.cs" />
+    <Compile Include="FunctorTests.cs" />
     <Compile Include="ImplementationTests.cs" />
     <Compile Include="LoaderTests.cs" />
     <Compile Include="MicroContainerExtensionTests.cs" />
@@ -99,6 +99,8 @@
     <Compile Include="SampleDomain\SamplePlugin.cs" />
     <Compile Include="SampleDomain\Truck.cs" />
     <Compile Include="SampleDomain\Vehicle.cs" />
+    <Compile Include="SampleModel\Foo.cs" />
+    <Compile Include="SampleModel\IFoo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Hiro.csproj">

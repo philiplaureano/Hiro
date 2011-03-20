@@ -79,10 +79,6 @@
       <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
       <Name>Hiro.Containers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core\Hiro.Web.csproj">
-      <Project>{E7FCBBD1-8A45-4614-96EB-01C943862D14}</Project>
-      <Name>Hiro.Web</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

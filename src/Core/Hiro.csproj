@@ -89,6 +89,9 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseDependencyMap.cs" />
     <Compile Include="CachedContainerCompiler.cs" />
+    <Compile Include="Functors\FunctorCall.cs" />
+    <Compile Include="Functors\FunctorExtensions.cs" />
+    <Compile Include="Functors\FunctorRegistry.cs" />
     <Compile Include="ILProcessorExtensions.cs" />
     <Compile Include="Compilers\AssemblyBuilder.cs" />
     <Compile Include="Compilers\SingletonEmitter.cs" />
@@ -162,12 +165,6 @@
     <Compile Include="TypeReferenceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
-      <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
-      <Name>Hiro.Containers</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +183,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
+      <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
+      <Name>Hiro.Containers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
