@@ -2,6 +2,7 @@
   <PropertyGroup>
     <MainAssembly>$(MSBuildProjectDirectory)\..\build\Hiro.dll</MainAssembly>
     <TargetDirectory>$(MSBuildProjectDirectory)\..\build\Debug</TargetDirectory>
+    <LibraryDirectory>$(MSBuildProjectDirectory)\..\lib</LibraryDirectory>
   </PropertyGroup>
   <ItemGroup>
     <ILMergeAssemblies Include="$(TargetDirectory)\Hiro.dll"/>
@@ -9,6 +10,8 @@
     <ILMergeAssemblies Include="$(TargetDirectory)\Iesi.Collections.Generic.dll"/>
     <ILMergeAssemblies Include="$(TargetDirectory)\Mono.Cecil.dll"/>    
     <ILMergeAssemblies Include="$(TargetDirectory)\NGenerics.dll"/>
+    <ILMergeAssemblies Include="$(LibraryDirectory)\common\LinFu.Finders.dll"/>
+    <ILMergeAssemblies Include="$(LibraryDirectory)\net-2.0\LinqBridge.dll"/>
   </ItemGroup>
   
   <Target Name="Merge">
