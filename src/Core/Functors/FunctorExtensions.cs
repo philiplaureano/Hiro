@@ -53,8 +53,10 @@ namespace Hiro
         public static void AddService(this IDependencyMap map, string serviceName, Type serviceType,
             Func<IMicroContainer, object> factoryFunctor)
         {
-            var implementation = new FunctorCall(factoryFunctor);
-            map.AddService(new Dependency(serviceType, serviceName), implementation);
+            var dependency = new Dependency(serviceType, serviceName);
+            var implementation = new FunctorCall(serviceType, factoryFunctor);
+
+            map.AddService(dependency, implementation);
         }
 
         /// <summary>
@@ -79,8 +81,7 @@ namespace Hiro
         /// <param name="factoryFunctor">The factory functor that will be used to instantiate the service type.</param>
         public static void AddService(this IDependencyMap map, IDependency dependency, Func<IMicroContainer, object> factoryFunctor)
         {
-            var implementation = new FunctorCall(factoryFunctor);
-
+            var implementation = new FunctorCall(dependency.ServiceType, factoryFunctor);
             map.AddService(dependency, implementation);
         }
     }

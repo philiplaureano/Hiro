@@ -97,15 +97,12 @@ namespace Hiro.Compilers
             var declaringType = method.DeclaringType;
             var module = declaringType.Module;
 
-            var getTypeFromHandle = module.ImportMethod<Type>("GetTypeFromHandle", BindingFlags.Public | BindingFlags.Static);
-            var equalsMethod = typeof(string).GetMethod("CompareOrdinal", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string), typeof(string) }, null);
-            var stringEquals = module.Import(equalsMethod);
-
             var jumpTargets = new Dictionary<IDependency, Instruction>();
             foreach (var dependency in serviceMap.Keys)
             {
                 jumpTargets[dependency] = il.Create(OpCodes.Nop);
             }
+
             var getItemMethod = module.ImportMethod<Dictionary<int, int>>("get_Item");
             var serviceHash = method.AddLocal<int>();
             var skipCreate = il.Create(OpCodes.Nop);
@@ -132,6 +129,8 @@ namespace Hiro.Compilers
             var switchLabels = new List<Instruction>(jumpTargets.Values);
             var labels = switchLabels.ToArray();
             il.Emit(OpCodes.Switch, labels);
+            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Stloc, returnValue);
             il.Emit(OpCodes.Br, skipCreate);
 
             foreach (var dependency in serviceMap.Keys)
@@ -145,10 +144,7 @@ namespace Hiro.Compilers
                 // Emit the implementation
                 var implementation = serviceMap[dependency];
                 EmitService(getInstanceMethod, dependency, implementation, serviceMap);
-
-                if (serviceType.IsValueType)
-                    il.Emit(OpCodes.Box, serviceType);
-
+                
                 il.Emit(OpCodes.Stloc, returnValue);
 
                 var serviceInstance = returnValue;
@@ -157,10 +153,12 @@ namespace Hiro.Compilers
                 if (_initializer != null)
                     _initializer.Initialize(il, module, serviceInstance);
 
-                il.Emit(OpCodes.Ldloc, returnValue);
+                //il.Emit(OpCodes.Ldloc, returnValue);                
+                //il.Emit(OpCodes.Unbox_Any, serviceType);
 
                 il.Emit(OpCodes.Br, endLabel);
             }
+
 
             il.Append(skipCreate);
 
@@ -185,16 +183,20 @@ namespace Hiro.Compilers
             var otherGetInstanceMethod = module.ImportMethod<IMicroContainer>("GetInstance");
 
             // return otherContainer.GetInstance(type, key);
+
             il.Emit(OpCodes.Ldloc, otherContainer);
             il.Emit(OpCodes.Ldarg_1);
             il.Emit(OpCodes.Ldarg_2);
             il.Emit(OpCodes.Callvirt, otherGetInstanceMethod);
+            il.Emit(OpCodes.Stloc, returnValue);
             il.Emit(OpCodes.Br, endLabel);
             // }
 
-            il.Append(skipOtherContainerCall);
-            il.Emit(OpCodes.Ldnull);
+            il.Append(skipOtherContainerCall); 
+                                              
             il.Append(endLabel);
+            il.Emit(OpCodes.Pop);
+            il.Emit(OpCodes.Ldloc, returnValue);       
         }
     }
 }

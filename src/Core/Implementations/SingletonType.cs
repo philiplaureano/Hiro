@@ -6,6 +6,7 @@ using Hiro.Containers;
 using Hiro.Interfaces;
 using Hiro.Resolvers;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 namespace Hiro.Implementations
 {
@@ -79,6 +80,15 @@ namespace Hiro.Implementations
         public void Emit(IDependency dependency, IDictionary<IDependency, IImplementation> serviceMap, MethodDefinition targetMethod)
         {
             _emitter.EmitService(targetMethod, dependency, _implementation, serviceMap);
+
+            var il = targetMethod.GetILGenerator();
+            
+            var module = targetMethod.Module;
+            var serviceType = module.Import(dependency.ServiceType);
+            if (serviceType.IsValueType)
+                return;
+
+            il.Emit(OpCodes.Castclass, serviceType);
         }
 
         /// <summary>

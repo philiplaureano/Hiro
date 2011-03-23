@@ -16,13 +16,16 @@ namespace Hiro.Functors.Core
     {
         private readonly string _functorId = Guid.NewGuid().ToString();
         private readonly Func<IMicroContainer, object> _functor;
+        private readonly Type _serviceType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FunctorCall"/> class.
         /// </summary>
+        /// <param name="serviceType"></param>
         /// <param name="functor">The functor that will be used to instantiate the given service instance.</param>
-        public FunctorCall(Func<IMicroContainer, object> functor)
+        public FunctorCall(Type serviceType, Func<IMicroContainer, object> functor)
         {
+            _serviceType = serviceType;
             _functor = functor;
         }
 
@@ -32,14 +35,15 @@ namespace Hiro.Functors.Core
         /// <param name="dependency">The dependency that describes the service to be instantiated.</param>
         /// <param name="serviceMap">The service map that contains the list of dependencies in the application.</param>
         /// <param name="targetMethod">The target method.</param>
-        public void Emit(IDependency dependency, 
-            IDictionary<IDependency, IImplementation> serviceMap, 
+        public void Emit(IDependency dependency,
+            IDictionary<IDependency, IImplementation> serviceMap,
             MethodDefinition targetMethod)
         {
             var declaringType = targetMethod.DeclaringType;
             var module = declaringType.Module;
 
-            var createInstanceMethod = typeof (FunctorRegistry).GetMethod("CreateInstance");
+            var serviceType = module.Import(_serviceType);
+            var createInstanceMethod = typeof(FunctorRegistry).GetMethod("CreateInstance");
             var createInstance = module.Import(createInstanceMethod);
 
             // Register the functor 
@@ -53,6 +57,11 @@ namespace Hiro.Functors.Core
             IL.Emit(OpCodes.Ldstr, _functorId);
             IL.Emit(OpCodes.Ldarg_0);
             IL.Emit(OpCodes.Call, createInstance);
+
+            if (serviceType.IsValueType) 
+                return;
+
+            IL.Emit(OpCodes.Castclass, serviceType);
         }
 
         /// <summary>
