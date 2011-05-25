@@ -2,4 +2,7 @@ bin
 obj
 *.user
 *.suo
-
+build
+src/Hiro-vs2008/*
+*.sdps
+*.log

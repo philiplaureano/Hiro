@@ -9,6 +9,7 @@ using Mono.Cecil;
 using NUnit.Framework;
 using Hiro.Loaders;
 using PaulBenchmark;
+using SampleAssembly;
 
 namespace Hiro.UnitTests.BugFixes
 {
@@ -69,6 +70,30 @@ namespace Hiro.UnitTests.BugFixes
                 var driver = currentInstance.Driver;
                 Assert.AreSame(driver, person);
             }
+        }
+        
+        [Test]
+        public void ShouldBeAbleToLoadSampleAssemblyWithoutRunningIntoConstructorNotFoundException()
+        {
+        	var loader = new DependencyMapLoader();
+            var map = loader.LoadFromBaseDirectory("SampleAssembly.dll");
+
+            var container = map.CreateContainer();
+            var result = container.GetInstance<object>("Sample");
+
+            Assert.AreEqual(42, result);
+        }
+        
+        [Test]
+        public void ShouldReturnNullWhenTryingToInstantiateAnIncompleteDependency()
+        {
+        	var loader = new DependencyMapLoader();
+            var map = loader.LoadFromBaseDirectory("SampleAssembly.dll");
+
+            var container = map.CreateContainer();
+            var result = container.GetInstance<IMissing>();
+            
+            Assert.IsNull(result);
         }
 
         [Test]
