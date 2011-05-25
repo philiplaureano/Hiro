@@ -31,13 +31,19 @@ namespace Hiro.Resolvers
             }
 
             var bestParameterCount = 0;
+            var index=-1;
+            var missingIndex =0;
             foreach (var constructor in constructors)
             {
+            	index++;
                 var missingDependencies = constructor.GetMissingDependencies(container);
                 var missingItems = new List<IDependency>(missingDependencies);
-                var hasMissingDependencies = missingDependencies == null || missingItems.Count > 0;
+                var hasMissingDependencies = missingDependencies == null || missingItems.Count > 0;                
                 if (hasMissingDependencies)
-                    continue;
+                {
+                	missingIndex = index;
+                	continue;
+                }
 
                 var targetConstructor = constructor.Target;
                 var parameters = targetConstructor.GetParameters();
@@ -49,8 +55,8 @@ namespace Hiro.Resolvers
                     bestParameterCount = parameterCount;
                 }
             }
-
-            return result;
+            if(constructors.Count==0) return null;
+            return result??constructors[missingIndex];
         }
 
         /// <summary>

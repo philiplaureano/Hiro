@@ -50,6 +50,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BazImplementations.cs" />
+    <Compile Include="Delegates.cs" />
+    <Compile Include="IMissing.cs" />
+    <Compile Include="SampleMissingDependency.cs" />
     <Compile Include="DbConTest.cs" />
     <Compile Include="IBaz.cs" />
     <Compile Include="IDbConnection.cs" />
