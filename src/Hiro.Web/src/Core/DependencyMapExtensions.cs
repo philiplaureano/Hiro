@@ -38,6 +38,10 @@ namespace Hiro.Web
             if (!map.Contains(typeof(ICache)))
                 map.AddService<ICache, SessionCache>();
 
+            // Add the HttpReferenceTracker by default
+            if(!map.Contains(typeof(IHttpReferenceTracker)))
+                map.AddService<IHttpReferenceTracker, HttpReferenceTracker>();
+
             // The cached instantiation class will use the cache in the container
             // to cache service instances
             var dependency = new Dependency(serviceType, serviceName);

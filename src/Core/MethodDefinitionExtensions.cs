@@ -21,7 +21,7 @@ namespace Hiro
         /// <returns>The <see cref="ILProcessor"/> instance that points to the instructions of the method body.</returns>
         public static ILProcessor GetILGenerator(this MethodDefinition method)
         {
-            return method.Body.GetILProcessor ();
+            return method.Body.GetILProcessor();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Hiro
             {
                 var body = method.Body;
 
-                newLocal = new VariableDefinition (variableName, localType);
+                newLocal = new VariableDefinition(variableName, localType);
 
                 body.Variables.Add(newLocal);
             }

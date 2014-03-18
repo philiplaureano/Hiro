@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Hiro.Containers;
 using Hiro.Interfaces;
@@ -53,11 +54,7 @@ namespace Hiro.Implementations
         /// <returns>A list of missing dependencies.</returns>
         public IEnumerable<IDependency> GetMissingDependencies(IDependencyContainer map)
         {
-            foreach (var dependency in GetRequiredDependencies(map))
-            {
-                if (!map.Contains(dependency))
-                    yield return dependency;
-            }
+            return GetRequiredDependencies(map).Where(dependency => !map.Contains(dependency));
         }
 
         /// <summary>
@@ -68,11 +65,7 @@ namespace Hiro.Implementations
         public virtual IEnumerable<IDependency> GetRequiredDependencies(IDependencyContainer map)
         {
             var dependencies = new List<IDependency>(map.Dependencies);
-            foreach(var parameter in Target.GetParameters())
-            {
-                var dependency = GetNamedParameterDependencyIfPossible(dependencies, parameter);
-                yield return dependency;
-            }
+            return Target.GetParameters().Select(parameter => GetNamedParameterDependencyIfPossible(dependencies, parameter));
         }
 
         /// <summary>

@@ -10,6 +10,20 @@ namespace Hiro.Web
     /// </summary>
     public class SessionCache : ICache
     {
+        private readonly IHttpReferenceTracker _tracker;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SessionCache"/> class.
+        /// </summary>
+        /// <param name="tracker">The tracker that will be used to store the created service instances</param>
+        public SessionCache(IHttpReferenceTracker tracker)
+        {
+            if (tracker == null)
+                throw new ArgumentNullException("tracker");
+
+            _tracker = tracker;
+        }
+
         /// <summary>
         /// Gets or sets the value indicating the key/value pair that will be stored in the current cache instance.
         /// </summary>
@@ -24,7 +38,7 @@ namespace Hiro.Web
                 if (context == null)
                     return null;
 
-                return context.Session[key];
+                return _tracker.GetReference(key, context);
             }
 
             set
@@ -34,8 +48,8 @@ namespace Hiro.Web
                 if (context == null)
                     return;
 
-                context.Session[key] = value;
+                _tracker.SetReference(key, value, context);
             }
-        }
+        }        
     }
 }

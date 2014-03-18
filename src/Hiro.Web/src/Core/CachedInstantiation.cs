@@ -45,9 +45,6 @@ namespace Hiro.Web
             locals.Add(cacheVariable);
 
             var worker = methodBody.GetILProcessor();            
-
-            // Convert the token into a System.RuntimeType
-            var getTypeFromHandle = module.ImportMethod<Type>("GetTypeFromHandle");
             
             // var cache = (ICache)container.GetInstance(cacheType, string.Empty);
             var getCacheMethod = typeof(CacheRegistry).GetMethod("GetCache");

@@ -78,7 +78,10 @@
     <Compile Include="CachedInstantiation.cs" />
     <Compile Include="CacheRegistry.cs" />
     <Compile Include="DependencyMapExtensions.cs" />
+    <Compile Include="HiroHttpModule.cs" />
+    <Compile Include="HttpReferenceTracker.cs" />
     <Compile Include="ICache.cs" />
+    <Compile Include="IHttpReferenceTracker.cs" />
     <Compile Include="SessionCache.cs" />
   </ItemGroup>
   <ItemGroup>
