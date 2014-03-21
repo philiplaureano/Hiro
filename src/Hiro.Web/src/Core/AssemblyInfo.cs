@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Philip Laureano (c) 2009")]
+[assembly: AssemblyCopyright("Philip Laureano (c) 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 

@@ -84,9 +84,9 @@ namespace Hiro.MSBuild.Tasks
                 var loader = new DependencyMapLoader();
                 var dependencyMap = loader.LoadFrom(targetPath, targetFiles);
 
-                var typeName = "MicroContainer" ?? TypeName;
-                var namespaceName = "Hiro.Containers" ?? NamespaceName;
-                var assemblyName = "Hiro.CompiledContainers" ?? AssemblyName;
+                var typeName = TypeName ?? "MicroContainer";
+                var namespaceName = NamespaceName ?? "Hiro.Containers";
+                var assemblyName = AssemblyName ?? "Hiro.CompiledContainers";
 
                 var compiler = new ContainerCompiler();
                 var compiledAssembly = compiler.Compile(typeName, namespaceName, assemblyName, dependencyMap);

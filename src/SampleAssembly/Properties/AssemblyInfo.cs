@@ -8,9 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SampleAssembly")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("CodeLean Inc.")]
 [assembly: AssemblyProduct("SampleAssembly")]
-[assembly: AssemblyCopyright("Copyright © CodeLean Inc. 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
