@@ -60,10 +60,10 @@ namespace Hiro.Loaders
             if (TypeLoader == null || TypeFilter == null)
                 yield break;
 
-            IEnumerable<Type> loadedTypes = TypeLoader.LoadTypes(targetAssembly);
+            IEnumerable<System.Type> loadedTypes = TypeLoader.LoadTypes(targetAssembly);
 
             // Load all public types that can be instantiated
-            Predicate<Type> concreteTypeFilter = t => t.IsPublic && !t.IsAbstract && !t.IsInterface && !t.IsValueType && !t.IsGenericTypeDefinition;
+            Predicate<System.Type> concreteTypeFilter = t => t.IsPublic && !t.IsAbstract && !t.IsInterface && !t.IsValueType && !t.IsGenericTypeDefinition;
             var types = TypeFilter.GetTypes(loadedTypes, concreteTypeFilter);
 
             foreach (var type in types)

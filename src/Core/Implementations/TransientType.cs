@@ -17,7 +17,7 @@ namespace Hiro.Implementations
         /// <summary>
         /// The type that will be instantiated by the compiled container.
         /// </summary>
-        private readonly Type _targetType;
+        private readonly System.Type _targetType;
 
         /// <summary>
         /// The dependency container that contains the dependencies in the given application.
@@ -40,7 +40,7 @@ namespace Hiro.Implementations
         /// <param name="targetType">The target type.</param>
         /// <param name="container">The dependency container.</param>
         /// <param name="resolver">The constructor resolver.</param>
-        public TransientType(Type targetType, IDependencyContainer container, IConstructorResolver resolver)
+        public TransientType(System.Type targetType, IDependencyContainer container, IConstructorResolver resolver)
         {
             _targetType = targetType;
             _container = container;
@@ -64,7 +64,7 @@ namespace Hiro.Implementations
         /// Gets the value indicating the type that will be instantiated by this implementation.
         /// </summary>
         /// <value>The target type.</value>
-        public Type TargetType
+        public System.Type TargetType
         {
             get
             {

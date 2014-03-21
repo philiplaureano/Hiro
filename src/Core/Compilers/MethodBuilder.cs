@@ -30,9 +30,9 @@ namespace Hiro.Compilers
             var targetType = options.HostType;
             var methodName = options.MethodName;
             var returnType = options.ReturnType;
-            var parameterTypes = new List<Type>(options.ParameterTypes);
+            var parameterTypes = new List<System.Type>(options.ParameterTypes);
 
-           var newMethod = targetType.DefineMethod(methodName, methodAttributes, returnType, parameterTypes.ToArray(), new Type[0]);
+           var newMethod = targetType.DefineMethod(methodName, methodAttributes, returnType, parameterTypes.ToArray(), new System.Type[0]);
 
             newMethod.SetReturnType(options.ReturnType);
 

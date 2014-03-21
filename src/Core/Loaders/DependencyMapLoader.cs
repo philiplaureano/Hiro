@@ -95,7 +95,7 @@ namespace Hiro.Loaders
         {
             var map = new DependencyMap(_constructorResolver) { Injector = new PropertyInjector() };
 
-            var defaultImplementations = new Dictionary<Type, IImplementation>();
+            var defaultImplementations = new Dictionary<System.Type, IImplementation>();
             foreach (var assembly in assemblies)
             {
                 var embeddedTypes = _typeLoader.LoadTypes(assembly);
@@ -126,7 +126,7 @@ namespace Hiro.Loaders
         /// <param name="type">The target type</param>
         /// <param name="defaultImplementations">The list of default implementations per service type.</param>
         /// <param name="map">The dependency map.</param>
-        private void RegisterNamedFactoryType(Type type, IDictionary<Type, IImplementation> defaultImplementations, IDependencyMap map)
+        private void RegisterNamedFactoryType(System.Type type, IDictionary<System.Type, IImplementation> defaultImplementations, IDependencyMap map)
         {
             var factoryTypeDefinition = typeof(IFactory<>);
             var interfaces = type.GetInterfaces();
@@ -269,7 +269,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="serviceList">The list of service implementations that will be used to determine the default service for each service type.</param>
         /// <returns></returns>
-        private List<IServiceInfo> GetDefaultServices(IDictionary<Type, IList<IServiceInfo>> serviceList)
+        private List<IServiceInfo> GetDefaultServices(IDictionary<System.Type, IList<IServiceInfo>> serviceList)
         {
             if (serviceList == null)
                 throw new ArgumentNullException("serviceList");
@@ -298,12 +298,12 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="assemblies">The list of assemblies that contain the types that will be injected into the dependency map.</param>
         /// <returns>A list of services grouped by type.</returns>
-        private HashList<Type, IServiceInfo> GetServiceList(IEnumerable<Assembly> assemblies)
+        private HashList<System.Type, IServiceInfo> GetServiceList(IEnumerable<Assembly> assemblies)
         {
             if (assemblies == null)
                 throw new ArgumentNullException("assemblies");
 
-            var serviceList = new HashList<Type, IServiceInfo>();
+            var serviceList = new HashList<System.Type, IServiceInfo>();
             foreach (var assembly in assemblies)
             {
                 var services = _serviceLoader.Load(assembly);

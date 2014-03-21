@@ -196,7 +196,7 @@ namespace Hiro.Compilers
         {
             // Define the GetInstance method on the singleton type
             var getInstanceMethodAttributes = MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.HideBySig;
-            var getInstanceMethod = singletonType.DefineMethod("GetInstance", getInstanceMethodAttributes, typeof(object), new Type[0], new Type[0]);
+            var getInstanceMethod = singletonType.DefineMethod("GetInstance", getInstanceMethodAttributes, typeof(object), new System.Type[0], new System.Type[0]);
             var singletonWorker = getInstanceMethod.GetILGenerator();
 
             singletonWorker.Emit(OpCodes.Ldsfld, instanceField);

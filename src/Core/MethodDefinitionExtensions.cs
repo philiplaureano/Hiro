@@ -31,7 +31,7 @@ namespace Hiro
         /// <param name="methodDef">The <paramref name="methodDef"/> instance which will contain the local variable.</param>
         /// <param name="localType">The object <see cref="System.Type">type</see> that describes the type of objects that will be stored by the local variable.</param>
         /// <returns>A <see cref="VariableDefinition"/> that represents the local variable itself.</returns>
-        public static VariableDefinition AddLocal(this MethodDefinition methodDef, Type localType)
+        public static VariableDefinition AddLocal(this MethodDefinition methodDef, System.Type localType)
         {
             var declaringType = methodDef.DeclaringType;
             var module = declaringType.Module;
@@ -76,7 +76,7 @@ namespace Hiro
         /// <param name="variableName">The name of the local variable.</param>
         /// <param name="variableType">The object <see cref="System.Type">type</see> that describes the type of objects that will be stored by the local variable.</param>
         /// <returns></returns>
-        public static VariableDefinition AddLocal(this MethodDefinition method, string variableName, Type variableType)
+        public static VariableDefinition AddLocal(this MethodDefinition method, string variableName, System.Type variableType)
         {
             var module = method.DeclaringType.Module;
             var localType = module.Import(variableType);
@@ -109,7 +109,7 @@ namespace Hiro
         /// </summary>
         /// <param name="method">The target method.</param>
         /// <param name="parameterTypes">The list of types that describe the method signature.</param>
-        public static void AddParameters(this MethodDefinition method, Type[] parameterTypes)
+        public static void AddParameters(this MethodDefinition method, System.Type[] parameterTypes)
         {
             var declaringType = method.DeclaringType;
             var module = declaringType.Module;
@@ -135,7 +135,7 @@ namespace Hiro
         /// </summary>
         /// <param name="method">The target method.</param>
         /// <param name="returnType">The <see cref="System.Type"/> instance that describes the return type.</param>
-        public static void SetReturnType(this MethodDefinition method, Type returnType)
+        public static void SetReturnType(this MethodDefinition method, System.Type returnType)
         {
             var declaringType = method.DeclaringType;
             ModuleDefinition module = declaringType.Module;
@@ -156,7 +156,7 @@ namespace Hiro
         /// <param name="method">The target method.</param>
         /// <param name="parameterType">The parameter type.</param>
         /// <returns>A <see cref="TypeReference"/> that represents the generic parameter type.</returns>
-        public static TypeReference AddGenericParameter(this MethodDefinition method, Type parameterType)
+        public static TypeReference AddGenericParameter(this MethodDefinition method, System.Type parameterType)
         {
 
             // Check if the parameter type already exists

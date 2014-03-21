@@ -14,6 +14,6 @@ namespace Hiro.Interfaces
         /// Gets the value indicating the type that will implement the service type.
         /// </summary>
         /// <value>The implementing type.</value>
-        Type ImplementingType { get; }
+        System.Type ImplementingType { get; }
     }
 }

@@ -16,9 +16,9 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="targetAssembly">The target assembly that contains the types to be loaded.</param>
         /// <returns>The list of types.</returns>
-        public IEnumerable<Type> LoadTypes(Assembly targetAssembly)
+        public IEnumerable<System.Type> LoadTypes(Assembly targetAssembly)
         {
-            IEnumerable<Type> loadedTypes = null;
+            IEnumerable<System.Type> loadedTypes = null;
             try
             {
                 loadedTypes = targetAssembly.GetTypes();

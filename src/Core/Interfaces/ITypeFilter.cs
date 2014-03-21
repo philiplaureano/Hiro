@@ -15,6 +15,6 @@ namespace Hiro.Interfaces
         /// <param name="items">The list of types to be filtered.</param>
         /// <param name="filter">The predicate that determines which types should be selected.</param>
         /// <returns>A list of types.</returns>
-        IList<Type> GetTypes(IEnumerable<Type> items, Predicate<Type> filter);
+        IList<System.Type> GetTypes(IEnumerable<System.Type> items, Predicate<System.Type> filter);
     }
 }

@@ -66,7 +66,7 @@ namespace Hiro
         /// <param name="container">The container instance itself.</param>
         /// <param name="serviceType">The service type.</param>
         /// <param name="serviceInstance">The service instance.</param>
-        public static void AddService(this IMicroContainer container, Type serviceType, object serviceInstance)
+        public static void AddService(this IMicroContainer container, System.Type serviceType, object serviceInstance)
         {
             AddService(container, serviceType, null, serviceInstance);
         }
@@ -78,7 +78,7 @@ namespace Hiro
         /// <param name="serviceType">The service type.</param>
         /// <param name="serviceName">The service name.</param>
         /// <param name="serviceInstance">The service instance.</param>
-        public static void AddService(this IMicroContainer container, Type serviceType, string serviceName, object serviceInstance)
+        public static void AddService(this IMicroContainer container, System.Type serviceType, string serviceName, object serviceInstance)
         {
             var targetContainer = container;
             while (targetContainer.NextContainer != null)

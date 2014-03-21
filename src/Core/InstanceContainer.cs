@@ -11,7 +11,7 @@ namespace Hiro
     internal class InstanceContainer : IMicroContainer
     {
         private string _serviceName;
-        private Type _serviceType;
+        private System.Type _serviceType;
         private object _instance;
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Hiro
         /// <param name="serviceType">The service type.</param>
         /// <param name="serviceName">The service name.</param>
         /// <param name="instance">The instance that the container will contain.</param>
-        public InstanceContainer(Type serviceType, string serviceName, object instance)
+        public InstanceContainer(System.Type serviceType, string serviceName, object instance)
         {
             _serviceType = serviceType;
             _serviceName = serviceName;
@@ -43,7 +43,7 @@ namespace Hiro
         /// <param name="serviceType">The service type to be instantiated.</param>
         /// <param name="key">The name of the service itself.</param>
         /// <returns>A boolean value that specifies whether or not the service exists.</returns>
-        public bool Contains(Type serviceType, string key)
+        public bool Contains(System.Type serviceType, string key)
         {
             return _serviceType == serviceType && _serviceName == key;
         }
@@ -53,7 +53,7 @@ namespace Hiro
         /// </summary>
         /// <param name="serviceType">The service type to be instantiated.</param>
         /// <returns>A list of objects that match the given service type</returns>
-        public IEnumerable<object> GetAllInstances(Type serviceType)
+        public IEnumerable<object> GetAllInstances(System.Type serviceType)
         {
             if (serviceType == _serviceType)
                 yield return _serviceType;
@@ -66,7 +66,7 @@ namespace Hiro
         /// <param name="serviceType">The service type to be instantiated.</param>
         /// <param name="key">The name of the service itself.</param>
         /// <returns>An object instance that matches the given service description.</returns>
-        public object GetInstance(Type serviceType, string key)
+        public object GetInstance(System.Type serviceType, string key)
         {
             if (Contains(serviceType, key))
                 return _instance;

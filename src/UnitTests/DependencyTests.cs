@@ -100,7 +100,7 @@ namespace Hiro.UnitTests
         [Test]
         public void ShouldBeAbleToAddItemsToDependencyMap()
         {
-            var ctor = typeof(Vehicle).GetConstructor(new Type[0]);
+            var ctor = typeof(Vehicle).GetConstructor(new System.Type[0]);
             var dependency = new Dependency(typeof(IVehicle), string.Empty);
             var constructorImplementation = new ConstructorCall(ctor);
 

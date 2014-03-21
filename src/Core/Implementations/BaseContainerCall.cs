@@ -13,7 +13,7 @@ namespace Hiro.Implementations
     /// </summary>
     public abstract class BaseContainerCall : IImplementation
     {
-        private readonly Type _serviceType;
+        private readonly System.Type _serviceType;
         private readonly string _serviceName;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="serviceType">The service type.</param>
         /// <param name="serviceName">The service name.</param>
-        protected BaseContainerCall(Type serviceType, string serviceName)
+        protected BaseContainerCall(System.Type serviceType, string serviceName)
         {
             _serviceType = serviceType;
             _serviceName = serviceName;
@@ -73,7 +73,7 @@ namespace Hiro.Implementations
             EmitGetContainerInstance(module, microContainerType, il, skipCreate);
 
             var getInstance = module.ImportMethod<IMicroContainer>("GetInstance");
-            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var getTypeFromHandleMethod = typeof(System.Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
             var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
 
             // Push the service type onto the stack
@@ -94,7 +94,7 @@ namespace Hiro.Implementations
             il.Append(skipCreate);
 
             var serviceNotFoundExceptionCtor = module.ImportConstructor<ServiceNotFoundException>(typeof(string),
-                                                                                                  typeof(Type));
+                                                                                                  typeof(System.Type));
             var serviceName = dependency.ServiceName ?? string.Empty;
             il.Emit(OpCodes.Ldstr, serviceName);
             il.Emit(OpCodes.Ldtoken, serviceType);

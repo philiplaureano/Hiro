@@ -56,7 +56,7 @@ namespace Hiro.Implementations
         /// Gets the value indicating the type that will be instantiated by this implementation.
         /// </summary>
         /// <value>The target type.</value>
-        public Type TargetType
+        public System.Type TargetType
         {
             get
             {

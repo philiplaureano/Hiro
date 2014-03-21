@@ -83,7 +83,7 @@ namespace Hiro.Compilers
             il.Emit(OpCodes.Ceq);
             il.Emit(OpCodes.Brtrue, skipCall);
 
-            // returnValue = otherContainer.Contains(Type, name);
+            // returnValue = otherContainer.Contains(TypeFilters, name);
             il.Emit(OpCodes.Ldloc, otherContainer);
             il.Emit(OpCodes.Ldarg_1);
             il.Emit(OpCodes.Ldarg_2);

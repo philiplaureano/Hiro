@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
+using Hiro.Loaders;
 using Hiro.Resolvers;
 using Mono.Cecil;
 using NGenerics.DataStructures.General;
@@ -129,7 +131,7 @@ namespace Hiro
         /// <param name="serviceName">The service name.</param>
         /// <param name="serviceType">The service type.</param>
         /// <param name="implementingType">The implementing type.</param>
-        public void AddService(string serviceName, Type serviceType, Type implementingType)
+        public void AddService(string serviceName, System.Type serviceType, System.Type implementingType)
         {
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
@@ -142,7 +144,7 @@ namespace Hiro
         /// </summary>
         /// <param name="serviceType">The service type.</param>
         /// <param name="implementingType">The implementing type.</param>
-        public void AddService(Type serviceType, Type implementingType)
+        public void AddService(System.Type serviceType, System.Type implementingType)
         {
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
@@ -177,7 +179,7 @@ namespace Hiro
         /// </summary>
         /// <param name="serviceType">The service type.</param>
         /// <param name="implementingType">The implementing type.</param>
-        public void AddSingletonService(Type serviceType, Type implementingType)
+        public void AddSingletonService(System.Type serviceType, System.Type implementingType)
         {
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
@@ -191,7 +193,7 @@ namespace Hiro
         /// <param name="serviceName">The service name.</param>
         /// <param name="serviceType">The service type.</param>
         /// <param name="implementingType">The implementing type.</param>
-        public void AddSingletonService(string serviceName, Type serviceType, Type implementingType)
+        public void AddSingletonService(string serviceName, System.Type serviceType, System.Type implementingType)
         {
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
@@ -223,7 +225,7 @@ namespace Hiro
         /// </summary>
         /// <remarks>This method tells the dependency map that the <paramref name="serviceType"/> will be supplied to the container at runtime.</remarks>
         /// <param name="serviceType">The service type that will be injected at runtime.</param>
-        public void AddDeferredService(Type serviceType)
+        public void AddDeferredService(System.Type serviceType)
         {
             var dependency = new Dependency(serviceType);
             var implementation = new NextContainerCall(serviceType, dependency.ServiceName);
@@ -236,7 +238,7 @@ namespace Hiro
         /// <remarks>This method tells the dependency map that the <paramref name="serviceType"/> will be supplied to the container at runtime.</remarks>
         /// <param name="serviceName">The service name.</param>
         /// <param name="serviceType">The service type that will be injected at runtime.</param>
-        public void AddDeferredService(string serviceName, Type serviceType)
+        public void AddDeferredService(string serviceName, System.Type serviceType)
         {
             var dependency = new Dependency(serviceType, serviceName);
             var implementation = new NextContainerCall(serviceType, serviceName);
@@ -249,7 +251,7 @@ namespace Hiro
         /// <param name="serviceType">The service type.</param>
         /// <param name="serviceName">The service name.</param>
         /// <returns><c>true</c> if the service exists; otherwise, it will return <c>false</c>.</returns>
-        public bool Contains(Type serviceType, string serviceName)
+        public bool Contains(System.Type serviceType, string serviceName)
         {
             return Contains(new Dependency(serviceType, serviceName));
         }
@@ -259,7 +261,7 @@ namespace Hiro
         /// </summary>
         /// <param name="serviceType">The service type.</param>
         /// <returns><c>true</c> if the service exists; otherwise, it will return <c>false</c>.</returns>
-        public bool Contains(Type serviceType)
+        public bool Contains(System.Type serviceType)
         {
             return Contains(new Dependency(serviceType));
         }
@@ -277,7 +279,7 @@ namespace Hiro
             var assembly = compiler.Compile("MicroContainer", "Hiro.Containers", "Hiro.CompiledContainers", this);
             Assembly loadedAssembly = CompileContainerAssembly(assembly);
 
-            var containerTypes = new List<Type>();
+            var containerTypes = new List<System.Type>();
             foreach (var type in loadedAssembly.GetTypes())
             {
                 if (!typeof(IMicroContainer).IsAssignableFrom(type))
@@ -287,9 +289,30 @@ namespace Hiro
             }
 
             var containerType = containerTypes[0];
-            IMicroContainer result = (IMicroContainer)Activator.CreateInstance(containerType);
+            var result = (IMicroContainer)Activator.CreateInstance(containerType);
 
             return result;
+        }
+
+        /// <summary>
+        /// Registers the selected types into the <see cref="DependencyMap"/> from the given assemblies.
+        /// </summary>
+        /// <param name="assemblies">The list of assemblies that contain the types that will be registered.</param>
+        /// <param name="typeFilter">The predicate that determines which types will be registered</param>
+        /// <param name="registerTypeAction">The delegate that will be used to register the types.</param>
+        public void AddServicesFrom(IEnumerable<Assembly> assemblies, Func<System.Type, bool> typeFilter,
+            Action<DependencyMap, System.Type> registerTypeAction)
+        {
+            var typeLoader = new TypeLoader();
+            var allTypes = assemblies.SelectMany(typeLoader.LoadTypes);
+
+            var selectedTypes =
+                allTypes.Where(typeFilter).ToArray();
+
+            foreach (var controllerType in selectedTypes)
+            {
+                registerTypeAction(this, controllerType);
+            }
         }
 
         /// <summary>
@@ -324,7 +347,7 @@ namespace Hiro
         /// available as a resolvable enumerable service.
         /// </summary>
         /// <param name="serviceType">The service type that should be resolvable as an enumerable service.</param>
-        public void AddAsEnumerableService(Type serviceType)
+        public void AddAsEnumerableService(System.Type serviceType)
         {
             var enumerableType = typeof(IEnumerable<>).MakeGenericType(serviceType);
             var dependency = new Dependency(enumerableType);

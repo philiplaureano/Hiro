@@ -20,7 +20,7 @@ namespace Hiro.Compilers
         /// Gets or sets the value indicating the method return type.
         /// </summary>
         /// <value>The method return type.</value>
-        public Type ReturnType { get; set; }
+        public System.Type ReturnType { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether or not the method is publicly visible.
@@ -48,7 +48,7 @@ namespace Hiro.Compilers
         /// Gets a value indicating the list of method parameters.
         /// </summary>
         /// <value>The list of parameters for the new method.</value>
-        public IEnumerable<Type> ParameterTypes
+        public IEnumerable<System.Type> ParameterTypes
         {
             get;
             private set;
@@ -58,7 +58,7 @@ namespace Hiro.Compilers
         /// Assigns parameters to the target method.
         /// </summary>
         /// <param name="parameterTypes">The method parameter types.</param>
-        public void SetMethodParameters(params Type[] parameterTypes)
+        public void SetMethodParameters(params System.Type[] parameterTypes)
         {
             ParameterTypes = parameterTypes;
         }

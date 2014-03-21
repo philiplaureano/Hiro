@@ -166,6 +166,8 @@
     <Compile Include="Interfaces\IConstructorResolver.cs" />
     <Compile Include="ServiceInfo.cs" />
     <Compile Include="TypeDefinitionExtensions.cs" />
+    <Compile Include="TypeFilterPredicateExtensions.cs" />
+    <Compile Include="TypeFilters.cs" />
     <Compile Include="TypeReferenceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -17,7 +17,7 @@ namespace Hiro
         /// <param name="serviceType">The type of service that can be created.</param>
         /// <param name="implementingType">The type that will implement the service type.</param>
         /// <param name="serviceName">The name of the service.</param>
-        public ServiceInfo(Type serviceType, Type implementingType, string serviceName)
+        public ServiceInfo(System.Type serviceType, System.Type implementingType, string serviceName)
         {
             ServiceType = serviceType;
             ServiceName = serviceName;
@@ -38,7 +38,7 @@ namespace Hiro
         /// Gets the value indicating the service type. 
         /// </summary>
         /// <value>The type that describes the service type to be created.</value>
-        public Type ServiceType
+        public System.Type ServiceType
         {
             get;
             set;
@@ -48,7 +48,7 @@ namespace Hiro
         /// Gets the value indicating the type that will implement the service type.
         /// </summary>
         /// <value>The implementing type.</value>
-        public Type ImplementingType
+        public System.Type ImplementingType
         {
             get;
             set;
@@ -92,7 +92,7 @@ namespace Hiro
         public override string ToString()
         {
             var serviceName = ServiceName ?? "{null}";
-            return string.Format("Service Name: {0}, Service Type: {1}, ImplementingType {2}", serviceName,
+            return string.Format("Service Name: {0}, Service TypeFilters: {1}, ImplementingType {2}", serviceName,
                                  ServiceType.FullName, ImplementingType.FullName);
         }
     }

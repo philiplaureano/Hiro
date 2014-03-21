@@ -27,7 +27,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="map">The dependency map.</param>
         /// <param name="serviceList">The list of named services that will be added to the container.</param>
-        internal static void RegisterNamedServices(this DependencyMap map, HashList<Type, IServiceInfo> serviceList)
+        internal static void RegisterNamedServices(this DependencyMap map, HashList<System.Type, IServiceInfo> serviceList)
         {
             // Register the named services
             foreach (var serviceType in serviceList.Keys)

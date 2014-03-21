@@ -114,7 +114,7 @@ namespace Hiro.Compilers
             options.HostType = targetType;
             options.MethodName = "GetServiceHashCode";
             options.ReturnType = typeof(int);
-            options.SetMethodParameters(typeof(Type), typeof(string));
+            options.SetMethodParameters(typeof(System.Type), typeof(string));
             options.IsPublic = shouldBeVisible;
             options.IsStatic = true;
         }

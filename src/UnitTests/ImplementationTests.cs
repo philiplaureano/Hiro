@@ -44,7 +44,7 @@ namespace Hiro.UnitTests
             map.Expect(m => m.Contains(It.IsAny<Dependency>())).Returns(true);
             map.Expect(m => m.Dependencies).Returns(new IDependency[] { });
 
-            var expectedConstructor = typeof(Vehicle).GetConstructor(new Type[] { typeof(IPerson) });
+            var expectedConstructor = typeof(Vehicle).GetConstructor(new System.Type[] { typeof(IPerson) });
             IImplementation<ConstructorInfo> implementation = new TransientType(typeof(Vehicle), map.Object, new ConstructorResolver());
 
             Assert.AreSame(implementation.Target, expectedConstructor);

@@ -42,7 +42,7 @@ namespace Hiro
         /// <param name="module">The <see cref="ModuleDefinition"/> that will import the target constructor.</param>
         /// <param name="constructorParameters">The list of <see cref="System.Type"/> objects that describe the signature of the constructor.</param>
         /// <returns>A <see cref="MethodReference"/> that represents the constructor itself.</returns>
-        public static MethodReference ImportConstructor<T>(this ModuleDefinition module, params Type[] constructorParameters)
+        public static MethodReference ImportConstructor<T>(this ModuleDefinition module, params System.Type[] constructorParameters)
         {
             var targetType = typeof(T);
             return ImportConstructor(module, targetType, constructorParameters);
@@ -56,7 +56,7 @@ namespace Hiro
         /// <param name="targetType">The type that holds the target constructor</param>
         /// <param name="constructorParameters">The list of <see cref="System.Type"/> objects that describe the signature of the constructor.</param>
         /// <returns>A <see cref="MethodReference"/> that represents the constructor itself.</returns>
-        public static MethodReference ImportConstructor(this ModuleDefinition module, Type targetType, params Type[] constructorParameters)
+        public static MethodReference ImportConstructor(this ModuleDefinition module, System.Type targetType, params System.Type[] constructorParameters)
         {
             return module.Import(targetType.GetConstructor(constructorParameters));
         }
@@ -69,7 +69,7 @@ namespace Hiro
         /// <param name="methodName">The name of the method being imported.</param>
         /// <param name="declaringType">The <see cref="System.Type"/> instance that holds the target method.</param>
         /// <returns>A <see cref="MethodReference"/> that represents the method being imported.</returns>
-        public static MethodReference ImportMethod(this ModuleDefinition module, string methodName, Type declaringType)
+        public static MethodReference ImportMethod(this ModuleDefinition module, string methodName, System.Type declaringType)
         {
             return module.Import(declaringType.GetMethod(methodName));
         }
@@ -92,11 +92,11 @@ namespace Hiro
         /// into the <paramref name="module">target module</paramref>.
         /// </summary>
         /// <typeparam name="T">The target type that holds the target method.</typeparam>
-        /// <param name="parameterTypes">The list of <see cref="Type"/> objects that describe the method signature.</param>
+        /// <param name="parameterTypes">The list of <see cref="System.Type"/> objects that describe the method signature.</param>
         /// <param name="module">The <see cref="ModuleDefinition"/> instance that will import the actual method.</param>
         /// <param name="methodName">The name of the method being imported.</param>
         /// <returns>A <see cref="MethodReference"/> that represents the method being imported.</returns>
-        public static MethodReference ImportMethod<T>(this ModuleDefinition module, string methodName, params Type[] parameterTypes)
+        public static MethodReference ImportMethod<T>(this ModuleDefinition module, string methodName, params System.Type[] parameterTypes)
         {
             return module.Import(typeof(T).GetMethod(methodName, parameterTypes));
         }
@@ -126,7 +126,7 @@ namespace Hiro
         /// <param name="declaringType">The <see cref="System.Type"/> instance that holds the target method.</param>
         /// <param name="flags">The <see cref="BindingFlags"/> that describes the visibility and behavior of the target method.</param>
         /// <returns>A <see cref="MethodReference"/> that represents the method being imported.</returns>
-        public static MethodReference ImportMethod(this ModuleDefinition module, string methodName, Type declaringType, BindingFlags flags)
+        public static MethodReference ImportMethod(this ModuleDefinition module, string methodName, System.Type declaringType, BindingFlags flags)
         {
             return module.Import(declaringType.GetMethod(methodName, flags));
         }
@@ -150,7 +150,7 @@ namespace Hiro
         /// <param name="targetType">The type that will be imported into the <see cref="ModuleDefinition"/> instance itself.</param>
         /// <param name="module">The module that will store the imported type.</param>
         /// <returns>A <see cref="TypeDefinition"/> instance that represents the imported type.</returns>
-        public static TypeReference ImportType(this ModuleDefinition module, Type targetType)
+        public static TypeReference ImportType(this ModuleDefinition module, System.Type targetType)
         {
             return module.Import(targetType);
         }

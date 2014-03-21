@@ -43,7 +43,7 @@ namespace Hiro.Implementations
         /// <param name="container">The dependency container that contains the dependencies that will be used by the target type.</param>
         /// <param name="constructorResolver">The constructor resolver.</param>
         /// <param name="singletonEmitter">The emitter that will be responsible for emitting the singleton implementation.</param>
-        public SingletonType(Type targetType, IDependencyContainer container, IConstructorResolver constructorResolver, ISingletonEmitter singletonEmitter)
+        public SingletonType(System.Type targetType, IDependencyContainer container, IConstructorResolver constructorResolver, ISingletonEmitter singletonEmitter)
             : this(new TransientType(targetType, container, constructorResolver), singletonEmitter)
         {            
         }
@@ -54,7 +54,7 @@ namespace Hiro.Implementations
         /// <param name="targetType">The concrete service type.</param>
         /// <param name="container">The dependency container that contains the dependencies that will be used by the target type.</param>
         /// <param name="constructorResolver">The constructor resolver.</param>
-        public SingletonType(Type targetType, IDependencyContainer container, IConstructorResolver constructorResolver)
+        public SingletonType(System.Type targetType, IDependencyContainer container, IConstructorResolver constructorResolver)
             : this(new TransientType(targetType, container, constructorResolver), new ContainerBasedSingletonEmitter())
         {
         }
@@ -63,7 +63,7 @@ namespace Hiro.Implementations
         /// Gets the value indicating the type that will be instantiated by this implementation.
         /// </summary>
         /// <value>The target type.</value>
-        public Type TargetType
+        public System.Type TargetType
         {
             get
             {

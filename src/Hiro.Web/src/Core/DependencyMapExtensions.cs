@@ -22,7 +22,7 @@ namespace Hiro.Web
         /// <param name="map">The target dependency map.</param>
         /// <param name="serviceType">The service type.</param>
         /// <param name="implementingType">The implementing type.</param>
-        public static void AddPerSessionService(this DependencyMap map, Type serviceType, Type implementingType)
+        public static void AddPerSessionService(this DependencyMap map, System.Type serviceType, System.Type implementingType)
         {
             map.AddPerSessionService(null, serviceType, implementingType);
         }
@@ -35,7 +35,7 @@ namespace Hiro.Web
         /// <param name="serviceName">The service name.</param>
         /// <param name="serviceType">The service type.</param>
         /// <param name="implementingType">The implementing type.</param>
-        public static void AddPerSessionService(this DependencyMap map, string serviceName, Type serviceType, Type implementingType)
+        public static void AddPerSessionService(this DependencyMap map, string serviceName, System.Type serviceType, System.Type implementingType)
         {
             // Add the SessionCache by default
             if (!map.Contains(typeof(ICache)))

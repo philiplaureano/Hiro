@@ -55,14 +55,14 @@ namespace Hiro.Compilers
             IL.Emit(OpCodes.Stloc, listVariable);
 
             // Group the dependencies by type
-            var dependenciesByType = new HashList<Type, IDependency>();
+            var dependenciesByType = new HashList<System.Type, IDependency>();
             foreach (var dependency in serviceMap.Keys)
             {
                 var serviceType = dependency.ServiceType;
                 dependenciesByType.Add(serviceType, dependency);
             }
 
-            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var getTypeFromHandleMethod = typeof(System.Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
             var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
             var addItem = module.ImportMethod<List<object>>("Add");
 

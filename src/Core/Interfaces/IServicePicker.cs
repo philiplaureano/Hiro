@@ -15,6 +15,6 @@ namespace Hiro.Interfaces
         /// <param name="serviceType">The service type.</param>
         /// <param name="services">The list of services.</param>
         /// <returns>The default service implementation.</returns>
-        IServiceInfo ChooseDefaultServiceFrom(Type serviceType, IEnumerable<IServiceInfo> services);
+        IServiceInfo ChooseDefaultServiceFrom(System.Type serviceType, IEnumerable<IServiceInfo> services);
     }
 }

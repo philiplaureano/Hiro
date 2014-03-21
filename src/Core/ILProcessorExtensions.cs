@@ -41,7 +41,7 @@ namespace Hiro
             var declaringType = method.DeclaringType;
             var module = declaringType.Module;
 
-            var writeLineMethod = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null);
+            var writeLineMethod = typeof(Console).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new System.Type[] { typeof(string) }, null);
             IL.Emit(OpCodes.Ldstr, text);
             IL.Emit(OpCodes.Call, module.Import(writeLineMethod));
         }

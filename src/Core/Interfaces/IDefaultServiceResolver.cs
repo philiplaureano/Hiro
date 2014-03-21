@@ -15,6 +15,6 @@ namespace Hiro.Interfaces
         /// <param name="serviceType">The service type.</param>
         /// <param name="services">The list of services that implement the service type.</param>
         /// <returns>The <see cref="IServiceInfo"/> instance that will determine </returns>
-        IServiceInfo GetDefaultService(Type serviceType, IEnumerable<IServiceInfo> services);
+        IServiceInfo GetDefaultService(System.Type serviceType, IEnumerable<IServiceInfo> services);
     }
 }

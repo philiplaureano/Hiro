@@ -9,7 +9,7 @@ using Hiro.Loaders;
 
 namespace Hiro.Web.Mvc4
 {
-    public static class DependencyMapMvcExtensions
+    public static class DependencyMapMvcExtensions 
     {
         /// <summary>
         /// Registers all controller types from the given assembly.
@@ -38,19 +38,13 @@ namespace Hiro.Web.Mvc4
         /// <param name="assemblies">The list of assemblies that contain the controller types being registered.</param>
         public static void RegisterAllControllersFrom(this DependencyMap map, IEnumerable<Assembly> assemblies)
         {
-            Func<Type, bool> typeFilter = t => t.IsClass && !t.IsInterface && t.IsPublic && typeof(IController).IsAssignableFrom(t);
-
-            var typeLoader = new TypeLoader();
-            var allTypes = assemblies.SelectMany(typeLoader.LoadTypes);
-
-            var controllerTypes =
-                allTypes.Where(typeFilter).ToArray();
-
-            foreach (var controllerType in controllerTypes)
+            Action<DependencyMap, Type> registerTypeAction = (dependencyMap, controllerType) =>
             {
                 var typeName = controllerType.Name;
-                map.AddService(typeName, typeof(IController), controllerType);
-            }
-        }
+                dependencyMap.AddService(typeName, typeof(IController), controllerType);
+            };
+
+            map.AddServicesFrom(assemblies, TypeFilters.IsDerivedFrom<IController>(), registerTypeAction);
+        }        
     }
 }

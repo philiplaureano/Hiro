@@ -111,8 +111,8 @@ namespace Hiro.UnitTests
             serviceList.Add(new ServiceInfo(typeof(IVehicle), typeof(Truck), "Truck"));
             serviceList.Add(defaultService);
 
-            typeLoader.Expect(l => l.LoadTypes(It.IsAny<Assembly>())).Returns(new Type[0]);
-            resolver.Expect(r => r.GetDefaultService(It.IsAny<Type>(), It.IsAny<IEnumerable<IServiceInfo>>())).Returns(defaultService);
+            typeLoader.Expect(l => l.LoadTypes(It.IsAny<Assembly>())).Returns(new System.Type[0]);
+            resolver.Expect(r => r.GetDefaultService(It.IsAny<System.Type>(), It.IsAny<IEnumerable<IServiceInfo>>())).Returns(defaultService);
             serviceLoader.Expect(s => s.Load(assembly)).Returns(services);
 
             var loader = new DependencyMapLoader(typeLoader.Object, serviceLoader.Object, resolver.Object);

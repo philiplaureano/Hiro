@@ -97,7 +97,7 @@ namespace Hiro.UnitTests
             Assert.IsNotNull(container);
 
             var mockContainer = new Mock<IMicroContainer>();
-            mockContainer.Expect(m => m.GetInstance(It.IsAny<Type>(), It.IsAny<string>())).Returns(42);
+            mockContainer.Expect(m => m.GetInstance(It.IsAny<System.Type>(), It.IsAny<string>())).Returns(42);
             container.NextContainer = mockContainer.Object;
 
             Assert.AreSame(container.NextContainer, mockContainer.Object);
@@ -117,7 +117,7 @@ namespace Hiro.UnitTests
             Assert.IsNotNull(container);
 
             var mockContainer = new Mock<IMicroContainer>();
-            mockContainer.Expect(m => m.Contains(It.IsAny<Type>(), It.IsAny<string>())).Returns(true);
+            mockContainer.Expect(m => m.Contains(It.IsAny<System.Type>(), It.IsAny<string>())).Returns(true);
             container.NextContainer = mockContainer.Object;
 
             // The Contains() call on the created container should trigger
@@ -444,7 +444,7 @@ namespace Hiro.UnitTests
         [Test]
         public void ShouldBeAbleToCompileContainerWithParameterlessConstructor()
         {
-            var targetConstructor = typeof(Vehicle).GetConstructor(new Type[0]);
+            var targetConstructor = typeof(Vehicle).GetConstructor(new System.Type[0]);
 
             var dependency = new Dependency(typeof(IVehicle), string.Empty);
             var implementation = new ConstructorCall(targetConstructor);
@@ -732,7 +732,7 @@ namespace Hiro.UnitTests
             actionThatShouldTriggerException(instance);
         }
 
-        private void CreateStub(string typeName, string assemblyName, Type interfaceType, out ModuleDefinition module, out TypeDefinition type)
+        private void CreateStub(string typeName, string assemblyName, System.Type interfaceType, out ModuleDefinition module, out TypeDefinition type)
         {
             var assembly = _assemblyBuilder.CreateAssembly(assemblyName, ModuleKind.Dll);
             module = assembly.MainModule;

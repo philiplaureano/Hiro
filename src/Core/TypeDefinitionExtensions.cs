@@ -46,7 +46,7 @@ namespace Hiro
         /// <param name="parentType">The base class that contains the default constructor that will be used for constructor chaining..</param>
         /// <param name="targetType">The type that will contain the default constructor.</param>
         /// <returns>The default constructor.</returns>
-        public static MethodDefinition AddDefaultConstructor(this TypeDefinition targetType, Type parentType)
+        public static MethodDefinition AddDefaultConstructor(this TypeDefinition targetType, System.Type parentType)
         {
             var module = targetType.Module;
             var voidType = module.Import(typeof(void));
@@ -55,12 +55,12 @@ namespace Hiro
 
 
             var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-            var objectConstructor = parentType.GetConstructor(flags, null, new Type[0], null);
+            var objectConstructor = parentType.GetConstructor(flags, null, new System.Type[0], null);
 
             // Revert to the System.Object constructor
             // if the parent type does not have a default constructor
             if (objectConstructor == null)
-                objectConstructor = typeof(object).GetConstructor(new Type[0]);
+                objectConstructor = typeof(object).GetConstructor(new System.Type[0]);
 
             var baseConstructor = module.Import(objectConstructor);
 
@@ -94,7 +94,7 @@ namespace Hiro
         /// <param name="genericParameterTypes">The list of generic argument types that will be used to define the method signature.</param>
         /// <returns>A <see cref="MethodDefinition"/> instance that represents the newly-created method.</returns>
         public static MethodDefinition DefineMethod(this TypeDefinition typeDef, string methodName,
-            Mono.Cecil.MethodAttributes attributes, Type returnType, Type[] parameterTypes, Type[] genericParameterTypes)
+            Mono.Cecil.MethodAttributes attributes, System.Type returnType, System.Type[] parameterTypes, System.Type[] genericParameterTypes)
         {
             var method = new MethodDefinition(methodName, attributes, typeDef.Module.Import(typeof(object)));
 
@@ -121,7 +121,7 @@ namespace Hiro
         /// <param name="typeDef">The target type that will hold the newly-created property.</param>
         /// <param name="propertyName">The name of the property itself.</param>
         /// <param name="propertyType">The <see cref="System.Type"/> instance that describes the property type.</param>
-        public static void AddProperty(this TypeDefinition typeDef, string propertyName, Type propertyType)
+        public static void AddProperty(this TypeDefinition typeDef, string propertyName, System.Type propertyType)
         {
             var module = typeDef.Module;
             var typeRef = module.Import(propertyType);

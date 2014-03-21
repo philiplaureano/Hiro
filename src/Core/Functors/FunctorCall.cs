@@ -16,14 +16,14 @@ namespace Hiro.Functors.Core
     {
         private readonly string _functorId = Guid.NewGuid().ToString();
         private readonly Func<IMicroContainer, object> _functor;
-        private readonly Type _serviceType;
+        private readonly System.Type _serviceType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FunctorCall"/> class.
         /// </summary>
         /// <param name="serviceType"></param>
         /// <param name="functor">The functor that will be used to instantiate the given service instance.</param>
-        public FunctorCall(Type serviceType, Func<IMicroContainer, object> functor)
+        public FunctorCall(System.Type serviceType, Func<IMicroContainer, object> functor)
         {
             _serviceType = serviceType;
             _functor = functor;

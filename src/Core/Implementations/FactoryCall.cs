@@ -13,7 +13,7 @@ namespace Hiro.Implementations
     /// </summary>
     public class FactoryCall : IImplementation
     {
-        private readonly Type _serviceType;
+        private readonly System.Type _serviceType;
         private readonly string _serviceName;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="serviceType">The service type.</param>
         /// <param name="serviceName">The service name.</param>
-        public FactoryCall(Type serviceType, string serviceName)
+        public FactoryCall(System.Type serviceType, string serviceName)
         {
             _serviceType = serviceType;
             _serviceName = serviceName;

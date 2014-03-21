@@ -15,6 +15,6 @@ namespace Hiro.Interfaces
         /// </summary>
         /// <param name="targetAssembly">The target assembly that contains the types to be loaded.</param>
         /// <returns>The list of types.</returns>
-        IEnumerable<Type> LoadTypes(Assembly targetAssembly);
+        IEnumerable<System.Type> LoadTypes(Assembly targetAssembly);
     }
 }

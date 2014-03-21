@@ -17,7 +17,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="serviceType">The service type that will be instantiated.</param>
         /// <param name="serviceName">The name of the service to instantiaet.</param>
-        public ContainerCall(Type serviceType, string serviceName) : base(serviceType, serviceName)
+        public ContainerCall(System.Type serviceType, string serviceName) : base(serviceType, serviceName)
         {
         }
 

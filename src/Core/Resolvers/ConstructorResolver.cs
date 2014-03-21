@@ -19,7 +19,7 @@ namespace Hiro.Resolvers
         /// <param name="targetType">The target type that contains list of constructors to be resolved.</param>
         /// <param name="container">The dependency container that holds the current set of dependencies.</param>
         /// <returns>An implementation that can instantiate the object associated with the constructor.</returns>
-        public virtual IImplementation<ConstructorInfo> ResolveFrom(Type targetType, IDependencyContainer container)
+        public virtual IImplementation<ConstructorInfo> ResolveFrom(System.Type targetType, IDependencyContainer container)
         {
             IImplementation<ConstructorInfo> result = null;
 

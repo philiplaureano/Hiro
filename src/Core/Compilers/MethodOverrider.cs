@@ -25,7 +25,7 @@ namespace Hiro.Compilers
             options.IsPublic = true;
             options.MethodName = targetMethod.Name;
 
-            var parameterTypes = new List<Type>();
+            var parameterTypes = new List<System.Type>();
             foreach (var param in targetMethod.GetParameters())
             {
                 parameterTypes.Add(param.ParameterType);

@@ -153,7 +153,7 @@ namespace Hiro
 
             pluginDependencies = pluginDependencies.FindAll(predicate);
 
-            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var getTypeFromHandleMethod = typeof(System.Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
             var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
             var getInstanceMethod = module.ImportMethod<IMicroContainer>("GetInstance");
             foreach (var currentDependency in pluginDependencies)
@@ -223,7 +223,7 @@ namespace Hiro
             RemoveLastInstruction(body);
 
             // Initialize the jump targets in the default container constructor
-            var getTypeFromHandleMethod = typeof(Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var getTypeFromHandleMethod = typeof(System.Type).GetMethod("GetTypeFromHandle", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
             var getTypeFromHandle = module.Import(getTypeFromHandleMethod);
 
             // __jumpTargets = new Dictionary<int, int>();

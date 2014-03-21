@@ -14,7 +14,7 @@ namespace Hiro.Implementations
     /// </summary>
     public class NextContainerCall : BaseContainerCall
     {
-        private readonly Type _serviceType;
+        private readonly System.Type _serviceType;
         private readonly string _serviceName;
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="serviceType">The service type.</param>
         /// <param name="serviceName">The service name.</param>
-        public NextContainerCall(Type serviceType, string serviceName) : base(serviceType, serviceName)
+        public NextContainerCall(System.Type serviceType, string serviceName) : base(serviceType, serviceName)
         {
             _serviceType = serviceType;
             _serviceName = serviceName;

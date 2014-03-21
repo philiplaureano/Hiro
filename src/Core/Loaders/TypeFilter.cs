@@ -16,9 +16,9 @@ namespace Hiro.Loaders
         /// <param name="items">The list of types to be filtered.</param>
         /// <param name="filter">The predicate that determines which types should be selected.</param>
         /// <returns>A list of types.</returns>
-        public IList<Type> GetTypes(IEnumerable<Type> items, Predicate<Type> filter)
+        public IList<System.Type> GetTypes(IEnumerable<System.Type> items, Predicate<System.Type> filter)
         {
-            var types = new List<Type>();
+            var types = new List<System.Type>();
             foreach (var type in items)
             {
                 if (!filter(type))

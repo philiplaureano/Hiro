@@ -15,13 +15,13 @@ namespace Hiro.Implementations
     /// </summary>
     public class EnumerableType : IImplementation
     {
-        private readonly Type _serviceType;
+        private readonly System.Type _serviceType;
         private readonly IServiceInitializer _initializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:System.Object"/> class.
         /// </summary>
-        public EnumerableType(Type serviceType) : this(serviceType, new ServiceInitializer())
+        public EnumerableType(System.Type serviceType) : this(serviceType, new ServiceInitializer())
         {
         }
 
@@ -30,7 +30,7 @@ namespace Hiro.Implementations
         /// </summary>
         /// <param name="serviceType">The service type.</param>
         /// <param name="initializer">The service initializer that will be used to introduce the container to instantiated services.</param>
-        public EnumerableType(Type serviceType, IServiceInitializer initializer)
+        public EnumerableType(System.Type serviceType, IServiceInitializer initializer)
         {
             _serviceType = serviceType;
             _initializer = initializer;
@@ -72,7 +72,7 @@ namespace Hiro.Implementations
             var module = declaringType.Module;
 
             var listType = typeof(List<>).MakeGenericType(_serviceType);
-            var listCtor = module.ImportConstructor(listType, new Type[0]);
+            var listCtor = module.ImportConstructor(listType, new System.Type[0]);
             
             var listVariable = targetMethod.AddLocal(listType);
             var IL = targetMethod.GetILGenerator();

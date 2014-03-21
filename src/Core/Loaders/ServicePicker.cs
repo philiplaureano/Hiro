@@ -16,7 +16,7 @@ namespace Hiro.Loaders
         /// <param name="serviceType">The service type.</param>
         /// <param name="services">The list of services.</param>
         /// <returns>The default service implementation.</returns>
-        public IServiceInfo ChooseDefaultServiceFrom(Type serviceType, IEnumerable<IServiceInfo> services)
+        public IServiceInfo ChooseDefaultServiceFrom(System.Type serviceType, IEnumerable<IServiceInfo> services)
         {
             var serviceTypeName = serviceType.Name;
 

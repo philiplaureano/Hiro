@@ -19,7 +19,7 @@ namespace Hiro.Compilers
         /// <param name="interfaceType">The interface type.</param>
         /// <param name="type">The host type.</param>
         /// <returns>The list of stubbed methods.</returns>
-        public IEnumerable<MethodDefinition> AddStubImplementationFor(Type interfaceType, TypeDefinition type)
+        public IEnumerable<MethodDefinition> AddStubImplementationFor(System.Type interfaceType, TypeDefinition type)
         {
             var module = type.Module;
             var interfaceTypeRef = module.Import(interfaceType);
@@ -35,7 +35,7 @@ namespace Hiro.Compilers
         /// <param name="interfaceType">The interface type that will be implemented by the target type.</param>
         /// <param name="type">The target type.</param>
         /// <returns>The list of stubbed methods.</returns>
-        private static IEnumerable<MethodDefinition> CreateInterfaceStub(Type interfaceType, TypeDefinition type)
+        private static IEnumerable<MethodDefinition> CreateInterfaceStub(System.Type interfaceType, TypeDefinition type)
         {
             var module = type.Module;
             var overrider = new MethodOverrider();
