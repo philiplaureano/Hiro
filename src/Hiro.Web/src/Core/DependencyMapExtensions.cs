@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using Hiro.Containers;
 using Hiro.Implementations;
-using Hiro.Loaders;
 using Hiro.Resolvers;
 
 namespace Hiro.Web

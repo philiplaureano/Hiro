@@ -98,6 +98,7 @@
     <Compile Include="ImplementationTests.cs" />
     <Compile Include="LoaderTests.cs" />
     <Compile Include="MicroContainerExtensionTests.cs" />
+    <Compile Include="ModuleLoaderTests.cs" />
     <Compile Include="PropertyInjectionTests.cs" />
     <Compile Include="SampleDomain\Garage.cs" />
     <Compile Include="SampleDomain\IPerson.cs" />

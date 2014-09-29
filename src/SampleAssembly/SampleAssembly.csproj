@@ -10,12 +10,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SampleAssembly</RootNamespace>
     <AssemblyName>SampleAssembly</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,11 +61,16 @@
     <Compile Include="SampleClassWithEnumerableBazDependency.cs" />
     <Compile Include="SampleFactory.cs" />
     <Compile Include="SampleGenericImplementation.cs" />
+    <Compile Include="SampleModule.cs" />
     <Compile Include="TestRepository.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\Hiro.csproj">
+      <Project>{4a778b50-f400-4301-bd6f-772761dfae16}</Project>
+      <Name>Hiro</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Hiro.Containers\Hiro.Containers.csproj">
-      <Project>{2E7E26C4-E391-4C33-9B6C-792B877F8F90}</Project>
+      <Project>{2e7e26c4-e391-4c33-9b6c-792b877f8f90}</Project>
       <Name>Hiro.Containers</Name>
     </ProjectReference>
   </ItemGroup>

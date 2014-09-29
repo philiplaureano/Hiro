@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Hiro</RootNamespace>
     <AssemblyName>Hiro</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -79,6 +79,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\common\LinFu.Finders.dll</HintPath>
     </Reference>
+    <Reference Include="LinFu.Loaders">
+      <HintPath>..\packages\LinFu.Loaders.3.0.0.30408\lib\net45\LinFu.Loaders.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=f8308f98b9861962, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\net-2.0\Mono.Cecil.dll</HintPath>
@@ -109,6 +112,7 @@
     <Compile Include="Compilers\ISingletonEmitter.cs" />
     <Compile Include="Implementations\BaseConstructorCall.cs" />
     <Compile Include="Implementations\EnumerableType.cs" />
+    <Compile Include="Interfaces\IModule.cs" />
     <Compile Include="Interfaces\IServiceInitializer.cs" />
     <Compile Include="Compilers\MethodBuilder.cs" />
     <Compile Include="Compilers\MethodBuilderOptions.cs" />
@@ -157,6 +161,7 @@
     <Compile Include="Loaders\AssemblyLoader.cs" />
     <Compile Include="Loaders\DefaultServiceResolver.cs" />
     <Compile Include="Loaders\DependencyMapLoader.cs" />
+    <Compile Include="Loaders\ModuleLoader.cs" />
     <Compile Include="Loaders\ServiceLoader.cs" />
     <Compile Include="Loaders\ServicePicker.cs" />
     <Compile Include="Loaders\TypeFilter.cs" />
