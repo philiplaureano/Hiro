@@ -35,6 +35,6 @@ namespace Hiro.UnitTests
             var targetDirectory = Path.GetDirectoryName(typeof (SampleModule).Assembly.Location);
             loader.LoadModulesFrom(targetDirectory, "*.dll");
             Assert.IsTrue(map.Contains(typeof(IList<int>)));
-        }
+        }        
     }
 }

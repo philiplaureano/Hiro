@@ -81,8 +81,12 @@ namespace Hiro.MSBuild.Tasks
                 targetPath = Path.GetDirectoryName(targetPath);
 
                 var targetFiles = Path.GetFileName(TargetAssemblies);
-                var loader = new DependencyMapLoader();
-                var dependencyMap = loader.LoadFrom(targetPath, targetFiles);
+                
+                // Use the loaded modules from the target assemblies
+                // to determine which services will be compiled
+                var dependencyMap = new DependencyMap();
+                var loader = new ModuleLoader(dependencyMap);
+                loader.LoadModulesFrom(targetPath, targetFiles);
 
                 var typeName = TypeName ?? "MicroContainer";
                 var namespaceName = NamespaceName ?? "Hiro.Containers";
