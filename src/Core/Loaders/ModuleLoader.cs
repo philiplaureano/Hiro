@@ -43,7 +43,7 @@ namespace Hiro.Loaders
         /// </summary>
         /// <param name="targetDirectory">The target directory that contains the <see cref="IModule"/> assemblies.</param>
         /// <param name="fileSpec">The file search pattern that describes the names of the assemblies that will be loaded.</param>
-        public void LoadModulesFrom(string targetDirectory, string fileSpec)
+        public void LoadModulesFrom(string targetDirectory, string fileSpec = "*.dll")
         {
             var modules = new List<IModule>();
             modules.LoadFrom(targetDirectory, fileSpec);
