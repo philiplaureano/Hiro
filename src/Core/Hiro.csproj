@@ -200,20 +200,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="PostBuildScripts\BuildNewPackage-RanAutomatically.ps1" />
-    <None Include="PostBuildScripts\New-NuGetPackage.ps1" />
-    <None Include="PostBuildScripts\UploadPackage-RunManually.bat" />
-    <None Include="PostBuildScripts\UploadPackage-RunManually.ps1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="PostBuildScripts\NuGet.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>REM Create a NuGet package for this project and place the .nupkg file in the project's output directory.
-ECHO Building NuGet package in Post-Build event...
-PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(ProjectDir)PostBuildScripts\BuildNewPackage-RanAutomatically.ps1' -ProjectFilePath '$(ProjectPath)' -OutputDirectory '$(TargetDir)' -Configuration '$(ConfigurationName)' -Platform '$(PlatformName)'"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
