@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Hiro.Containers</id>
+        <version>$version$</version>
+        <title>Hiro.Containers</title>
+        <authors>philip.laureano</authors>
+        <owners>philip.laureano</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>The core interface library for the Hiro IOC container.</description>
+    </metadata>
+</package>
