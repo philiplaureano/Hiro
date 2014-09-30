@@ -11,7 +11,7 @@ namespace Hiro.Web.Mvc4
 {
     public static class HiroMvcIntegration
     {
-        public static void Install(IMicroContainer container)
+        public static void EnableMvc(this IMicroContainer container)
         {
             // Replace the default controller factory with Hiro
             var factory = new HiroControllerFactory(container);
