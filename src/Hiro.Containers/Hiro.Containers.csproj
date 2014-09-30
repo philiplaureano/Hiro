@@ -55,6 +55,7 @@
     <Compile Include="ServiceNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Hiro.Containers.nuspec" />
     <None Include="Hiro.snk" />
     <None Include="packages.config" />
   </ItemGroup>
