@@ -7,7 +7,7 @@ namespace Hiro.UnitTests
     public class GenericTests
     {
         [Test]
-        public void ShouldBeAbleToInstantiateGenericType()
+        public void ShouldBeAbleToInstantiateGenericTypes()
         {
             var map = new DependencyMap();
             map.AddService(typeof(IList<>), typeof(List<>));
@@ -15,6 +15,20 @@ namespace Hiro.UnitTests
             var container = map.CreateContainer();
             var list = container.GetInstance<IList<int>>();
             Assert.IsNotNull(list);
+        }
+
+        [Test]
+        public void ShouldBeAbleToInstantiateGenericSingletonTypes()
+        {
+            var map = new DependencyMap();
+            map.AddSingletonService(typeof(IList<>), typeof(List<>));
+
+            var container = map.CreateContainer();
+            var list = container.GetInstance<IList<int>>();
+            Assert.IsNotNull(list);
+
+            var otherList = container.GetInstance<IList<int>>();
+            Assert.AreSame(list, otherList);
         }
 
         [Test]

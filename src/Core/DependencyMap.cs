@@ -196,6 +196,13 @@ namespace Hiro
         /// <param name="implementingType">The implementing type.</param>
         public void AddSingletonService(System.Type serviceType, System.Type implementingType)
         {
+            if (serviceType.IsGenericTypeDefinition && implementingType.IsGenericTypeDefinition)
+            {
+                var genericContainer = new GenericSingletonInstanceContainer(null, serviceType, implementingType, this);
+                _genericContainers.Add(genericContainer);
+                return;
+            }
+
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
@@ -210,6 +217,11 @@ namespace Hiro
         /// <param name="implementingType">The implementing type.</param>
         public void AddSingletonService(string serviceName, System.Type serviceType, System.Type implementingType)
         {
+            if (serviceType.IsGenericTypeDefinition && implementingType.IsGenericTypeDefinition)
+            {
+                throw new NotSupportedException("Named generic service registration is currently not supported");
+            }
+
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 

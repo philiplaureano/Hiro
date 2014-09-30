@@ -112,7 +112,7 @@ namespace Hiro
                 // Add the service type itself
                 var arguments = serviceType.GetGenericArguments();
                 var concreteType = _genericTypeImplementation.MakeGenericType(arguments);
-                map.AddService(serviceType, concreteType);
+                Register(serviceType, concreteType, map);
 
                 // Compile the container
                 var container = map.CreateContainer();
@@ -128,6 +128,17 @@ namespace Hiro
                 return NextContainer.GetInstance(serviceType, key);
 
             return result;
+        }
+
+        /// <summary>
+        /// Registers the generic service type.
+        /// </summary>
+        /// <param name="serviceType">The service type that will be registered.</param>
+        /// <param name="concreteType">The generic concrete type that will implement the generic service type.</param>
+        /// <param name="map">The dependency map that contains all the dependencies.</param>
+        protected virtual void Register(Type serviceType, Type concreteType, DependencyMap map)
+        {
+            map.AddService(serviceType, concreteType);
         }
 
         /// <summary>
