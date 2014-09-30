@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Hiro.Web</id>
+        <version>$version$</version>
+        <title>Hiro.Web</title>
+        <authors>Philip Laureano</authors>
+        <owners>Philip Laureano</owners>
+        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <developmentDependency>true</developmentDependency>
+        <description>A web extension library for the Hiro IOC container framework.</description>
+        <summary>The MIT license.</summary>
+        <copyright>Copyright © Philip Laureano 2014</copyright>
+        <tags>hiro ioc msbuild</tags>
+        <dependencies>
+            <dependency id="LinFu.Finders" version="1.0.1" />
+            <dependency id="LinFu.Loaders" version="3.0.0.30408" />
+            <dependency id="Mono.Cecil" version="0.9.5.4" />
+            <dependency id="Hiro.Containers" version="1.0.2.29326" />
+            <dependency id="Iesi.Collections" version="4.0.1.4000" />
+            <dependency id="NGenerics" version="1.4.1.0" />
+            <dependency id="Hiro" version="1.0.4.41795" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\..\..\..\build\Debug\Hiro.Web.dll" target="lib\net45\Hiro.Web.dll" />
+    </files>
+</package>

@@ -44,7 +44,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\build\Debug\\Debug\Hiro.XML</DocumentationFile>
+    <DocumentationFile>..\..\build\Debug\Hiro.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -77,14 +77,23 @@
     </Reference>
     <Reference Include="LinFu.Finders, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3addbe3eede3dde9, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\common\LinFu.Finders.dll</HintPath>
+      <HintPath>..\packages\LinFu.Finders.1.0.1\lib\LinFu.Finders.dll</HintPath>
     </Reference>
     <Reference Include="LinFu.Loaders">
       <HintPath>..\packages\LinFu.Loaders.3.0.0.30408\lib\net45\LinFu.Loaders.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=f8308f98b9861962, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\net-2.0\Mono.Cecil.dll</HintPath>
+      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="NGenerics, Version=1.4.1.0, Culture=neutral, PublicKeyToken=e4b41be133ea7faf, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -207,6 +216,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Hiro.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

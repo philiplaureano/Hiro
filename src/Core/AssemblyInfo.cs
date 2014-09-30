@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Hiro Inversion of Control")]
+[assembly: AssemblyTitle("Hiro")]
 [assembly: AssemblyDescription("A lightweight inversion of control framework.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
