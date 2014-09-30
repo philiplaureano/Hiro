@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Hiro.Compilers;
 using Hiro.Containers;
 using Hiro.Implementations;
 using Hiro.Interfaces;
@@ -21,6 +22,8 @@ namespace Hiro
 
         private readonly Dictionary<AssemblyDefinition, Assembly> _cache =
             new Dictionary<AssemblyDefinition, Assembly>();
+
+        private readonly List<IMicroContainer> _genericContainers = new List<IMicroContainer>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependencyMap"/> class.
@@ -133,6 +136,11 @@ namespace Hiro
         /// <param name="implementingType">The implementing type.</param>
         public void AddService(string serviceName, System.Type serviceType, System.Type implementingType)
         {
+            if (serviceType.IsGenericTypeDefinition && implementingType.IsGenericTypeDefinition)
+            {
+                throw new NotSupportedException("Named generic service registration is currently not supported");
+            }
+
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
@@ -146,6 +154,13 @@ namespace Hiro
         /// <param name="implementingType">The implementing type.</param>
         public void AddService(System.Type serviceType, System.Type implementingType)
         {
+            if (serviceType.IsGenericTypeDefinition && implementingType.IsGenericTypeDefinition)
+            {
+                var genericContainer = new GenericInstanceContainer(null, serviceType, implementingType, this);
+                _genericContainers.Add(genericContainer);
+                return;
+            }
+
             if (!serviceType.IsAssignableFrom(implementingType))
                 throw new ArgumentException("The implementing type must be derived from the service type");
 
@@ -264,7 +279,7 @@ namespace Hiro
         public bool Contains(System.Type serviceType)
         {
             return Contains(new Dependency(serviceType));
-        }
+        }        
 
         /// <summary>
         /// Compiles and instantiates a container instance using the current dependencies in the dependency map.
@@ -291,6 +306,20 @@ namespace Hiro
             var containerType = containerTypes[0];
             var result = (IMicroContainer)Activator.CreateInstance(containerType);
 
+            // Append the generic containers
+            var containers = new Queue<IMicroContainer>(_genericContainers);
+
+            IMicroContainer iterator = result;
+            while (containers.Count > 0)
+            {
+                var currentContainer = containers.Dequeue();
+                if (iterator.NextContainer == null)
+                {
+                    iterator.NextContainer = currentContainer;
+                    iterator = iterator.NextContainer;
+                }
+            }            
+           
             return result;
         }
 

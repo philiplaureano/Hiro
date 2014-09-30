@@ -95,6 +95,7 @@
     <Compile Include="CompilerTests.cs" />
     <Compile Include="DependencyTests.cs" />
     <Compile Include="FunctorTests.cs" />
+    <Compile Include="GenericTests.cs" />
     <Compile Include="ImplementationTests.cs" />
     <Compile Include="LoaderTests.cs" />
     <Compile Include="MicroContainerExtensionTests.cs" />

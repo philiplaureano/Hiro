@@ -98,9 +98,11 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BaseDependencyMap.cs" />
     <Compile Include="CachedContainerCompiler.cs" />
+    <Compile Include="DependencyContainerExtensions.cs" />
     <Compile Include="Functors\FunctorCall.cs" />
     <Compile Include="Functors\FunctorExtensions.cs" />
     <Compile Include="Functors\FunctorRegistry.cs" />
+    <Compile Include="GenericInstanceContainer.cs" />
     <Compile Include="ILProcessorExtensions.cs" />
     <Compile Include="Compilers\AssemblyBuilder.cs" />
     <Compile Include="Compilers\SingletonEmitter.cs" />
