@@ -15,8 +15,7 @@
     <tags>hiro ioc msbuild</tags>
     <dependencies>
       <dependency id="LinFu.Finders" version="1.0.1" />
-      <dependency id="LinFu.Loaders" version="3.0.0.30408" />
-      <dependency id="Mono.Cecil" version="0.9.5.4" />
+      <dependency id="LinFu.Loaders" version="3.0.0.30408"/>
       <dependency id="Hiro.Containers" version="1.0.2.29326" />
       <dependency id="Iesi.Collections" version="4.0.1.4000" />
       <dependency id="NGenerics" version="1.4.1.0" />
