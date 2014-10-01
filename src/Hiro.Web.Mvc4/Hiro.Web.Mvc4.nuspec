@@ -13,6 +13,7 @@
     <summary>The MIT license.</summary>
     <copyright>Copyright © Philip Laureano 2014</copyright>
     <tags>hiro ioc msbuild</tags>
+    
     <dependencies>
       <dependency id="LinFu.Finders" version="1.0.1" />
       <dependency id="LinFu.Loaders" version="3.0.0.30408"/>
